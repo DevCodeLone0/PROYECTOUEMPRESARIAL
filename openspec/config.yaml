@@ -1,0 +1,41 @@
+# SDD Configuration — PROYECTOUEMPRESARIAL
+# Vocational guidance web platform for Colombian secondary students
+
+context: |
+  Fresh rebuild of a vocational guidance platform.
+  Target stack: React 19 + Next.js 15 + Supabase (auth, DB, storage).
+  Audience: Colombian secondary students (guidance/career orientation).
+  No existing code — greenfield project.
+
+strict_tdd: false
+
+testing:
+  runner: none
+  framework: none
+  unit: false
+  integration: false
+  e2e: false
+  coverage: false
+
+phases:
+  proposal:
+    required: true
+    gate: intent + scope + approach
+  spec:
+    required: true
+    gate: scenarios + acceptance criteria
+  design:
+    required: true
+    gate: architecture + component model
+  tasks:
+    required: true
+    gate: ordered task list with dependencies
+  apply:
+    required: true
+    gate: implementation per tasks
+  verify:
+    required: true
+    gate: tests pass + specs satisfied
+  archive:
+    required: true
+    gate: delta specs synced + changes archived
