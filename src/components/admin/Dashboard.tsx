@@ -39,18 +39,18 @@ export default function Dashboard() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-24 bg-white/5 rounded-xl animate-pulse"
+              className="h-28 bg-white/3 rounded-2xl animate-pulse"
             />
           ))}
         </div>
-        <div className="h-64 bg-white/5 rounded-xl animate-pulse" />
+        <div className="h-72 bg-white/3 rounded-2xl animate-pulse" />
       </div>
     );
   }
 
   if (!metrics) {
     return (
-      <div className="text-center py-12 text-white/40">
+      <div className="text-center py-12 text-white/30">
         Error al cargar métricas
       </div>
     );
@@ -60,74 +60,97 @@ export default function Dashboard() {
     {
       label: "Total leads",
       value: metrics.total,
-      icon: "📊",
-      color: "from-violet-500/10 to-violet-500/5",
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      ),
+      color: "text-[#00ff88]",
+      bg: "bg-[#00ff88]/5",
     },
     {
       label: "Esta semana",
       value: metrics.thisWeek,
-      icon: "📅",
-      color: "from-blue-500/10 to-blue-500/5",
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+      color: "text-[#00d4ff]",
+      bg: "bg-[#00d4ff]/5",
     },
     {
       label: "Este mes",
       value: metrics.thisMonth,
-      icon: "📈",
-      color: "from-green-500/10 to-green-500/5",
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      ),
+      color: "text-[#D51933]",
+      bg: "bg-[#D51933]/5",
     },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Metric Cards */}
+      {/* Page title */}
+      <div>
+        <h1 className="text-2xl font-extrabold text-white tracking-tight">Dashboard</h1>
+        <p className="text-sm text-white/30 mt-1">Resumen de leads y actividad</p>
+      </div>
+
+      {/* Metric Cards — Chaptr clean */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {cards.map((card) => (
           <div
             key={card.label}
-            className={`bg-gradient-to-br ${card.color} border border-white/10 rounded-xl p-5`}
+            className="bg-white/3 border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all duration-300"
           >
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm text-white/50">{card.label}</div>
-                <div className="text-3xl font-bold text-white mt-1">
+                <div className="text-sm text-white/40 font-medium">{card.label}</div>
+                <div className="text-3xl font-extrabold text-white mt-2">
                   {card.value}
                 </div>
               </div>
-              <div className="text-3xl">{card.icon}</div>
+              <div className={`w-12 h-12 rounded-xl ${card.bg} flex items-center justify-center ${card.color}`}>
+                {card.icon}
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Chart */}
-      <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-        <h3 className="text-lg font-bold text-white mb-4">
+      {/* Chart — Clean card */}
+      <div className="bg-white/3 border border-white/5 rounded-2xl p-6">
+        <h3 className="text-lg font-bold text-white mb-6">
           Leads por día (últimos 30 días)
         </h3>
         {metrics.daily.length > 0 ? (
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={metrics.daily}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
               <XAxis
                 dataKey="date"
-                stroke="rgba(255,255,255,0.3)"
+                stroke="rgba(255,255,255,0.2)"
                 tick={{ fontSize: 12 }}
                 tickFormatter={(value: string) => value.slice(5)}
               />
-              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 12 }} />
+              <YAxis stroke="rgba(255,255,255,0.2)" tick={{ fontSize: 12 }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(0,0,0,0.8)",
+                  backgroundColor: "#1a1a1a",
                   border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: "8px",
+                  borderRadius: "12px",
                   color: "white",
                 }}
               />
-              <Bar dataKey="count" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="#D51933" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="text-center py-12 text-white/40">
+          <div className="text-center py-12 text-white/30">
             <div className="text-4xl mb-4">📭</div>
             <p>Aún no hay leads. ¡Comparte el test!</p>
           </div>

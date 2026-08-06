@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LeadFormSchema, type LeadFormData } from "@/lib/schemas";
+import { LeadFormSchema } from "@/lib/schemas";
 
 interface LeadFormProps {
   scores: {
@@ -34,7 +34,6 @@ export default function LeadForm({
 
   const handleChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error on change
     if (errors[field]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -48,7 +47,6 @@ export default function LeadForm({
     e.preventDefault();
     setSubmitError("");
 
-    // Validate with Zod
     const result = LeadFormSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -104,75 +102,84 @@ export default function LeadForm({
 
   if (submitted) {
     return (
-      <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-6 md:p-8 text-center space-y-4">
-        <div className="text-5xl">🎉</div>
-        <h3 className="text-xl font-bold text-green-400">
+      <div className="text-center space-y-6 py-8">
+        <div className="text-6xl animate-float">🎉</div>
+        <h3 className="text-2xl font-bold text-[#0a0a0a]">
           ¡Gracias, {formData.nombre}!
         </h3>
-        <p className="text-white/60 leading-relaxed">
+        <p className="text-gray-500 leading-relaxed">
           El equipo de admisiones de Uniempresarial te contactará pronto.
         </p>
-        <p className="text-sm text-white/40">
-          ¿Preguntas? Escríbenos a{" "}
-          <a
-            href="mailto:admisiones@uniempresarial.edu.co"
-            className="text-violet-400 hover:underline"
-          >
-            admisiones@uniempresarial.edu.co
-          </a>
-        </p>
+        <a
+          href="/resultados"
+          className="inline-flex items-center gap-2 bg-[#0a0a0a] text-white font-bold px-8 py-3 rounded-2xl transition-all duration-300 hover:scale-105"
+        >
+          Ver mis resultados
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </a>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <h3 className="text-xl font-bold text-white">
-        ¿Te gustó tu resultado? Déjanos tus datos
-      </h3>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="mb-6">
+        <h3 className="text-xl font-bold text-[#0a0a0a]">
+          ¿Te gustó tu resultado?
+        </h3>
+        <p className="text-sm text-gray-400 mt-1">Déjanos tus datos para recibir orientación personalizada</p>
+      </div>
 
       {/* Nombre */}
-      <div>
-        <label className="block text-sm text-white/60 mb-1">Nombre completo</label>
+      <div className="space-y-2">
+        <label className="block text-sm font-semibold text-[#0a0a0a]">
+          Nombre completo
+        </label>
         <input
           type="text"
           value={formData.nombre}
           onChange={(e) => handleChange("nombre", e.target.value)}
-          className="w-full p-3 rounded-xl bg-white/5 border-2 border-white/10 text-white placeholder-white/30 focus:border-violet-500 focus:outline-none transition-colors"
+          className="w-full p-4 rounded-xl bg-white border-2 border-gray-100 text-[#0a0a0a] placeholder-gray-300 focus:border-[#D51933] focus:outline-none transition-colors text-base"
           placeholder="Tu nombre"
         />
         {errors.nombre && (
-          <p className="text-sm text-red-400 mt-1">{errors.nombre}</p>
+          <p className="text-sm text-red-500">{errors.nombre}</p>
         )}
       </div>
 
       {/* Email */}
-      <div>
-        <label className="block text-sm text-white/60 mb-1">Correo electrónico</label>
+      <div className="space-y-2">
+        <label className="block text-sm font-semibold text-[#0a0a0a]">
+          Correo electrónico
+        </label>
         <input
           type="email"
           value={formData.email}
           onChange={(e) => handleChange("email", e.target.value)}
-          className="w-full p-3 rounded-xl bg-white/5 border-2 border-white/10 text-white placeholder-white/30 focus:border-violet-500 focus:outline-none transition-colors"
+          className="w-full p-4 rounded-xl bg-white border-2 border-gray-100 text-[#0a0a0a] placeholder-gray-300 focus:border-[#D51933] focus:outline-none transition-colors text-base"
           placeholder="tu@email.com"
         />
         {errors.email && (
-          <p className="text-sm text-red-400 mt-1">{errors.email}</p>
+          <p className="text-sm text-red-500">{errors.email}</p>
         )}
       </div>
 
       {/* Celular */}
-      <div>
-        <label className="block text-sm text-white/60 mb-1">Celular</label>
+      <div className="space-y-2">
+        <label className="block text-sm font-semibold text-[#0a0a0a]">
+          Celular
+        </label>
         <input
           type="tel"
           value={formData.celular}
           onChange={(e) => handleChange("celular", e.target.value)}
-          className="w-full p-3 rounded-xl bg-white/5 border-2 border-white/10 text-white placeholder-white/30 focus:border-violet-500 focus:outline-none transition-colors"
+          className="w-full p-4 rounded-xl bg-white border-2 border-gray-100 text-[#0a0a0a] placeholder-gray-300 focus:border-[#D51933] focus:outline-none transition-colors text-base"
           placeholder="3XX XXX XXXX"
         />
         {errors.celular && (
-          <p className="text-sm text-red-400 mt-1">{errors.celular}</p>
+          <p className="text-sm text-red-500">{errors.celular}</p>
         )}
       </div>
 
@@ -183,10 +190,10 @@ export default function LeadForm({
             type="checkbox"
             checked={formData.consentimiento}
             onChange={(e) => handleChange("consentimiento", e.target.checked)}
-            className="mt-1 w-4 h-4 rounded border-white/20 bg-white/5 text-violet-500 focus:ring-violet-500"
+            className="mt-1 w-5 h-5 rounded border-gray-200 bg-white text-[#D51933] focus:ring-[#D51933]"
           />
-          <span className="text-xs text-white/50 leading-relaxed">
-            <strong className="text-white/70">
+          <span className="text-xs text-gray-500 leading-relaxed">
+            <strong className="text-gray-700">
               Acepto el tratamiento de mis datos personales
             </strong>{" "}
             por parte de la Fundación Universitaria Empresarial de la CCB
@@ -195,13 +202,13 @@ export default function LeadForm({
             programas académicos, envío de información sobre eventos,
             convocatorias y procesos de admisión, y seguimiento del proceso de
             orientación vocacional. Mis datos serán tratados conforme a la{" "}
-            <strong className="text-white/70">Ley 1581 de 2012</strong> y su
+            <strong className="text-gray-700">Ley 1581 de 2012</strong> y su
             decreto reglamentario 1377 de 2013. Tengo derecho a acceder,
             rectificar, suprimir y/o portar mis datos personales en cualquier
             momento, escribiendo a{" "}
             <a
               href="mailto:admisiones@uniempresarial.edu.co"
-              className="text-violet-400 hover:underline"
+              className="text-[#D51933] hover:underline"
             >
               admisiones@uniempresarial.edu.co
             </a>
@@ -209,13 +216,13 @@ export default function LeadForm({
           </span>
         </label>
         {errors.consentimiento && (
-          <p className="text-sm text-red-400">{errors.consentimiento}</p>
+          <p className="text-sm text-red-500">{errors.consentimiento}</p>
         )}
       </div>
 
       {/* Submit error */}
       {submitError && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-sm text-red-400">
+        <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-sm text-red-500">
           {submitError}
         </div>
       )}
@@ -224,7 +231,7 @@ export default function LeadForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-3 rounded-xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-4 rounded-xl font-bold bg-[#0a0a0a] text-white transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-base"
       >
         {isSubmitting ? "Enviando..." : "Enviar mis datos"}
       </button>

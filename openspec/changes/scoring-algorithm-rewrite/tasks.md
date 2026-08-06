@@ -53,10 +53,10 @@ Chain strategy: pending
 
 ## Phase 5: Results UI + Cleanup
 
-- [ ] T14 Create `src/components/results/RadarChart.tsx` — recharts RadarChart wrapper, 6 RIASEC axes with Spanish labels, student profile fill + program overlay on hover
-- [ ] T15 Create `src/components/results/ModalityCard.tsx` — presencial/virtual recommendation, confidence indicator (green/yellow/orange), Spanish explanation text, matching programs count
-- [ ] T16 Create `src/components/results/GapAnalysis.tsx` — per-dimension student vs. requirement bars, gap indicators, Spanish suggestion text, expandable section
-- [ ] T17 Modify `src/components/results/ProgramCard.tsx` — add fit breakdown (3 sub-scores), modality badge with "Recomendado" indicator, expanded top-3 / collapsed rest
-- [ ] T18 Modify `src/app/resultados/page.tsx` — new `ResultsData` shape, wire radar chart + modality card + gap analysis + updated archetype card (no old scores)
-- [ ] T19 Delete `src/lib/scoring.ts`, `src/lib/scoring-matrix.ts`, `src/lib/archetypes.ts` — old files replaced by `src/lib/scoring/` module
-- [ ] T20 Final verification: full test flow Q1-Q25 → results page renders all new components
+- [x] T14 Create `src/components/results/RadarChart.tsx` — recharts RadarChart wrapper, 6 RIASEC axes with Spanish labels, student profile fill + program overlay on hover
+- [x] T15 Create `src/components/results/ModalityCard.tsx` — presencial/virtual recommendation, confidence indicator (green/yellow/orange), Spanish explanation text, matching programs count
+- [x] T16 Create `src/components/results/GapAnalysis.tsx` — per-dimension student vs. requirement bars, gap indicators, Spanish suggestion text, expandable section
+- [x] T17 Modify `src/components/results/ProgramCard.tsx` — add fit breakdown (3 sub-scores), modality badge with "Recomendado" indicator, expanded top-3 / collapsed rest
+- [x] T18 Modify `src/app/resultados/page.tsx` — new `ResultsData` shape, wire radar chart + modality card + gap analysis + updated archetype card (no old scores)
+- [x] T19 Delete `src/lib/scoring.ts`, `src/lib/scoring-matrix.ts`, `src/lib/archetypes.ts` — old files replaced by `src/lib/scoring/` module
+- [x] T20 Final verification: full test flow Q1-Q25 → results page renders all new components
