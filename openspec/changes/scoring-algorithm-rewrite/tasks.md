@@ -48,8 +48,8 @@ Chain strategy: pending
 
 ## Phase 4: Store + Wizard Integration
 
-- [ ] T12 Modify `src/stores/test-store.ts` — add layer tracking (`currentLayer: 1-4`), new answer format (`Record<string, number>`), RIASEC profile cache, migration logic (detect old `Q16` key → reset to step 0)
-- [ ] T13 Modify `src/app/test/page.tsx` (TestWizard) — 25-step wizard, layer transition screens between Q12→Q13, Q17→Q18, Q22→Q23, layer indicator component
+- [x] T12 Modify `src/stores/test-store.ts` — add layer tracking (`currentLayer: 1-4`), new answer format (`Record<string, number>`), RIASEC profile cache, migration logic (detect old `Q16` key → reset to step 0)
+- [x] T13 Modify `src/app/test/page.tsx` (TestWizard) — 25-step wizard, layer transition screens between Q12→Q13, Q17→Q18, Q22→Q23, layer indicator component
 
 ## Phase 5: Results UI + Cleanup
 
