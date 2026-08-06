@@ -40,11 +40,11 @@ Chain strategy: pending
 
 ## Phase 3: Modality + Archetypes (TDD)
 
-- [ ] T7 Write `src/lib/__tests__/modality.test.ts` — RED: failing tests for direct signal, derived signal, confidence levels, explanation generation, missing answers default, modality doesn't affect ranking
-- [ ] T8 Create `src/lib/scoring/modality.ts` — GREEN: implement `computeDirectSignal()`, `computeDerivedSignal()`, `recommendModality()`, `generateExplanation()`
-- [ ] T9 Write `src/lib/__tests__/archetypes.test.ts` — RED: failing tests for 8 archetypes exist, dominant/secondary mapping, cosine fallback, tiebreaking, all profile vectors normalized
-- [ ] T10 Create `src/lib/scoring/archetypes.ts` — GREEN: implement `ARCHETYPES` array, `MAPPING_TABLE`, `determineArchetype()`, cosine fallback
-- [ ] T11 Verify all modality + archetypes tests pass
+- [x] T7 Write `src/lib/__tests__/modality.test.ts` — RED: failing tests for direct signal, derived signal, confidence levels, explanation generation, missing answers default, modality doesn't affect ranking
+- [x] T8 Create `src/lib/scoring/modality.ts` — GREEN: implement `computeDirectSignal()`, `computeDerivedSignal()`, `recommendModality()`, `generateExplanation()`
+- [x] T9 Write `src/lib/__tests__/archetypes.test.ts` — RED: failing tests for 8 archetypes exist, dominant/secondary mapping, cosine fallback, tiebreaking, all profile vectors normalized
+- [x] T10 Create `src/lib/scoring/archetypes.ts` — GREEN: implement `ARCHETYPES` array, `MAPPING_TABLE`, `determineArchetype()`, cosine fallback
+- [x] T11 Verify all modality + archetypes tests pass
 
 ## Phase 4: Store + Wizard Integration
 
