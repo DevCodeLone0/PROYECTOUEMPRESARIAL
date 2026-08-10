@@ -65,6 +65,10 @@ export interface LeadRow {
   riasec_s: number;
   riasec_e: number;
   riasec_c: number;
+  estado: string;
+  notas: string;
+  actualizado_en: string;
+  rowIndex: number;
 }
 
 /**
@@ -99,12 +103,15 @@ export async function appendLead(lead: LeadRow): Promise<boolean> {
         lead.riasec_s,
         lead.riasec_e,
         lead.riasec_c,
+        lead.estado,
+        lead.notas,
+        lead.actualizado_en,
       ],
     ];
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: `${SHEET_NAME}!A:W`,
+      range: `${SHEET_NAME}!A:Z`,
       // RAW stores values as literal text: user-supplied strings that look
       // like formulas ("=HYPERLINK(...)", "+1+1") are never evaluated.
       valueInputOption: "RAW",
@@ -133,12 +140,12 @@ export async function getLeads(): Promise<LeadRow[]> {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `${SHEET_NAME}!A2:W`,
+      range: `${SHEET_NAME}!A2:Z`,
     });
 
     const rows = response.data.values || [];
 
-    return rows.map((row) => {
+    return rows.map((row, i) => {
       const rawConsent = row[4];
       return {
         timestamp: String(row[0] ?? ""),
@@ -169,11 +176,53 @@ export async function getLeads(): Promise<LeadRow[]> {
         riasec_s: Number(row[20]) || 0,
         riasec_e: Number(row[21]) || 0,
         riasec_c: Number(row[22]) || 0,
+        // Leads viejos sin valor de estado → "nuevo"
+        estado: String(row[23] ?? "") || "nuevo",
+        notas: String(row[24] ?? ""),
+        actualizado_en: String(row[25] ?? ""),
+        // Fila real en la hoja: la fila 2 es el primer lead (fila 1 = header)
+        rowIndex: i + 2,
       };
     });
   } catch (error) {
     console.error("Error getting leads from Google Sheets:", error);
     return [];
+  }
+}
+
+/**
+ * Update lead status/notes in the sheet.
+ * `rowIndex` is the real sheet row (1-based, header is row 1).
+ * Always rewrites estado, notas and actualizado_en (ISO timestamp).
+ */
+export async function updateLead(
+  rowIndex: number,
+  patch: { estado?: string; notas?: string }
+): Promise<boolean> {
+  try {
+    const sheets = await getSheets();
+
+    const values = [
+      [patch.estado ?? "", patch.notas ?? "", new Date().toISOString()],
+    ];
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${SHEET_NAME}!X${rowIndex}:Z${rowIndex}`,
+      valueInputOption: "RAW",
+      requestBody: { values },
+    });
+
+    return true;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes("GOOGLE_SERVICE_ACCOUNT_KEY")
+    ) {
+      throw error;
+    }
+    console.error("Error updating lead in Google Sheets:", error);
+    return false;
   }
 }
 

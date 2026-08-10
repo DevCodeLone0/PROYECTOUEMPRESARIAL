@@ -92,3 +92,16 @@ export const LeadPayloadSchema = z.object({
 });
 
 export type LeadPayload = z.infer<typeof LeadPayloadSchema>;
+
+export const LEAD_STATUSES = ["nuevo", "contactado", "en_proceso", "admitido", "descartado"] as const;
+export type LeadStatus = (typeof LEAD_STATUSES)[number];
+
+export const LeadUpdateSchema = z
+  .object({
+    id: z.string().regex(/^lead-\d+$/, { error: "ID de lead inválido" }),
+    estado: z.enum(LEAD_STATUSES).optional(),
+    notas: z.string().max(2000, { error: "Las notas no pueden superar 2000 caracteres" }).optional(),
+  })
+  .refine((d) => d.estado !== undefined || d.notas !== undefined, {
+    message: "Debes enviar estado o notas",
+  });

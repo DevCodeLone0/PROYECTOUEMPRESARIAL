@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import LeadsTable, { type Lead } from "@/components/admin/LeadsTable";
+import LeadsTable, { statusLabel, type Lead } from "@/components/admin/LeadsTable";
 import LeadDetail from "@/components/admin/LeadDetail";
 
 /**
@@ -24,6 +24,7 @@ export default function AdminLeadsPage() {
   const [archetype, setArchetype] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [estado, setEstado] = useState("");
   const [message, setMessage] = useState<ExportMessage>(null);
   const [exporting, setExporting] = useState(false);
 
@@ -39,6 +40,7 @@ export default function AdminLeadsPage() {
         archetype,
         dateFrom,
         dateTo,
+        estado,
         pageSize: "1000",
       });
       const res = await fetch(`/api/admin/leads?${params}`);
@@ -68,6 +70,7 @@ export default function AdminLeadsPage() {
         Email: sanitizeCell(lead.email),
         Celular: sanitizeCell(lead.celular),
         Arquetipo: sanitizeCell(lead.arquetipo),
+        Estado: lead.estado ? statusLabel(lead.estado) : "Nuevo",
         "Compatibilidad Top 1": `${lead.compatibilidad_1}%`,
         "Carrera 1": sanitizeCell(lead.carrera_1),
         "Carrera 2": sanitizeCell(lead.carrera_2),
@@ -157,6 +160,8 @@ export default function AdminLeadsPage() {
         onDateFromChange={setDateFrom}
         dateTo={dateTo}
         onDateToChange={setDateTo}
+        estado={estado}
+        onEstadoChange={setEstado}
       />
 
       {selectedLead && (

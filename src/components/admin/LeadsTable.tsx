@@ -2,6 +2,36 @@
 
 import { useState, useEffect } from "react";
 
+/**
+ * Human-readable label for a lead status, falling back to the raw value
+ * when the status is unknown.
+ */
+export function statusLabel(s: string): string {
+  const labels: Record<string, string> = {
+    nuevo: "Nuevo",
+    contactado: "Contactado",
+    en_proceso: "En proceso",
+    admitido: "Admitido",
+    descartado: "Descartado",
+  };
+  return labels[s] ?? s;
+}
+
+/**
+ * Badge color classes for a lead status, with a neutral fallback for
+ * unknown values.
+ */
+export function statusBadgeClasses(s: string): string {
+  const classes: Record<string, string> = {
+    nuevo: "bg-[#4da6ff]/15 text-[#4da6ff]",
+    contactado: "bg-[#00ff88]/15 text-[#00ff88]",
+    en_proceso: "bg-[#fbbf24]/15 text-[#fbbf24]",
+    admitido: "bg-[#a78bfa]/15 text-[#a78bfa]",
+    descartado: "bg-red-500/15 text-red-400",
+  };
+  return classes[s] ?? "bg-white/5 text-white/40";
+}
+
 export interface Lead {
   id: string;
   nombre: string;
@@ -27,6 +57,9 @@ export interface Lead {
   riasec_s: number;
   riasec_e: number;
   riasec_c: number;
+  estado: string;
+  notas: string;
+  actualizado_en: string;
 }
 
 interface LeadsTableProps {
@@ -39,6 +72,8 @@ interface LeadsTableProps {
   onDateFromChange: (value: string) => void;
   dateTo: string;
   onDateToChange: (value: string) => void;
+  estado: string;
+  onEstadoChange: (value: string) => void;
 }
 
 export default function LeadsTable({
@@ -51,6 +86,8 @@ export default function LeadsTable({
   onDateFromChange,
   dateTo,
   onDateToChange,
+  estado,
+  onEstadoChange,
 }: LeadsTableProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [total, setTotal] = useState(0);
@@ -69,6 +106,7 @@ export default function LeadsTable({
         archetype,
         dateFrom,
         dateTo,
+        estado,
       });
 
       try {
@@ -93,7 +131,7 @@ export default function LeadsTable({
     return () => {
       cancelled = true;
     };
-  }, [page, search, archetype, dateFrom, dateTo]);
+  }, [page, search, archetype, dateFrom, dateTo, estado]);
 
   const totalPages = Math.max(1, Math.ceil(total / 20));
 
@@ -129,6 +167,37 @@ export default function LeadsTable({
           }}
           className="w-48 p-3.5 rounded-xl bg-white/3 border border-white/5 text-white placeholder-white/25 focus:border-[#D51933]/50 focus:bg-[#D51933]/3 focus:outline-none text-sm transition-all duration-300"
         />
+        <label htmlFor="leads-estado" className="sr-only">
+          Filtrar por estado
+        </label>
+        <select
+          id="leads-estado"
+          value={estado}
+          onChange={(e) => {
+            onEstadoChange(e.target.value);
+            setPage(1);
+          }}
+          className="p-3.5 rounded-xl bg-white/3 border border-white/5 text-white focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300"
+        >
+          <option value="" className="bg-[#141414] text-white">
+            Todos los estados
+          </option>
+          <option value="nuevo" className="bg-[#141414] text-white">
+            Nuevo
+          </option>
+          <option value="contactado" className="bg-[#141414] text-white">
+            Contactado
+          </option>
+          <option value="en_proceso" className="bg-[#141414] text-white">
+            En proceso
+          </option>
+          <option value="admitido" className="bg-[#141414] text-white">
+            Admitido
+          </option>
+          <option value="descartado" className="bg-[#141414] text-white">
+            Descartado
+          </option>
+        </select>
         <label htmlFor="leads-date-from" className="sr-only">
           Desde
         </label>
@@ -182,6 +251,9 @@ export default function LeadsTable({
                     Arquetipo
                   </th>
                   <th className="text-left p-4 text-white/40 font-medium">
+                    Estado
+                  </th>
+                  <th className="text-left p-4 text-white/40 font-medium">
                     Compat.
                   </th>
                   <th className="text-left p-4 text-white/40 font-medium">
@@ -209,6 +281,16 @@ export default function LeadsTable({
                     </td>
                     <td className="p-4 text-white/50">{lead.email}</td>
                     <td className="p-4 text-white/50">{lead.arquetipo}</td>
+                    <td className="p-4">
+                      <span
+                        className={
+                          "inline-flex px-2.5 py-1 rounded-full text-xs font-medium " +
+                          statusBadgeClasses(lead.estado)
+                        }
+                      >
+                        {statusLabel(lead.estado)}
+                      </span>
+                    </td>
                     <td className="p-4 text-[#00ff88] font-bold">
                       {lead.compatibilidad_1}%
                     </td>

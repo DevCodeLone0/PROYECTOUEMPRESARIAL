@@ -78,6 +78,11 @@ export async function POST(request: NextRequest) {
       riasec_s: data.riasecProfile.S,
       riasec_e: data.riasecProfile.E,
       riasec_c: data.riasecProfile.C,
+      estado: "nuevo",
+      notas: "",
+      actualizado_en: "",
+      // Sin fila asignada todavía: solo getLeads/updateLead la usan
+      rowIndex: 0,
     };
 
     const success = await appendLead(leadRow);

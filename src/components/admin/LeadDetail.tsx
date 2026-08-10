@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { QUESTION_BANK } from "@/lib/questions/question-bank";
+import { LEAD_STATUSES } from "@/lib/schemas";
 import type { Lead } from "@/components/admin/LeadsTable";
 
 interface LeadDetailProps {
@@ -10,6 +11,28 @@ interface LeadDetailProps {
 }
 
 export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
+  const [estado, setEstado] = useState(lead.estado || "nuevo");
+  const [notas, setNotas] = useState(lead.notas || "");
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<"ok" | "error" | null>(null);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMsg(null);
+    try {
+      const res = await fetch("/api/admin/leads", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: lead.id, estado, notas }),
+      });
+      setSaveMsg(res.ok ? "ok" : "error");
+    } catch {
+      setSaveMsg("error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -91,6 +114,75 @@ export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
               <div className="text-xs text-white/25 mt-2">
                 {new Date(lead.timestamp).toLocaleString("es-CO")}
               </div>
+            </div>
+          </div>
+
+          {/* Seguimiento */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider">
+              Seguimiento
+            </h4>
+            <div className="bg-white/3 rounded-xl p-4 space-y-3">
+              <div>
+                <label
+                  htmlFor="lead-estado"
+                  className="block text-xs text-white/30 mb-1"
+                >
+                  Estado del lead
+                </label>
+                <select
+                  id="lead-estado"
+                  value={estado}
+                  onChange={(e) => setEstado(e.target.value)}
+                  className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-[#D51933]/50 focus:outline-none text-sm"
+                >
+                  {LEAD_STATUSES.map((status) => (
+                    <option key={status} value={status} className="bg-[#141414]">
+                      {status === "nuevo" && "Nuevo"}
+                      {status === "contactado" && "Contactado"}
+                      {status === "en_proceso" && "En proceso"}
+                      {status === "admitido" && "Admitido"}
+                      {status === "descartado" && "Descartado"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label
+                  htmlFor="lead-notas"
+                  className="block text-xs text-white/30 mb-1"
+                >
+                  Notas internas
+                </label>
+                <textarea
+                  id="lead-notas"
+                  value={notas}
+                  onChange={(e) => setNotas(e.target.value)}
+                  placeholder="Ej: llamada realizada, interesado en beca..."
+                  className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 focus:border-[#D51933]/50 focus:outline-none text-sm min-h-[96px] resize-y"
+                />
+              </div>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="w-full py-3 rounded-xl font-bold bg-white text-[#0a0a0a] hover:bg-[#0033A5] hover:text-white transition-all duration-300 disabled:opacity-50"
+              >
+                {saving ? "Guardando..." : "Guardar cambios"}
+              </button>
+              {saveMsg === "ok" && (
+                <p className="text-sm text-[#00ff88]">Cambios guardados</p>
+              )}
+              {saveMsg === "error" && (
+                <p className="text-sm text-red-400">
+                  Error al guardar. Intenta de nuevo.
+                </p>
+              )}
+              {lead.actualizado_en && (
+                <p className="text-xs text-white/25 mt-2">
+                  Actualizado:{" "}
+                  {new Date(lead.actualizado_en).toLocaleString("es-CO")}
+                </p>
+              )}
             </div>
           </div>
 

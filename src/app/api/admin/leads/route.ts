@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getLeads, type LeadRow } from "@/lib/sheets";
+import { getLeads, updateLead, type LeadRow } from "@/lib/sheets";
+import { LeadUpdateSchema } from "@/lib/schemas";
 
 const NO_STORE = { "Cache-Control": "no-store" };
 
-export async function GET(request: NextRequest) {
-  // Check admin authentication
+/**
+ * Shared admin auth guard for GET and PATCH.
+ * Returns a 401/403 response when unauthenticated or not admin, or null
+ * when the request may proceed.
+ */
+async function requireAdmin(): Promise<NextResponse | null> {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json(
@@ -21,6 +26,13 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  return null;
+}
+
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   try {
     const leads = await getLeads();
     const { searchParams } = new URL(request.url);
@@ -30,6 +42,7 @@ export async function GET(request: NextRequest) {
     const dateFrom = searchParams.get("dateFrom") || "";
     const dateTo = searchParams.get("dateTo") || "";
     const modality = searchParams.get("modality") || "";
+    const estado = searchParams.get("estado") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
 
     // pageSize: default 20, clamped to [1, 1000] (exports fetch pageSize=1000)
@@ -54,6 +67,10 @@ export async function GET(request: NextRequest) {
 
     if (archetype) {
       filtered = filtered.filter((l) => l.arquetipo === archetype);
+    }
+
+    if (estado) {
+      filtered = filtered.filter((l) => l.estado === estado);
     }
 
     if (dateFrom) {
@@ -86,9 +103,10 @@ export async function GET(request: NextRequest) {
     const start = (page - 1) * pageSize;
     const paginated = filtered.slice(start, start + pageSize);
 
-    // Map to response shape
-    const leadsResponse = paginated.map((l: LeadRow, index: number) => ({
-      id: `lead-${start + index}`,
+    // Map to response shape. id is STABLE: derived from the real sheet row,
+    // so PATCH can target the same row regardless of filters/pagination.
+    const leadsResponse = paginated.map((l: LeadRow) => ({
+      id: `lead-${l.rowIndex}`,
       nombre: l.nombre,
       email: l.email,
       celular: l.celular,
@@ -112,6 +130,9 @@ export async function GET(request: NextRequest) {
       riasec_s: l.riasec_s,
       riasec_e: l.riasec_e,
       riasec_c: l.riasec_c,
+      estado: l.estado,
+      notas: l.notas,
+      actualizado_en: l.actualizado_en,
     }));
 
     return NextResponse.json(
@@ -125,6 +146,39 @@ export async function GET(request: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: "Error al obtener leads" },
+      { status: 500, headers: NO_STORE }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
+  try {
+    const body = await request.json();
+    const result = LeadUpdateSchema.safeParse(body);
+    if (!result.success) {
+      return NextResponse.json(
+        { errors: result.error.issues },
+        { status: 400, headers: NO_STORE }
+      );
+    }
+
+    const { id, estado, notas } = result.data;
+    const rowIndex = parseInt(id.replace("lead-", ""), 10);
+    const ok = await updateLead(rowIndex, { estado, notas });
+    if (!ok) {
+      return NextResponse.json(
+        { error: "Error al actualizar el lead" },
+        { status: 500, headers: NO_STORE }
+      );
+    }
+
+    return NextResponse.json({ ok: true }, { headers: NO_STORE });
+  } catch {
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
       { status: 500, headers: NO_STORE }
     );
   }
