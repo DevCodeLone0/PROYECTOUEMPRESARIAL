@@ -154,3 +154,52 @@ export function getPresencialPrograms(): Program[] {
 export function getVirtualPrograms(): Program[] {
   return programs.filter((p) => p.modality === "virtual");
 }
+
+export interface UniqueProgram {
+  /** Base id without "-virtual" suffix, e.g. "marketing". */
+  baseId: string;
+  /** Base name without " Virtual" suffix. */
+  name: string;
+  /** Modalities this career is actually offered in. */
+  modalities: ("presencial" | "virtual")[];
+  description: string;
+  whyDualModel: string;
+  displayOrder: number;
+}
+
+/** 7 unique careers, each with the modalities it is offered in. */
+export function getUniquePrograms(): UniqueProgram[] {
+  const byBase = new Map<string, Program[]>();
+  for (const program of programs) {
+    const baseId = program.id.replace(/-virtual$/, "");
+    const variants = byBase.get(baseId) ?? [];
+    variants.push(program);
+    byBase.set(baseId, variants);
+  }
+
+  return [...byBase.values()]
+    .map((variants) => {
+      // Use the presencial entry as the source of name/description/whyDualModel.
+      const source = variants.find((p) => p.modality === "presencial") ?? variants[0];
+      const modalities = (["presencial", "virtual"] as const).filter((m) =>
+        variants.some((p) => p.modality === m)
+      );
+
+      return {
+        baseId: source.id.replace(/-virtual$/, ""),
+        name: source.name.replace(/ Virtual$/, ""),
+        modalities,
+        description: source.description,
+        whyDualModel: source.whyDualModel,
+        displayOrder: source.displayOrder,
+      };
+    })
+    .sort((a, b) => a.displayOrder - b.displayOrder);
+}
+
+/** Base display name for any program id (strips " Virtual" from virtual names). */
+export function getProgramBaseName(id: string): string {
+  const program = getProgramById(id);
+  if (!program) return id.replace(/-virtual$/, "");
+  return program.name.replace(/ Virtual$/, "");
+}

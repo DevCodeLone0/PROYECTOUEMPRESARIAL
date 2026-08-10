@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Program } from "@/lib/programs";
+import { getProgramById, getProgramBaseName } from "@/lib/programs";
 import type { ScoringResult, ModalityResult } from "@/lib/scoring/types";
 
 interface ProgramCardProps {
@@ -39,6 +40,11 @@ export default function ProgramCard({
 
   const colors = rankColors[rank] || { bg: "bg-white/5", text: "text-white/50" };
   const isModalityMatch = modalityRecommendation === program.modality;
+  const twinId =
+    program.modality === "virtual"
+      ? program.id.replace(/-virtual$/, "")
+      : `${program.id}-virtual`;
+  const hasTwin = !!getProgramById(twinId);
 
   return (
     <div
@@ -58,11 +64,20 @@ export default function ProgramCard({
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="font-bold text-white truncate">{program.name}</div>
-          <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-xs text-white/35 capitalize">
-              {program.modality === "presencial" ? "Presencial" : "Virtual"}
-            </span>
+          <div className="font-bold text-white truncate">
+            {getProgramBaseName(program.id)}
+          </div>
+          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+            {(program.modality === "presencial" || hasTwin) && (
+              <span className="text-[10px] font-bold text-[#00ff88] bg-[#00ff88]/10 px-1.5 py-0.5 rounded">
+                Presencial
+              </span>
+            )}
+            {(program.modality === "virtual" || hasTwin) && (
+              <span className="text-[10px] font-bold text-[#4da6ff] bg-[#4da6ff]/10 px-1.5 py-0.5 rounded">
+                Virtual
+              </span>
+            )}
             {isModalityMatch && (
               <span className="text-[10px] font-bold text-[#00ff88] bg-[#00ff88]/10 px-1.5 py-0.5 rounded">
                 Recomendado

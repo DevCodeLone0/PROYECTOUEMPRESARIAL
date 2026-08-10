@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { programs } from "@/lib/programs";
+import { programs, getProgramById, getProgramBaseName } from "@/lib/programs";
 import type { ScoringResult, ModalityResult } from "@/lib/scoring/types";
 
 interface RankingFullProps {
@@ -51,6 +51,11 @@ export default function RankingFull({
 
             const isModalityMatch =
               modalityRecommendation === program.modality;
+            const twinId =
+              program.modality === "virtual"
+                ? program.id.replace(/-virtual$/, "")
+                : `${program.id}-virtual`;
+            const hasTwin = !!getProgramById(twinId);
 
             return (
               <div
@@ -65,10 +70,19 @@ export default function RankingFull({
                 {/* Name and modality */}
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-white/80 truncate">
-                    {program.name}
+                    {getProgramBaseName(program.id)}
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-white/25">
-                    <span className="capitalize">{program.modality}</span>
+                  <div className="flex items-center gap-1.5 text-xs flex-wrap">
+                    {(program.modality === "presencial" || hasTwin) && (
+                      <span className="text-[10px] font-bold text-[#00ff88] bg-[#00ff88]/10 px-1 py-0.5 rounded">
+                        Presencial
+                      </span>
+                    )}
+                    {(program.modality === "virtual" || hasTwin) && (
+                      <span className="text-[10px] font-bold text-[#4da6ff] bg-[#4da6ff]/10 px-1 py-0.5 rounded">
+                        Virtual
+                      </span>
+                    )}
                     {isModalityMatch && (
                       <span className="text-[10px] font-bold text-[#00ff88] bg-[#00ff88]/10 px-1 py-0.5 rounded">
                         ✓

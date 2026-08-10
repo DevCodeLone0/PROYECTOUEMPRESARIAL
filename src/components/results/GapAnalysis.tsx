@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { RIASECDimension, RIASECProfile } from "@/lib/scoring/types";
 import { PROGRAM_PROFILES } from "@/lib/scoring/programs-matrix";
-import { programs } from "@/lib/programs";
+import { programs, getProgramBaseName } from "@/lib/programs";
 
 interface GapAnalysisProps {
   riasecProfile: RIASECProfile;
@@ -147,7 +147,7 @@ export default function GapAnalysis({
             >
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-white/80 truncate">
-                  {program.name}
+                  {getProgramBaseName(program.id)}
                 </div>
               </div>
               <svg

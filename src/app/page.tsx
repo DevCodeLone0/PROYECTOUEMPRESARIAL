@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTestStore } from "@/stores/test-store";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Header from "@/components/layout/Header";
-import { programs } from "@/lib/programs";
+import { getUniquePrograms } from "@/lib/programs";
 
 const photos = [
   "/images/DSC_0191.JPG",
@@ -491,30 +491,33 @@ export default function HomePage() {
             <h2 className="text-4xl md:text-5xl font-extrabold text-white mt-4 tracking-tight leading-tight">
               Tu carrera entre
               <br />
-              <span className="gradient-text">7 presenciales y 5 virtuales.</span>
+              <span className="gradient-text">7 carreras, 5 también en virtual.</span>
             </h2>
             <p className="text-white/50 text-lg mt-4 max-w-xl">
-              El test ordena los 12 programas por afinidad con tu perfil y te recomienda la
+              El test ordena los 7 programas por afinidad con tu perfil y te recomienda la
               modalidad que mejor se adapta a tu estilo de aprendizaje.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {programs.map((p) => (
+            {getUniquePrograms().map((p) => (
               <div
-                key={p.id}
+                key={p.baseId}
                 className="group flex items-center justify-between gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
               >
                 <span className="font-semibold text-white">{p.name}</span>
-                <span
-                  className={`shrink-0 text-xs font-semibold px-3 py-1 rounded-full ${
-                    p.modality === "presencial"
-                      ? "bg-[#00ff88]/10 text-[#00ff88]"
-                      : "bg-[#4da6ff]/10 text-[#4da6ff]"
-                  }`}
-                >
-                  {p.modality === "presencial" ? "Presencial" : "Virtual"}
-                </span>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {p.modalities.includes("presencial") && (
+                    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#00ff88]/10 text-[#00ff88]">
+                      Presencial
+                    </span>
+                  )}
+                  {p.modalities.includes("virtual") && (
+                    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#4da6ff]/10 text-[#4da6ff]">
+                      Virtual
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
           </div>
