@@ -114,13 +114,18 @@ export default function GapAnalysis({
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-lg font-bold text-white flex items-center gap-3">
-        <span className="w-8 h-8 rounded-lg bg-[#0033A5]/10 flex items-center justify-center text-sm">
+    <div className="space-y-4">
+      <h3 className="text-xl font-bold text-white flex items-center gap-3">
+        <span className="w-10 h-10 rounded-xl bg-[#0033A5]/10 flex items-center justify-center text-xl">
           📊
         </span>
         Análisis de brechas
       </h3>
+      <p className="text-sm text-white/40 leading-relaxed">
+        Una brecha es una aptitud que el programa requiere y en la que hoy
+        estás lejos. No es un bloqueo: son áreas de crecimiento que
+        desarrollarás durante la carrera.
+      </p>
 
       {topProgramIds.slice(0, 3).map((programId, index) => {
         const program = programs.find((p) => p.id === programId);

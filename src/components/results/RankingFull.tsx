@@ -22,7 +22,11 @@ export default function RankingFull({
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-white/10 text-white/50 hover:border-[#0033A5] hover:text-[#0033A5] transition-all duration-300 font-medium"
       >
-        <span>{expanded ? "Ocultar ranking completo" : "Ver los 12 programas"}</span>
+        <span>
+          {expanded
+            ? "Ocultar ranking completo"
+            : `Ver el ranking completo (${results.length} programas)`}
+        </span>
         <svg
           className={`w-4 h-4 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
           fill="none"

@@ -26,6 +26,15 @@ const DIMENSION_LABELS: Record<RIASECDimension, string> = {
   C: "Convencional",
 };
 
+const DIMENSION_INSIGHTS: Record<RIASECDimension, string> = {
+  R: "Disfrutas el trabajo práctico y tangible.",
+  I: "Te motiva entender cómo funcionan las cosas.",
+  A: "Valoras la creatividad y la expresión.",
+  S: "Te impulsa ayudar y conectar con personas.",
+  E: "Te atraen el liderazgo y los retos.",
+  C: "Valoras el orden, la precisión y la organización.",
+};
+
 const DIMENSIONS: RIASECDimension[] = ["R", "I", "A", "S", "E", "C"];
 
 function formatData(profile: RIASECProfile, programProfile?: RIASECProfile) {
@@ -44,6 +53,13 @@ export default function RadarChart({
   className,
 }: RadarChartProps) {
   const data = formatData(profile, programProfile);
+
+  let strong = DIMENSIONS[0];
+  let weak = DIMENSIONS[0];
+  for (const dim of DIMENSIONS) {
+    if (profile[dim] > profile[strong]) strong = dim;
+    if (profile[dim] < profile[weak]) weak = dim;
+  }
 
   return (
     <div className={className}>
@@ -90,6 +106,33 @@ export default function RadarChart({
           )}
         </RechartsRadarChart>
       </ResponsiveContainer>
+
+      {/* Legend */}
+      <div className="flex items-center justify-center gap-6 mt-3">
+        <span className="flex items-center gap-2 text-xs text-white/40">
+          <span className="w-3 h-3 rounded-full bg-[#D51933]" />
+          Tu perfil
+        </span>
+        {programProfile && (
+          <span className="flex items-center gap-2 text-xs text-white/40">
+            <span className="w-3 h-3 rounded-full bg-[#0033A5]" />
+            Programa
+          </span>
+        )}
+      </div>
+
+      {/* Interpretation */}
+      <p className="text-sm text-white/50 leading-relaxed mt-4 text-center">
+        Tu dimensión más fuerte es{" "}
+        <span className="text-white font-semibold">
+          {DIMENSION_LABELS[strong]} ({Math.round(profile[strong] * 100)}%)
+        </span>
+        . La más baja es{" "}
+        <span className="text-white/80 font-medium">
+          {DIMENSION_LABELS[weak]}
+        </span>
+        . {DIMENSION_INSIGHTS[strong]}
+      </p>
     </div>
   );
 }

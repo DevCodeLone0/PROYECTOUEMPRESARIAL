@@ -42,7 +42,7 @@ export default function ProgramCard({
 
   return (
     <div
-      className={`bg-white/3 border border-white/8 rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/15 ${expanded ? "shadow-xl shadow-black/20" : ""}`}
+      className={`bg-white/3 border rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/15 ${rank === 1 ? "border-[#fbbf24]/25" : "border-white/8"} ${expanded ? "shadow-xl shadow-black/20" : ""}`}
     >
       {/* Header */}
       <button
