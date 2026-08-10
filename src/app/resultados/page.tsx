@@ -5,127 +5,254 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTestStore } from "@/stores/test-store";
 import { programs } from "@/lib/programs";
-import type { Archetype } from "@/lib/archetypes";
-import type { ScoringResult } from "@/lib/scoring";
+import { cosineSimilarity } from "@/lib/scoring/riasec";
+import { ARCHETYPES } from "@/lib/scoring/archetypes";
+import {
+  RIASEC_DIMENSIONS,
+  type RIASECDimension,
+} from "@/lib/scoring/types";
+import Header from "@/components/layout/Header";
+import type {
+  RIASECProfile,
+  ModalityResult,
+  Archetype,
+  ScoringResult,
+} from "@/lib/scoring/types";
 import Confetti from "@/components/ui/Confetti";
 import ArchetypeCard from "@/components/results/ArchetypeCard";
+import RadarChart from "@/components/results/RadarChart";
+import ModalityCard from "@/components/results/ModalityCard";
 import ProgramCard from "@/components/results/ProgramCard";
+import GapAnalysis from "@/components/results/GapAnalysis";
 import RankingFull from "@/components/results/RankingFull";
-import LeadForm from "@/components/lead/LeadForm";
 
 interface ResultsData {
-  results: ScoringResult[];
+  riasecProfile: RIASECProfile;
+  modalityResult: ModalityResult;
   archetype: Archetype;
-  scores: {
-    intereses: number;
-    personalidad: number;
-    habilidades: number;
-    motivacion: number;
-  };
-  answers: Record<string, string | number>;
+  aptitudeVec: number[];
+  valuesVec: number[];
+  rankedResults: ScoringResult[];
+  answers: Record<string, number>;
+}
+
+const DIMENSION_LABELS: Record<RIASECDimension, string> = {
+  R: "Realista",
+  I: "Investigativo",
+  A: "Artístico",
+  S: "Social",
+  E: "Emprendedor",
+  C: "Convencional",
+};
+
+function loadResults(): ResultsData | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = sessionStorage.getItem("tufuturo-results");
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
 }
 
 export default function ResultadosPage() {
   const router = useRouter();
-  const { isCompleted } = useTestStore();
-  const [data, setData] = useState<ResultsData | null>(null);
+  const { isCompleted, resetTest } = useTestStore();
+  const [data] = useState<ResultsData | null>(loadResults);
 
   useEffect(() => {
-    // Try to load results from sessionStorage
-    const stored = sessionStorage.getItem("tufuturo-results");
-    if (stored) {
-      setData(JSON.parse(stored));
-    } else if (!isCompleted) {
-      // No results and test not completed — redirect to test
+    if (!data && !isCompleted) {
       router.push("/test");
     }
-  }, [isCompleted, router]);
+  }, [data, isCompleted, router]);
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-white/40">Cargando resultados...</div>
       </div>
     );
   }
 
-  const top3 = data.results.slice(0, 3);
+  const recommendation = data.modalityResult.recommendation;
+  const confidence = data.modalityResult.confidence;
+
+  const filteredResults =
+    confidence === "low"
+      ? data.rankedResults
+      : data.rankedResults.filter((r) => {
+          const p = programs.find((x) => x.id === r.programId);
+          return p?.modality === recommendation;
+        });
+
+  const wasFiltered = filteredResults.length < data.rankedResults.length;
+  const top3 = filteredResults.slice(0, 3);
   const top3WithProgram = top3.map((r) => ({
     ...r,
     program: programs.find((p) => p.id === r.programId)!,
   }));
 
-  const top3ForLead = top3.map((r) => {
-    const prog = programs.find((p) => p.id === r.programId);
-    return {
-      carrera: prog?.name || "",
-      compatibilidad: r.compatibility,
-    };
-  });
+  const affinity = Math.round(
+    cosineSimilarity(
+      Object.values(data.riasecProfile),
+      Object.values(data.archetype.riasecProfile)
+    ) * 100
+  );
+
+  const relatedArchetypes = ARCHETYPES.filter(
+    (a) => a.id !== data.archetype.id
+  )
+    .map((archetype) => ({
+      archetype,
+      similarity: cosineSimilarity(
+        Object.values(data.riasecProfile),
+        Object.values(archetype.riasecProfile)
+      ),
+    }))
+    .sort((a, b) => b.similarity - a.similarity)
+    .slice(0, 2);
+
+  const topDimensions = [...RIASEC_DIMENSIONS]
+    .map((dim) => ({
+      dim,
+      label: DIMENSION_LABELS[dim],
+      value: data.riasecProfile[dim],
+    }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 3);
+
+  const modalityLabel =
+    recommendation === "presencial" ? "Presencial" : "Virtual";
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <Confetti />
 
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center font-bold text-lg">
-              UF
-            </div>
-            <span className="text-lg font-bold tracking-tight">
-              Tu Futuro Dual
-            </span>
-          </Link>
-          <Link
-            href="/test"
-            onClick={() => useTestStore.getState().resetTest()}
-            className="text-sm text-white/40 hover:text-white/70 transition-colors"
-          >
-            Repetir test
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       {/* Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+      <main className="max-w-4xl mx-auto px-4 py-10 space-y-12">
+        {/* Hero result */}
+        <div className="relative text-center space-y-5 animate-fade-in">
+          {/* Decorative glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-[#00ff88]/5 rounded-full blur-3xl" />
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight relative z-10">
+            <span className="gradient-text">Tu resultado</span>
+          </h1>
+          <p className="text-white/60 text-lg relative z-10">
+            Descubriste tu arquetipo:{" "}
+            <span className="font-bold text-white">
+              {data.archetype.name}
+            </span>
+          </p>
+          <p className="text-white/40 relative z-10">
+            Modalidad recomendada:{" "}
+            <span className="font-semibold text-[#00ff88]">
+              {modalityLabel}
+            </span>
+          </p>
+        </div>
+
         {/* Archetype */}
-        <ArchetypeCard archetype={data.archetype} />
+        <ArchetypeCard
+          archetype={data.archetype}
+          affinity={affinity}
+          relatedArchetypes={relatedArchetypes}
+          topDimensions={topDimensions}
+        />
+
+        {/* Radar Chart */}
+        <div className="space-y-3">
+          <h3 className="text-xl font-bold text-white flex items-center gap-3">
+            <span className="w-10 h-10 rounded-xl bg-[#D51933]/10 flex items-center justify-center text-xl">
+              🎯
+            </span>
+            Tu perfil RIASEC
+          </h3>
+          <div className="bg-gradient-to-br from-[#141414] to-[#1a1a1a] border border-white/8 rounded-3xl p-6">
+            <RadarChart profile={data.riasecProfile} />
+          </div>
+        </div>
+
+        {/* Modality Card */}
+        <ModalityCard modality={data.modalityResult} />
 
         {/* Top 3 */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="text-2xl">🏆</span>
+        <div className="space-y-5">
+          <h3 className="text-xl font-bold text-white flex items-center gap-3">
+            <span className="w-10 h-10 rounded-xl bg-[#fbbf24]/10 flex items-center justify-center text-xl">
+              🏆
+            </span>
             Tus 3 carreras ideales
           </h3>
+          <p className="text-sm text-white/40 leading-relaxed">
+            Ordenamos los programas por afinidad con tu personalidad, tus
+            aptitudes y tu estilo de vida. El primero es tu mejor
+            coincidencia.
+          </p>
+          {wasFiltered && (
+            <p className="text-xs text-white/30">
+              Mostramos solo programas{" "}
+              {recommendation === "presencial" ? "presenciales" : "virtuales"}{" "}
+              según tu recomendación.
+            </p>
+          )}
+          {confidence === "low" && (
+            <div className="border border-orange-500/25 bg-orange-500/5 rounded-xl px-4 py-3">
+              <p className="text-sm text-orange-200/80 leading-relaxed">
+                No detectamos una señal clara sobre tu modalidad ideal, por
+                eso te mostramos todos los programas.
+              </p>
+            </div>
+          )}
           <div className="space-y-3">
             {top3WithProgram.map((r, index) => (
               <ProgramCard
                 key={r.programId}
                 program={r.program}
-                compatibility={r.compatibility}
+                result={r}
                 rank={index + 1}
+                isExpanded={true}
+                modalityRecommendation={recommendation}
               />
             ))}
           </div>
         </div>
 
-        {/* Full ranking */}
-        <RankingFull results={data.results} />
+        {/* Gap Analysis */}
+        <GapAnalysis
+          riasecProfile={data.riasecProfile}
+          topProgramIds={filteredResults
+            .slice(0, 3)
+            .map((r) => r.programId)}
+        />
 
-        {/* CTA to lead form */}
-        <div className="bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 border border-violet-500/10 rounded-2xl p-6 md:p-8">
-          <LeadForm
-            scores={data.scores}
-            arquetipo={data.archetype.id}
-            top3={top3ForLead}
-            respuestas={data.answers}
-          />
+        {/* Full ranking */}
+        <RankingFull
+          results={filteredResults}
+          modalityRecommendation={recommendation}
+        />
+
+        {/* CTA */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+          <Link
+            href="/test"
+            onClick={resetTest}
+            className="inline-flex items-center gap-3 bg-white text-[#0a0a0a] font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:bg-[#0033A5] hover:text-white hover:scale-105"
+          >
+            Repetir el test
+          </Link>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-3 border border-white/20 text-white/60 font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:border-[#0033A5] hover:text-[#0033A5]"
+          >
+            Volver al inicio
+          </Link>
         </div>
 
-        {/* Disclaimer reminder */}
-        <div className="text-center text-xs text-white/30 pb-8">
+        {/* Disclaimer */}
+        <div className="text-center text-xs text-white/20 pt-4 pb-8">
           <p>
             Los resultados son una guía basada en auto-percepción y no
             constituyen un diagnóstico psicológico certificado.

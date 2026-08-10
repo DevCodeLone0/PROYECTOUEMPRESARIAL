@@ -2,61 +2,86 @@
 
 import { useState } from "react";
 import type { Program } from "@/lib/programs";
+import type { ScoringResult, ModalityResult } from "@/lib/scoring/types";
 
 interface ProgramCardProps {
   program: Program;
-  compatibility: number;
+  result: ScoringResult;
   rank: number;
+  isExpanded?: boolean;
+  modalityRecommendation?: ModalityResult["recommendation"];
 }
+
+const FIT_LABELS: Record<
+  keyof ScoringResult["fitBreakdown"],
+  { label: string; color: string }
+> = {
+  personality: { label: "Personalidad", color: "bg-[#D51933]" },
+  technical: { label: "Aptitud técnica", color: "bg-[#0033A5]" },
+  lifestyle: { label: "Estilo de vida", color: "bg-[#00ff88]" },
+};
+
+const rankColors: Record<number, { bg: string; text: string }> = {
+  1: { bg: "bg-[#fbbf24]/15", text: "text-[#fbbf24]" },
+  2: { bg: "bg-white/10", text: "text-white/70" },
+  3: { bg: "bg-[#cd7f32]/15", text: "text-[#cd7f32]" },
+};
 
 export default function ProgramCard({
   program,
-  compatibility,
+  result,
   rank,
+  isExpanded: controlledExpanded,
+  modalityRecommendation,
 }: ProgramCardProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const expanded = controlledExpanded ?? internalExpanded;
+
+  const colors = rankColors[rank] || { bg: "bg-white/5", text: "text-white/50" };
+  const isModalityMatch = modalityRecommendation === program.modality;
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden transition-all duration-200 hover:border-white/20">
+    <div
+      className={`bg-white/3 border rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/15 ${rank === 1 ? "border-[#fbbf24]/25" : "border-white/8"} ${expanded ? "shadow-xl shadow-black/20" : ""}`}
+    >
       {/* Header */}
       <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full p-4 flex items-center gap-4 text-left"
+        onClick={() => setInternalExpanded(!expanded)}
+        className="w-full p-5 flex items-center gap-4 text-left"
       >
         {/* Rank */}
         <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
-            rank === 1
-              ? "bg-yellow-500/20 text-yellow-400"
-              : rank === 2
-              ? "bg-gray-300/20 text-gray-300"
-              : rank === 3
-              ? "bg-orange-500/20 text-orange-400"
-              : "bg-white/10 text-white/60"
-          }`}
+          className={`w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold ${colors.bg} ${colors.text}`}
         >
           #{rank}
         </div>
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-white truncate">{program.name}</div>
-          <div className="text-xs text-white/40 capitalize">
-            {program.modality === "presencial" ? "Presencial" : "Virtual"}
+          <div className="font-bold text-white truncate">{program.name}</div>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-xs text-white/35 capitalize">
+              {program.modality === "presencial" ? "Presencial" : "Virtual"}
+            </span>
+            {isModalityMatch && (
+              <span className="text-[10px] font-bold text-[#00ff88] bg-[#00ff88]/10 px-1.5 py-0.5 rounded">
+                Recomendado
+              </span>
+            )}
           </div>
         </div>
 
         {/* Compatibility */}
         <div className="text-right">
-          <div className="text-lg font-bold text-violet-400">{compatibility}%</div>
-          <div className="text-xs text-white/40">compatible</div>
+          <div className="text-lg font-bold text-[#00ff88]">
+            {Math.round(result.overallScore)}%
+          </div>
+          <div className="text-xs text-white/30">compatible</div>
         </div>
 
         {/* Expand icon */}
         <svg
-          className={`w-5 h-5 text-white/40 transition-transform ${
-            expanded ? "rotate-180" : ""
-          }`}
+          className={`w-5 h-5 text-white/30 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -71,26 +96,73 @@ export default function ProgramCard({
       </button>
 
       {/* Compatibility bar */}
-      <div className="px-4 pb-2">
-        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+      <div className="px-5 pb-3">
+        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full transition-all duration-500"
-            style={{ width: `${compatibility}%` }}
+            className="h-full bg-white/60 rounded-full transition-all duration-700"
+            style={{ width: `${result.overallScore}%` }}
           />
         </div>
       </div>
 
       {/* Expanded content */}
       {expanded && (
-        <div className="px-4 pb-4 space-y-3 border-t border-white/5 pt-3">
-          <p className="text-sm text-white/60 leading-relaxed">
+        <div className="px-5 pb-5 space-y-4 border-t border-white/5 pt-4 animate-fade-in">
+          {/* Fit breakdown */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold text-white/50 uppercase tracking-wider">
+              Desglose de compatibilidad
+            </h4>
+            {(Object.entries(FIT_LABELS) as [keyof typeof FIT_LABELS, { label: string; color: string }][]).map(
+              ([key, { label, color }]) => {
+                const value = result.fitBreakdown[key];
+                const isHighest =
+                  value >= result.fitBreakdown.personality &&
+                  value >= result.fitBreakdown.technical &&
+                  value >= result.fitBreakdown.lifestyle;
+                const isLowest =
+                  value <= result.fitBreakdown.personality &&
+                  value <= result.fitBreakdown.technical &&
+                  value <= result.fitBreakdown.lifestyle;
+
+                return (
+                  <div key={key} className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`text-xs ${isHighest ? "text-white font-bold" : isLowest ? "text-white/30" : "text-white/50"}`}
+                      >
+                        {label}
+                      </span>
+                      <span className="text-xs text-white/40 font-medium">
+                        {Math.round(value)}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-700 ${color}`}
+                        style={{
+                          width: `${value}%`,
+                          opacity: isLowest ? 0.4 : 0.8,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
+
+          {/* Description */}
+          <p className="text-sm text-white/50 leading-relaxed">
             {program.description}
           </p>
-          <div className="bg-violet-500/5 border border-violet-500/10 rounded-lg p-3">
-            <h4 className="text-xs font-semibold text-violet-400 mb-1">
+
+          {/* Dual Model */}
+          <div className="bg-[#D51933]/5 border border-[#D51933]/10 rounded-xl p-4">
+            <h4 className="text-xs font-bold text-[#D51933] uppercase tracking-wider mb-2">
               Modelo Dual
             </h4>
-            <p className="text-xs text-white/50 leading-relaxed">
+            <p className="text-xs text-white/40 leading-relaxed">
               {program.whyDualModel}
             </p>
           </div>

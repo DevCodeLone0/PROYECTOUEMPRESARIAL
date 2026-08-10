@@ -14,25 +14,29 @@ export default function Confetti({ active = true }: ConfettiProps) {
     if (!active || hasFired.current) return;
     hasFired.current = true;
 
-    const duration = 3000;
+    const duration = 4000;
     const end = Date.now() + duration;
 
-    const colors = ["#8b5cf6", "#d946ef", "#ec4899", "#f59e0b", "#10b981"];
+    const colors = ["#00ff88", "#D51933", "#ff0080", "#fbbf24", "#00d4ff"];
 
     const frame = () => {
       confetti({
-        particleCount: 3,
+        particleCount: 4,
         angle: 60,
-        spread: 55,
+        spread: 60,
         origin: { x: 0, y: 0.7 },
         colors,
+        gravity: 0.8,
+        scalar: 1.2,
       });
       confetti({
-        particleCount: 3,
+        particleCount: 4,
         angle: 120,
-        spread: 55,
+        spread: 60,
         origin: { x: 1, y: 0.7 },
         colors,
+        gravity: 0.8,
+        scalar: 1.2,
       });
 
       if (Date.now() < end) {
