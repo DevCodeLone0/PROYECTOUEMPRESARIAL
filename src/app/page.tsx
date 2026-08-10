@@ -4,12 +4,110 @@ import Link from "next/link";
 import { useTestStore } from "@/stores/test-store";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Header from "@/components/layout/Header";
+import { programs } from "@/lib/programs";
 
 const photos = [
   "/images/DSC_0191.JPG",
   "/images/DSC_0294.JPG",
   "/images/DSC_0228.JPG",
   "/images/DSC_0299.JPG",
+];
+
+const archetypes = [
+  {
+    emoji: "⚙️",
+    name: "El Constructor",
+    desc: "Optimizas todo lo que tocas. Procesos, recursos, tiempo — encuentras la forma más inteligente de hacer las cosas.",
+  },
+  {
+    emoji: "🔬",
+    name: "El Investigador",
+    desc: "Tu curiosidad no tiene límites. Analizas, experimentas y descubres patrones que otros pasan por alto.",
+  },
+  {
+    emoji: "🎨",
+    name: "El Creador",
+    desc: "Transformas ideas en experiencias. Tu creatividad es tu lenguaje natural y tu mayor ventaja.",
+  },
+  {
+    emoji: "🤝",
+    name: "El Conector",
+    desc: "Entiendes a las personas como nadie. Empatía, comunicación y habilidades sociales son tu superpoder.",
+  },
+  {
+    emoji: "♟️",
+    name: "El Estratega",
+    desc: "Planificas, organizas y ejecutas con precisión. Ves el panorama completo donde otros ven caos.",
+  },
+  {
+    emoji: "📊",
+    name: "El Analista",
+    desc: "Los datos cuentan historias para ti. Metódico, preciso y orientado a la excelencia.",
+  },
+  {
+    emoji: "🚀",
+    name: "El Visionario",
+    desc: "Conectas creatividad con negocio. Ves oportunidades donde otros ven problemas.",
+  },
+  {
+    emoji: "👑",
+    name: "El Líder",
+    desc: "Inspiras, motivas y llevas equipos a resultados extraordinarios. Tu energía es contagiosa.",
+  },
+];
+
+const steps = [
+  {
+    number: "01",
+    title: "Responde 25 preguntas",
+    desc: "Cuatro capas breves: intereses, aptitudes, valores y tu preferencia por lo presencial o virtual. Unos 5 minutos.",
+  },
+  {
+    number: "02",
+    title: "Conoce tu perfil RIASEC",
+    desc: "Un radar de 6 dimensiones muestra cómo se combinan tus intereses: Realista, Investigador, Artístico, Social, Emprendedor y Convencional.",
+  },
+  {
+    number: "03",
+    title: "Descubre tu arquetipo",
+    desc: "Basado en los tipos de Jung, uno de 8 arquetipos profesionales resume tu forma natural de trabajar.",
+  },
+  {
+    number: "04",
+    title: "Recibe tu ranking",
+    desc: "Los 12 programas de Uniempresarial ordenados por afinidad real con tu perfil, y tu modalidad recomendada.",
+  },
+];
+
+const features = [
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 3.055A9 9 0 1020.945 13H11V3.055z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+      </svg>
+    ),
+    title: "Radar RIASEC",
+    desc: "Visualiza tus intereses profesionales en 6 dimensiones y entiende qué actividades te motivan de verdad.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+      </svg>
+    ),
+    title: "Modalidad presencial o virtual",
+    desc: "El test analiza tu estilo de aprendizaje y te recomienda la modalidad del Modelo Dual que mejor se adapta a ti.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    ),
+    title: "Análisis de brechas",
+    desc: "Identifica las aptitudes que puedes fortalecer para acercarte a tu programa ideal y crecer en tu perfil.",
+  },
 ];
 
 export default function HomePage() {
@@ -98,36 +196,6 @@ export default function HomePage() {
     return () => observer.disconnect();
   }, []);
 
-  const features = [
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-      ),
-      title: "Autoconocimiento",
-      desc: "Explora tus intereses, personalidad y habilidades de forma interactiva.",
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-        </svg>
-      ),
-      title: "12 Programas",
-      desc: "Compara carreras de Uniempresarial con un modelo Dual de negocio.",
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      ),
-      title: "Gamificado",
-      desc: "Gana puntos, sube de nivel y descubre tu arquetipo profesional.",
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       {/* Audio toggle */}
@@ -192,7 +260,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-2xl md:text-3xl text-white/70 max-w-lg leading-relaxed animate-fade-in font-light" style={{ animationDelay: "0.3s" }}>
-                16 preguntas. 4 dimensiones. 12 programas. Un resultado que puede
+                25 preguntas. 4 capas. 8 arquetipos. 12 programas. Un resultado que puede
                 cambiar tu futuro.
               </p>
 
@@ -265,12 +333,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section — Light background (Chaptr editorial feel) */}
+      {/* How it works — Light background */}
       <section
-        id="features"
+        id="how"
         data-reveal
         className={`py-24 md:py-32 bg-[#fafafa] text-[#0a0a0a] transition-all duration-700 ${
-          visibleSections.has("features") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          visibleSections.has("how") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
         <div className="px-6 md:px-10">
@@ -282,6 +350,111 @@ export default function HomePage() {
               No es solo un test.
               <br />
               <span className="text-[#D51933]">Es tu mapa de futuro.</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {steps.map((step, i) => (
+              <div
+                key={i}
+                className="group p-8 rounded-3xl bg-white border border-gray-100 hover:border-[#D51933]/30 hover:shadow-xl hover:shadow-[#D51933]/5 transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="text-5xl font-extrabold text-gray-200 group-hover:text-[#D51933]/20 transition-colors duration-300 mb-6">
+                  {step.number}
+                </div>
+                <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+                <p className="text-gray-500 leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Archetypes — Dark section */}
+      <section
+        id="archetypes"
+        data-reveal
+        className={`py-24 md:py-32 bg-[#0a0a0a] transition-all duration-700 delay-100 ${
+          visibleSections.has("archetypes") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="px-6 md:px-10">
+          <div className="max-w-2xl mb-16">
+            <span className="text-sm font-semibold tracking-widest text-[#00ff88] uppercase">
+              Tu perfil profesional
+            </span>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mt-4 tracking-tight leading-tight">
+              8 arquetipos basados en
+              <br />
+              <span className="gradient-text">los tipos de Jung.</span>
+            </h2>
+            <p className="text-white/50 text-lg mt-4 max-w-xl">
+              Tu resultado combina intereses, aptitudes y valores para revelar el arquetipo que
+              mejor describe tu forma de trabajar.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {archetypes.map((a, i) => (
+              <div
+                key={i}
+                className="group p-6 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="text-4xl mb-4">{a.emoji}</div>
+                <h3 className="text-lg font-bold text-white mb-2">{a.name}</h3>
+                <p className="text-sm text-white/50 leading-relaxed">{a.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section — Dark */}
+      <section
+        id="stats"
+        data-reveal
+        className={`pb-24 bg-[#0a0a0a] transition-all duration-700 delay-100 ${
+          visibleSections.has("stats") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="px-6 md:px-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/10 pt-16">
+            {[
+              { value: "25", label: "Preguntas" },
+              { value: "4", label: "Capas" },
+              { value: "8", label: "Arquetipos" },
+              { value: "12", label: "Programas" },
+            ].map((stat, i) => (
+              <div key={i} className="text-center space-y-2">
+                <div className="text-4xl md:text-5xl font-extrabold gradient-text">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-white/40 uppercase tracking-wider">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* What you get — Light background */}
+      <section
+        id="features"
+        data-reveal
+        className={`py-24 md:py-32 bg-[#fafafa] text-[#0a0a0a] transition-all duration-700 ${
+          visibleSections.has("features") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="px-6 md:px-10">
+          <div className="max-w-2xl mb-16">
+            <span className="text-sm font-semibold tracking-widest text-[#D51933] uppercase">
+              Qué obtienes
+            </span>
+            <h2 className="text-4xl md:text-5xl font-extrabold mt-4 tracking-tight leading-tight">
+              Resultados que
+              <br />
+              <span className="text-[#D51933]">sí puedes usar.</span>
             </h2>
           </div>
 
@@ -302,29 +475,46 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section — Dark gamified */}
+      {/* Programs — Dark section */}
       <section
-        id="stats"
+        id="programs"
         data-reveal
-        className={`py-24 bg-[#0a0a0a] transition-all duration-700 delay-100 ${
-          visibleSections.has("stats") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        className={`py-24 md:py-32 bg-[#0a0a0a] transition-all duration-700 delay-100 ${
+          visibleSections.has("programs") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
         <div className="px-6 md:px-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { value: "16", label: "Preguntas" },
-              { value: "4", label: "Dimensiones" },
-              { value: "12", label: "Programas" },
-              { value: "~5", label: "Minutos" },
-            ].map((stat, i) => (
-              <div key={i} className="text-center space-y-2">
-                <div className="text-4xl md:text-5xl font-extrabold gradient-text">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-white/40 uppercase tracking-wider">
-                  {stat.label}
-                </div>
+          <div className="max-w-2xl mb-16">
+            <span className="text-sm font-semibold tracking-widest text-[#00ff88] uppercase">
+              Programas del Modelo Dual
+            </span>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mt-4 tracking-tight leading-tight">
+              Tu carrera entre
+              <br />
+              <span className="gradient-text">7 presenciales y 5 virtuales.</span>
+            </h2>
+            <p className="text-white/50 text-lg mt-4 max-w-xl">
+              El test ordena los 12 programas por afinidad con tu perfil y te recomienda la
+              modalidad que mejor se adapta a tu estilo de aprendizaje.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {programs.map((p) => (
+              <div
+                key={p.id}
+                className="group flex items-center justify-between gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+              >
+                <span className="font-semibold text-white">{p.name}</span>
+                <span
+                  className={`shrink-0 text-xs font-semibold px-3 py-1 rounded-full ${
+                    p.modality === "presencial"
+                      ? "bg-[#00ff88]/10 text-[#00ff88]"
+                      : "bg-[#4da6ff]/10 text-[#4da6ff]"
+                  }`}
+                >
+                  {p.modality === "presencial" ? "Presencial" : "Virtual"}
+                </span>
               </div>
             ))}
           </div>
@@ -341,9 +531,9 @@ export default function HomePage() {
       >
         <div className="px-6 md:px-10 text-center">
           <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
-            Tu futuro no espera.
+            25 preguntas separan
             <br />
-            <span className="gradient-text">Empieza ahora.</span>
+            <span className="gradient-text">tu futuro de la indecisión.</span>
           </h2>
           <p className="text-lg text-gray-500 mb-10 max-w-xl mx-auto">
             Toma el test y descubre qué carrera se alinea con quién eres.
