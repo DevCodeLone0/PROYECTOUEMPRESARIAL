@@ -234,7 +234,7 @@ export default function HomePage() {
             {/* Left: Bold typography */}
             <div className="space-y-8 bg-[#0a0a0a]/70 backdrop-blur-xl rounded-3xl p-8 lg:p-12 border border-white/5">
               <h1 className="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tight leading-[0.85] animate-slide-up">
-                <span className="gradient-text drop-shadow-[0_0_30px_rgba(0,255,136,0.3)]">Descubre</span>
+                <span className="gradient-text drop-shadow-[0_0_30px_rgba(0,51,165,0.3)]">Descubre</span>
                 <br />
                 <span className="text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">tu carrera</span>
                 <br />
