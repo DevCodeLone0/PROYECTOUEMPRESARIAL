@@ -28,7 +28,7 @@ export interface ModalityScore {
  * Compute the direct modality signal from Layer 4 questions (Q23-Q25).
  *
  * Q23 (environment): 0=Presencial-leaning(+2p), 1=Virtual-leaning(+2v), 2=No pref(0). Weight: 0.5
- * Q24 (autonomy):    0-1=Needs structure(+1p), 2=Neutral(0), 3-4=Self-directed(+1v). Weight: 0.3
+ * Q24 (autonomy):    1-2=Needs structure(+1p), 3=Neutral(0), 4-5=Self-directed(+1v). Weight: 0.3
  * Q25 (interaction): 0=Solo(+0.5v), 1=Group(+1p). Weight: 0.2
  *
  * @param answers - Record of question ID → selected option index
@@ -53,17 +53,17 @@ export function computeDirectSignal(
     // q23 === 2 → "Una mezcla de ambos" → no contribution
   }
 
-  // Q24: Autonomy / self-direction (likert 0-4)
+  // Q24: Autonomy / self-direction (likert 1-5, QuestionCard stores index+1)
   const q24 = answers["Q24"];
   if (q24 !== undefined) {
-    if (q24 <= 1) {
+    if (q24 <= 2) {
       // "Muy mal" or "Mal" keeping up without supervision → presencial (needs structure)
       presencial += 1 * 0.3;
-    } else if (q24 >= 3) {
+    } else if (q24 >= 4) {
       // "Bien" or "Muy bien" → virtual (self-directed)
       virtual += 1 * 0.3;
     }
-    // q24 === 2 → "Regular" → no contribution
+    // q24 === 3 → "Regular" → no contribution
   }
 
   // Q25: Social interaction preference
@@ -106,13 +106,13 @@ export function computeDerivedSignal(
   let presencial = 0;
   let virtual = 0;
 
-  // Q18: Autonomy preference (likert 0-4)
+  // Q18: Autonomy preference (likert 1-5, QuestionCard stores index+1)
   const q18 = answers["Q18"];
   if (q18 !== undefined) {
-    if (q18 >= 3) {
+    if (q18 >= 4) {
       // High autonomy → virtual
       virtual += 0.3;
-    } else if (q18 <= 1) {
+    } else if (q18 <= 2) {
       // Low autonomy → presencial
       presencial += 0.3;
     }
@@ -130,13 +130,13 @@ export function computeDerivedSignal(
     }
   }
 
-  // Q20: Risk tolerance (likert 0-4)
+  // Q20: Risk tolerance (likert 1-5, QuestionCard stores index+1)
   const q20 = answers["Q20"];
   if (q20 !== undefined) {
-    if (q20 >= 3) {
+    if (q20 >= 4) {
       // High risk tolerance → virtual (more flexibility)
       virtual += 0.2;
-    } else if (q20 <= 1) {
+    } else if (q20 <= 2) {
       // Low risk tolerance → presencial (more structure)
       presencial += 0.2;
     }

@@ -44,10 +44,9 @@ const ALL_DIMENSIONS = ["R", "I", "A", "S", "E", "C"] as const;
 // ═══════════════════════════════════════════════════════════
 
 describe("normalizeProfile", () => {
-  it("returns all zeros when answeredQuestions is empty", () => {
+  it("returns all zeros when no maxPossible is provided", () => {
     const result = normalizeProfile(
-      { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 },
-      []
+      { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }
     );
     for (const dim of ALL_DIMENSIONS) {
       expect(result[dim]).toBe(0);
@@ -58,7 +57,7 @@ describe("normalizeProfile", () => {
     // Q1: max R weight across options is 0.5
     const rawScores = { R: 0.5, I: 0, A: 0, S: 0, E: 0, C: 0 };
     const maxPossible = { R: 0.5, I: 0, A: 0, S: 0, E: 0, C: 0 };
-    const result = normalizeProfile(rawScores, ["Q1"], maxPossible);
+    const result = normalizeProfile(rawScores, maxPossible);
     expect(result.R).toBeCloseTo(1.0, 1);
     // Other dimensions should be 0
     expect(result.I).toBe(0);
@@ -69,7 +68,7 @@ describe("normalizeProfile", () => {
     // Simulate raw scores exceeding max possible
     const rawScores = { R: 1.5, I: 0.3, A: 0, S: 0, E: 0, C: 0 };
     const maxPossible = { R: 1.0, I: 1.0, A: 0, S: 0, E: 0, C: 0 };
-    const result = normalizeProfile(rawScores, ["Q1", "Q2"], maxPossible);
+    const result = normalizeProfile(rawScores, maxPossible);
     expect(result.R).toBeLessThanOrEqual(1.0);
     expect(result.R).toBeGreaterThanOrEqual(0);
   });
@@ -77,11 +76,7 @@ describe("normalizeProfile", () => {
   it("handles all dimensions returning values in [0, 1]", () => {
     const rawScores = { R: 0.8, I: 0.6, A: 0.4, S: 0.3, E: 0.5, C: 0.7 };
     const maxPossible = { R: 1.0, I: 1.0, A: 1.0, S: 1.0, E: 1.0, C: 1.0 };
-    const result = normalizeProfile(
-      rawScores,
-      ["Q1", "Q3", "Q5", "Q7", "Q9", "Q11"],
-      maxPossible
-    );
+    const result = normalizeProfile(rawScores, maxPossible);
     for (const dim of ALL_DIMENSIONS) {
       expect(result[dim]).toBeGreaterThanOrEqual(0);
       expect(result[dim]).toBeLessThanOrEqual(1);
@@ -91,11 +86,7 @@ describe("normalizeProfile", () => {
   it("preserves relative proportions when all dimensions have the same max", () => {
     const rawScores = { R: 0.6, I: 0.3, A: 0.9, S: 0.1, E: 0.4, C: 0.7 };
     const maxPossible = { R: 1.0, I: 1.0, A: 1.0, S: 1.0, E: 1.0, C: 1.0 };
-    const result = normalizeProfile(
-      rawScores,
-      ["Q1", "Q3", "Q5", "Q7", "Q9", "Q11"],
-      maxPossible
-    );
+    const result = normalizeProfile(rawScores, maxPossible);
     // Highest raw should still be highest normalized
     const maxDim = ALL_DIMENSIONS.reduce((a, b) =>
       result[a] > result[b] ? a : b

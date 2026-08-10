@@ -26,7 +26,6 @@ import { RIASEC_DIMENSIONS } from "./types";
  * Normalize raw RIASEC scores to [0, 1] per dimension.
  *
  * @param rawScores - Accumulated weights per dimension from answered questions
- * @param answeredQuestions - IDs of questions the student actually answered
  * @param maxPossible - Max possible score per dimension across answered questions
  * @returns Normalized RIASECProfile with each dimension in [0, 1]
  *
@@ -39,7 +38,6 @@ import { RIASEC_DIMENSIONS } from "./types";
  */
 export function normalizeProfile(
   rawScores: RIASECProfile,
-  answeredQuestions: string[],
   maxPossible: Partial<RIASECProfile> = {}
 ): RIASECProfile {
   const result = {} as RIASECProfile;

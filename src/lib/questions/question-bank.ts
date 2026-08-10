@@ -535,22 +535,7 @@ export const QUESTION_BANK: Question[] = [
 
 // ── Accessors ──
 
-/** Get questions for a specific layer (1-4). */
-export function getQuestionsByLayer(layer: 1 | 2 | 3 | 4): Question[] {
-  return QUESTION_BANK.filter((q) => q.layer === layer);
-}
-
 /** Get a single question by its ID. */
 export function getQuestionById(id: string): Question | undefined {
   return QUESTION_BANK.find((q) => q.id === id);
-}
-
-/** Get all Layer 1 questions (RIASEC). */
-export function getRIASECQuestions(): Question[] {
-  return getQuestionsByLayer(1);
-}
-
-/** Get total question count. */
-export function getQuestionCount(): number {
-  return QUESTION_BANK.length;
 }

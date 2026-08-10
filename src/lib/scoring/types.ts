@@ -93,7 +93,9 @@ export interface Question {
    * questions where RIASEC scoring applies.
    *
    * Structure: weights[optIndex][dimension] → number.
-   * Weights across all options for a question sum to 1.0 per dimension.
+   * Weights represent the strength of each option for each RIASEC dimension;
+   * normalization happens per-question via the max possible weight (see
+   * normalizeProfile), so weights do not need to sum to 1.
    */
   riasecWeights?: Record<RIASECDimension, number>[];
   /**

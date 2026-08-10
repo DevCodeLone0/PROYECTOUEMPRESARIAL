@@ -70,50 +70,50 @@ describe("computeDirectSignal", () => {
   });
 
   it("Q24 low comfort (1-2) pushes toward presencial", () => {
-    // Q24 option 0 or 1 → presencial +1 * 0.3 = 0.3
-    const resultLow = computeDirectSignal({ Q24: 0 });
-    const resultLow2 = computeDirectSignal({ Q24: 1 });
+    // Q24 answers 1-2 ("Muy mal", "Mal") → presencial +1 * 0.3 = 0.3
+    const resultLow = computeDirectSignal({ Q24: 1 });
+    const resultLow2 = computeDirectSignal({ Q24: 2 });
     expect(resultLow.presencial).toBeGreaterThan(0);
     expect(resultLow2.presencial).toBeGreaterThan(0);
   });
 
-  it("Q24 neutral (2) adds nothing", () => {
-    // Q24 option 2 = "Neutral" → 0
-    const result = computeDirectSignal({ Q24: 2 });
+  it("Q24 neutral (3) adds nothing", () => {
+    // Q24 answer 3 = "Regular" → 0
+    const result = computeDirectSignal({ Q24: 3 });
     expect(result.presencial).toBe(0);
     expect(result.virtual).toBe(0);
   });
 
-  it("Q24 high comfort (3-4) pushes toward virtual", () => {
-    // Q24 option 3 or 4 → virtual +1 * 0.3 = 0.3
-    const resultHigh = computeDirectSignal({ Q24: 3 });
-    const resultHigh2 = computeDirectSignal({ Q24: 4 });
+  it("Q24 high comfort (4-5) pushes toward virtual", () => {
+    // Q24 answers 4-5 ("Bien", "Muy bien") → virtual +1 * 0.3 = 0.3
+    const resultHigh = computeDirectSignal({ Q24: 4 });
+    const resultHigh2 = computeDirectSignal({ Q24: 5 });
     expect(resultHigh.virtual).toBeGreaterThan(0);
     expect(resultHigh2.virtual).toBeGreaterThan(0);
   });
 
-  it("Q25 no access pushes toward presencial", () => {
-    // Q25 option 1 = "No tengo internet estable" → presencial +1 * 0.2 = 0.2
+  it("Q25 group preference pushes toward presencial", () => {
+    // Q25 option 1 = "Compartir con un grupo y profesores cerca" → presencial +1 * 0.2 = 0.2
     const result = computeDirectSignal({ Q25: 1 });
     expect(result.presencial).toBeGreaterThan(0);
   });
 
-  it("Q25 full access pushes toward virtual", () => {
-    // Q25 option 0 = "Sí, tengo todo" → virtual +0.5 * 0.2 = 0.1
+  it("Q25 solo preference pushes toward virtual", () => {
+    // Q25 option 0 = "Trabajar solo/a, en mi propio espacio" → virtual +0.5 * 0.2 = 0.1
     const result = computeDirectSignal({ Q25: 0 });
     expect(result.virtual).toBeGreaterThan(0);
   });
 
   it("combines Q23 + Q24 + Q25 weights correctly", () => {
-    // Q23=0 (presencial +2*0.5=1.0), Q24=0 (presencial +1*0.3=0.3), Q25=1 (presencial +1*0.2=0.2)
-    const result = computeDirectSignal({ Q23: 0, Q24: 0, Q25: 1 });
+    // Q23=0 (presencial +2*0.5=1.0), Q24=1 (presencial +1*0.3=0.3), Q25=1 (presencial +1*0.2=0.2)
+    const result = computeDirectSignal({ Q23: 0, Q24: 1, Q25: 1 });
     expect(result.presencial).toBeCloseTo(1.5, 1);
     expect(result.virtual).toBe(0);
   });
 
   it("virtual answers combine correctly", () => {
-    // Q23=1 (virtual +2*0.5=1.0), Q24=4 (virtual +1*0.3=0.3), Q25=0 (virtual +0.5*0.2=0.1)
-    const result = computeDirectSignal({ Q23: 1, Q24: 4, Q25: 0 });
+    // Q23=1 (virtual +2*0.5=1.0), Q24=5 (virtual +1*0.3=0.3), Q25=0 (virtual +0.5*0.2=0.1)
+    const result = computeDirectSignal({ Q23: 1, Q24: 5, Q25: 0 });
     expect(result.virtual).toBeCloseTo(1.4, 1);
     expect(result.presencial).toBe(0);
   });
@@ -179,6 +179,35 @@ describe("computeDerivedSignal", () => {
       INDEPENDENT_PROFILE
     );
     expect(result.virtual).toBeGreaterThan(result.presencial);
+  });
+
+  it("middle likert answers (3) are neutral — no modality bias", () => {
+    // Regression: likert answers are 1-based (QuestionCard stores index+1),
+    // so answer 3 is the middle "neutral" value. The old 0-based thresholds
+    // treated 3 as virtual-leaning (>= 3), biasing mid answers toward virtual.
+    // A profile with Q24=3, Q18=3, Q20=3 and neutral Q23/Q25 must contribute
+    // NO signal in either direction.
+    const neutralProfile: RIASECProfile = {
+      R: 0.3, I: 0.5, A: 0.3, S: 0.4, E: 0.3, C: 0.3,
+    };
+
+    // Direct signal: Q23=2 ("Una mezcla de ambos") neutral, Q24=3 ("Regular")
+    // neutral, Q25 unanswered (no neutral binary option) → no signal
+    const direct = computeDirectSignal({ Q23: 2, Q24: 3 });
+    expect(direct.presencial).toBe(0);
+    expect(direct.virtual).toBe(0);
+
+    // Derived signal: Q18=3 ("Moderada"), Q20=3 ("A veces") neutral,
+    // neutral RIASEC → no signal
+    const derived = computeDerivedSignal({ Q18: 3, Q20: 3 }, neutralProfile);
+    expect(derived.presencial).toBe(0);
+    expect(derived.virtual).toBe(0);
+
+    // No signal at all → default presencial with low confidence, never virtual
+    const result = recommendModality(direct, derived);
+    expect(result.recommendation).not.toBe("virtual");
+    expect(result.recommendation).toBe("presencial");
+    expect(result.confidence).toBe("low");
   });
 });
 

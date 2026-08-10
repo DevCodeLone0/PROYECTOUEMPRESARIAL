@@ -11,7 +11,7 @@
  *
  * Vector slot semantics (must match programs-matrix.ts):
  *   aptitude: [logical, planning, creative, social]
- *   values:   [autonomy, flexibility, helping, risk-tolerance]
+ *   values:   [autonomy, risk-tolerance, flexibility, helping]
  *
  * Layer 2 normalization: each option carries its own per-slot aptitude
  * weights (aptitudeWeights[answer][slot]); the answer's weights are added
@@ -89,12 +89,10 @@ function computeRiasecProfile(
   const maxPossible: Record<RIASECDimension, number> = {
     R: 0, I: 0, A: 0, S: 0, E: 0, C: 0,
   };
-  const answeredL1: string[] = [];
 
   for (const q of QUESTION_BANK.filter((q) => q.layer === 1)) {
     const answer = answers[q.id];
     if (answer === undefined || !q.riasecWeights) continue;
-    answeredL1.push(q.id);
 
     const weights = q.riasecWeights[answer];
     if (weights) {
@@ -113,11 +111,7 @@ function computeRiasecProfile(
     }
   }
 
-  return normalizeProfile(
-    rawScores as RIASECProfile,
-    answeredL1,
-    maxPossible
-  );
+  return normalizeProfile(rawScores as RIASECProfile, maxPossible);
 }
 
 // ═══════════════════════════════════════════════════════════
