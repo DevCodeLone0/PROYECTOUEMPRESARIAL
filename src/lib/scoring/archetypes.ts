@@ -117,13 +117,15 @@ export const ARCHETYPES: readonly Archetype[] = [
 export const MAPPING_TABLE: Record<string, string> = {
   "R,I": "constructor",
   "R,A": "constructor",
+  "R,C": "constructor",
   "I,R": "investigador",
-  "I,C": "investigador",
+  "I,A": "investigador",
+  "I,C": "analista",
   "A,S": "creador",
   "A,I": "creador",
   "S,E": "connecting",
-  "S,A": "connecting",
-  "E,C": "leader",
+  "S,A": "creador",
+  "E,C": "estratega",
   "E,S": "leader",
   "C,I": "analista",
   "C,E": "estratega",
@@ -136,10 +138,30 @@ export const MAPPING_TABLE: Record<string, string> = {
 // ═══════════════════════════════════════════════════════════
 
 /**
+ * Epsilon threshold for near-ties in RIASEC dimension ranking.
+ *
+ * If the gap between the dominant and the next dimension is smaller than this
+ * value, the top-two mapping is considered ambiguous: a 0.05 difference is
+ * likely measurement noise (a single answer shift) rather than a real
+ * preference, so we fall back to cosine similarity over the archetype
+ * vectors instead of forcing a flipped `dominant, secondary` pair.
+ *
+ * 0.05 ≈ half a likert step on a 5-option question (each option contributes
+ * roughly 0.1 to its tagged dimension via the per-question weights). Below
+ * this, the alphabetical tiebreaker would silently flip the archetype.
+ */
+const NEAR_TIE_EPSILON = 0.05;
+
+/**
  * Sort RIASEC dimensions by score (descending) and return the top two.
  *
- * Tiebreaking: when two dimensions have the same score, use alphabetical order
- * (I before R, A before S, etc.) to ensure deterministic output.
+ * Tiebreaking:
+ *   - When two dimensions are within `NEAR_TIE_EPSILON` of each other, the
+ *     caller (`determineArchetype`) treats them as tied and falls back to
+ *     cosine similarity, so the alphabetical sort here is only a tiebreaker
+ *     of last resort — not a silent archetype flip on a 0.001 difference.
+ *   - When two dimensions are exactly tied (or within floating-point
+ *     precision), alphabetical order applies (I before R, A before S).
  *
  * @param profile - Normalized RIASEC profile
  * @returns Tuple of [dominant, secondary] dimensions
@@ -183,9 +205,17 @@ function findClosestByCosine(profile: RIASECProfile): Archetype {
  * Determine the archetype from a student's normalized RIASEC profile.
  *
  * Algorithm:
- * 1. Find the two highest RIASEC dimensions (dominant + secondary)
- * 2. Check the mapping table for (dominant, secondary) → archetype ID
- * 3. If no direct mapping, fall back to cosine similarity against archetype vectors
+ *   1. Sort dimensions by score; identify dominant + secondary.
+ *   2. If the gap between dominant and secondary is below `NEAR_TIE_EPSILON`,
+ *      the top-two is ambiguous — skip the mapping table and fall back to
+ *      cosine similarity over the 8 archetype vectors. This avoids a silent
+ *      archetype flip on a 0.001 difference.
+ *   3. Otherwise, look up `(dominant, secondary)` in the mapping table.
+ *   4. If the pair is not in the table, fall back to cosine.
+ *
+ * The epsilon guard is what makes near-ties use the cosine path. Exact ties
+ * (e.g. all-equal profile) also fall here because dominant === secondary in
+ * score, and cosine resolves deterministically instead of alphabetically.
  *
  * @param riasecProfile - Student's normalized RIASEC profile (6 values in [0, 1])
  * @returns The matching Archetype object
@@ -194,6 +224,15 @@ export function determineArchetype(
   riasecProfile: RIASECProfile
 ): Archetype {
   const [dominant, secondary] = getTopTwoDimensions(riasecProfile);
+
+  // Near-tie guard: if the top-two dimensions are within epsilon, the pair is
+  // ambiguous and a 0.001 difference should NOT flip the archetype via the
+  // alphabetical tiebreaker. Fall back to cosine similarity.
+  const gap = riasecProfile[dominant] - riasecProfile[secondary];
+  if (gap < NEAR_TIE_EPSILON) {
+    return findClosestByCosine(riasecProfile);
+  }
+
   const key = `${dominant},${secondary}`;
 
   // Direct mapping
@@ -203,6 +242,6 @@ export function determineArchetype(
     if (archetype) return archetype;
   }
 
-  // Cosine fallback
+  // Cosine fallback (no direct mapping for this pair, or mapping missing)
   return findClosestByCosine(riasecProfile);
 }
