@@ -55,6 +55,41 @@ function loadResults(): ResultsData | null {
   }
 }
 
+function MissingResults() {
+  const router = useRouter();
+  const { resetTest } = useTestStore();
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+      <div className="text-center space-y-6 max-w-md">
+        <div className="text-5xl">🔍</div>
+        <h1 className="text-2xl font-bold text-white">
+          No encontramos tus resultados
+        </h1>
+        <p className="text-white/50 leading-relaxed">
+          Cerraste la pestaña y perdimos el resultado de tu test.
+        </p>
+        <div className="flex flex-col items-center gap-4">
+          <button
+            onClick={() => {
+              resetTest();
+              router.push("/test");
+            }}
+            className="inline-flex items-center gap-3 bg-white text-[#0a0a0a] font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:bg-[#0033A5] hover:text-white hover:scale-105"
+          >
+            Hacer el test de nuevo
+          </button>
+          <Link
+            href="/"
+            className="text-sm text-white/40 hover:text-white transition-colors"
+          >
+            Volver al inicio
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ResultadosPage() {
   const router = useRouter();
   const { isCompleted, resetTest } = useTestStore();
@@ -67,6 +102,9 @@ export default function ResultadosPage() {
   }, [data, isCompleted, router]);
 
   if (!data) {
+    if (isCompleted) {
+      return <MissingResults />;
+    }
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-white/40">Cargando resultados...</div>
@@ -77,15 +115,29 @@ export default function ResultadosPage() {
   const recommendation = data.modalityResult.recommendation;
   const confidence = data.modalityResult.confidence;
 
+  const dedupedLowResults = (() => {
+    const byBase = new Map<string, ScoringResult>();
+    for (const r of data.rankedResults) {
+      const baseId = r.programId.replace(/-virtual$/, "");
+      const existing = byBase.get(baseId);
+      if (!existing || r.overallScore > existing.overallScore) {
+        byBase.set(baseId, r);
+      }
+    }
+    return [...byBase.values()];
+  })();
+
   const filteredResults =
     confidence === "low"
-      ? data.rankedResults
+      ? dedupedLowResults
       : data.rankedResults.filter((r) => {
           const p = programs.find((x) => x.id === r.programId);
           return p?.modality === recommendation;
         });
 
-  const wasFiltered = filteredResults.length < data.rankedResults.length;
+  const wasFiltered =
+    confidence !== "low" &&
+    filteredResults.length < data.rankedResults.length;
   const top3 = filteredResults.slice(0, 3);
   const top3WithProgram = top3.map((r) => ({
     ...r,
@@ -202,7 +254,7 @@ export default function ResultadosPage() {
             <div className="border border-orange-500/25 bg-orange-500/5 rounded-xl px-4 py-3">
               <p className="text-sm text-orange-200/80 leading-relaxed">
                 No detectamos una señal clara sobre tu modalidad ideal, por
-                eso te mostramos todos los programas.
+                eso te mostramos las 7 carreras con sus modalidades.
               </p>
             </div>
           )}
@@ -214,7 +266,9 @@ export default function ResultadosPage() {
                 result={r}
                 rank={index + 1}
                 isExpanded={true}
-                modalityRecommendation={recommendation}
+                modalityRecommendation={
+                  confidence === "low" ? undefined : recommendation
+                }
               />
             ))}
           </div>
@@ -231,7 +285,7 @@ export default function ResultadosPage() {
         {/* Full ranking */}
         <RankingFull
           results={filteredResults}
-          modalityRecommendation={recommendation}
+          modalityRecommendation={confidence === "low" ? undefined : recommendation}
         />
 
         {/* CTA */}

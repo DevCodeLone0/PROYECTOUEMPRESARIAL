@@ -72,6 +72,12 @@ export async function POST(request: NextRequest) {
       carrera_3: data.top3[2]?.carrera || "",
       compatibilidad_3: data.top3[2]?.compatibilidad || 0,
       respuestas_raw: JSON.stringify(data.respuestas),
+      riasec_r: data.riasecProfile.R,
+      riasec_i: data.riasecProfile.I,
+      riasec_a: data.riasecProfile.A,
+      riasec_s: data.riasecProfile.S,
+      riasec_e: data.riasecProfile.E,
+      riasec_c: data.riasecProfile.C,
     };
 
     const success = await appendLead(leadRow);

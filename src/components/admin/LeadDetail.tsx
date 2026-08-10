@@ -1,30 +1,23 @@
 "use client";
 
+import { useEffect } from "react";
+import { QUESTION_BANK } from "@/lib/questions/question-bank";
+import type { Lead } from "@/components/admin/LeadsTable";
+
 interface LeadDetailProps {
-  lead: {
-    id: string;
-    nombre: string;
-    email: string;
-    celular: string;
-    arquetipo: string;
-    compatibilidad_1: number;
-    timestamp: string;
-    consentimiento: boolean;
-    puntaje_intereses: number;
-    puntaje_personalidad: number;
-    puntaje_habilidades: number;
-    puntaje_motivacion: number;
-    carrera_1: string;
-    carrera_2: string;
-    carrera_3: string;
-    compatibilidad_2: number;
-    compatibilidad_3: number;
-    respuestas_raw: string;
-  };
+  lead: Lead;
   onClose: () => void;
 }
 
 export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   let answers: Record<string, string | number> = {};
   try {
     answers = JSON.parse(lead.respuestas_raw || "{}");
@@ -32,15 +25,31 @@ export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
     // ignore
   }
 
+  // Q16 is a single-choice aptitude question; resolve the selected option
+  // text instead of rendering the raw index.
+  const rawQ16 = answers.Q16;
+  const q16 = QUESTION_BANK.find((q) => q.id === "Q16");
+  const q16Index = typeof rawQ16 === "number" ? rawQ16 : Number(rawQ16);
+  const q16Option =
+    q16?.options && Number.isInteger(q16Index) && q16Index >= 0
+      ? q16.options[q16Index]
+      : undefined;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end p-0 md:p-4 bg-black/60 backdrop-blur-sm">
       {/* Slide-in side panel */}
-      <div className="w-full md:max-w-lg h-full md:max-h-[90vh] bg-[#141414] border-l border-white/5 overflow-hidden flex flex-col animate-slide-in-right">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detalle del lead"
+        className="w-full md:max-w-lg h-full md:max-h-[90vh] bg-[#141414] border-l border-white/5 overflow-hidden flex flex-col animate-slide-in-right"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-white/5">
           <h3 className="font-bold text-white text-lg">Detalle del Lead</h3>
           <button
             onClick={onClose}
+            aria-label="Cerrar detalle"
             className="p-2 rounded-xl hover:bg-white/5 text-white/50 hover:text-white transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,22 +106,47 @@ export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
 
           {/* Scores */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider">
-              Puntajes por dimensión
-            </h4>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: "Intereses", value: lead.puntaje_intereses },
-                { label: "Personalidad", value: lead.puntaje_personalidad },
-                { label: "Habilidades", value: lead.puntaje_habilidades },
-                { label: "Motivación", value: lead.puntaje_motivacion },
-              ].map((item) => (
-                <div key={item.label} className="bg-white/3 rounded-xl p-4">
-                  <div className="text-xs text-white/30">{item.label}</div>
-                  <div className="text-lg font-bold text-white mt-1">{item.value}</div>
+            {lead.riasec_r + lead.riasec_i + lead.riasec_a + lead.riasec_s + lead.riasec_e + lead.riasec_c > 0 ? (
+              <>
+                <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider">
+                  Perfil RIASEC
+                </h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: "Realista (R)", value: lead.riasec_r },
+                    { label: "Investigativo (I)", value: lead.riasec_i },
+                    { label: "Artístico (A)", value: lead.riasec_a },
+                    { label: "Social (S)", value: lead.riasec_s },
+                    { label: "Emprendedor (E)", value: lead.riasec_e },
+                    { label: "Convencional (C)", value: lead.riasec_c },
+                  ].map((item) => (
+                    <div key={item.label} className="bg-white/3 rounded-xl p-4">
+                      <div className="text-xs text-white/30">{item.label}</div>
+                      <div className="text-lg font-bold text-white mt-1">{item.value}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <>
+                <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider">
+                  Puntajes por dimensión
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: "Intereses", value: lead.puntaje_intereses },
+                    { label: "Personalidad", value: lead.puntaje_personalidad },
+                    { label: "Habilidades", value: lead.puntaje_habilidades },
+                    { label: "Motivación", value: lead.puntaje_motivacion },
+                  ].map((item) => (
+                    <div key={item.label} className="bg-white/3 rounded-xl p-4">
+                      <div className="text-xs text-white/30">{item.label}</div>
+                      <div className="text-lg font-bold text-white mt-1">{item.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Top 3 */}
@@ -146,14 +180,14 @@ export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
             </div>
           </div>
 
-          {/* Q16 */}
-          {answers.Q16 && (
+          {/* Q16 — aptitude single-choice, rendered as option text */}
+          {rawQ16 !== undefined && rawQ16 !== "" && (
             <div className="space-y-3">
               <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider">
-                Lo que me apasiona
+                {q16?.text ?? "Q16"}
               </h4>
               <div className="bg-white/3 rounded-xl p-4 text-sm text-white/50">
-                {String(answers.Q16)}
+                {q16Option ?? String(rawQ16)}
               </div>
             </div>
           )}

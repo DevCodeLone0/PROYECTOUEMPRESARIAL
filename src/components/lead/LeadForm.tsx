@@ -10,6 +10,7 @@ interface LeadFormProps {
     habilidades: number;
     motivacion: number;
   };
+  riasecProfile: { R: number; I: number; A: number; S: number; E: number; C: number };
   arquetipo: string;
   top3: { carrera: string; compatibilidad: number }[];
   respuestas: Record<string, string | number>;
@@ -17,6 +18,7 @@ interface LeadFormProps {
 
 export default function LeadForm({
   scores,
+  riasecProfile,
   arquetipo,
   top3,
   respuestas,
@@ -67,6 +69,7 @@ export default function LeadForm({
         ...formData,
         respuestas,
         scores,
+        riasecProfile,
         arquetipo,
         top3,
       };

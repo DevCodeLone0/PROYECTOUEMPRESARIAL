@@ -22,10 +22,18 @@ export const LeadFormSchema = z.object({
 
 export type LeadFormData = z.infer<typeof LeadFormSchema>;
 
-export const AnswerSchema = z.record(
-  z.string(),
-  z.union([z.string(), z.number()])
-);
+export const AnswerSchema = z
+  .record(
+    z.string().max(10, { error: "Los IDs de respuesta no pueden superar 10 caracteres" }),
+    z.union([
+      z.string().max(10, { error: "Las respuestas de texto no pueden superar 10 caracteres" }),
+      z.number().min(0, { error: "Las respuestas numéricas no pueden ser negativas" }).max(10, { error: "Las respuestas numéricas no pueden superar 10" }),
+    ])
+  )
+  .refine(
+    (answers) => Object.keys(answers).length <= 25,
+    { message: "El máximo de respuestas es 25" }
+  );
 
 export type AnswerRecord = z.infer<typeof AnswerSchema>;
 
@@ -42,25 +50,45 @@ export const ScoringResultSchema = z.object({
 
 export type ScoringResultData = z.infer<typeof ScoringResultSchema>;
 
+export const RiasecProfileSchema = z.object({
+  R: z.number().min(0).max(100),
+  I: z.number().min(0).max(100),
+  A: z.number().min(0).max(100),
+  S: z.number().min(0).max(100),
+  E: z.number().min(0).max(100),
+  C: z.number().min(0).max(100),
+});
+
 export const LeadPayloadSchema = z.object({
   nombre: LeadFormSchema.shape.nombre,
-  email: LeadFormSchema.shape.email,
-  celular: LeadFormSchema.shape.celular,
+  email: LeadFormSchema.shape.email.max(200, {
+    error: "El correo no puede superar 200 caracteres",
+  }),
+  celular: LeadFormSchema.shape.celular.max(30, {
+    error: "El teléfono no puede superar 30 caracteres",
+  }),
   consentimiento: LeadFormSchema.shape.consentimiento,
   respuestas: AnswerSchema,
   scores: z.object({
-    intereses: z.number(),
-    personalidad: z.number(),
-    habilidades: z.number(),
-    motivacion: z.number(),
+    intereses: z.number().min(0).max(100),
+    personalidad: z.number().min(0).max(100),
+    habilidades: z.number().min(0).max(100),
+    motivacion: z.number().min(0).max(100),
   }),
-  arquetipo: z.string(),
-  top3: z.array(
-    z.object({
-      carrera: z.string(),
-      compatibilidad: z.number(),
-    })
-  ),
+  riasecProfile: RiasecProfileSchema,
+  arquetipo: z.string().min(1).max(80, {
+    error: "El arquetipo no puede superar 80 caracteres",
+  }),
+  top3: z
+    .array(
+      z.object({
+        carrera: z.string().max(40, {
+          error: "El nombre de la carrera no puede superar 40 caracteres",
+        }),
+        compatibilidad: z.number().min(0).max(100),
+      })
+    )
+    .max(3, { error: "El top 3 no puede tener más de 3 carreras" }),
 });
 
 export type LeadPayload = z.infer<typeof LeadPayloadSchema>;

@@ -21,26 +21,48 @@ export interface Lead {
   compatibilidad_2: number;
   compatibilidad_3: number;
   respuestas_raw: string;
+  riasec_r: number;
+  riasec_i: number;
+  riasec_a: number;
+  riasec_s: number;
+  riasec_e: number;
+  riasec_c: number;
 }
 
 interface LeadsTableProps {
   onSelectLead: (lead: Lead) => void;
+  search: string;
+  onSearchChange: (value: string) => void;
+  archetype: string;
+  onArchetypeChange: (value: string) => void;
+  dateFrom: string;
+  onDateFromChange: (value: string) => void;
+  dateTo: string;
+  onDateToChange: (value: string) => void;
 }
 
-export default function LeadsTable({ onSelectLead }: LeadsTableProps) {
+export default function LeadsTable({
+  onSelectLead,
+  search,
+  onSearchChange,
+  archetype,
+  onArchetypeChange,
+  dateFrom,
+  onDateFromChange,
+  dateTo,
+  onDateToChange,
+}: LeadsTableProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [archetype, setArchetype] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     async function fetchLeads() {
       setLoading(true);
+      setError(null);
       const params = new URLSearchParams({
         page: page.toString(),
         search,
@@ -51,67 +73,84 @@ export default function LeadsTable({ onSelectLead }: LeadsTableProps) {
 
       try {
         const res = await fetch(`/api/admin/leads?${params}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!cancelled) {
           setLeads(data.leads || []);
           setTotal(data.total || 0);
         }
       } catch {
-        if (!cancelled) setLeads([]);
+        if (!cancelled) {
+          setLeads([]);
+          setTotal(0);
+          setError("Error al cargar los leads. Intenta de nuevo.");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
     fetchLeads();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [page, search, archetype, dateFrom, dateTo]);
 
-  const totalPages = Math.ceil(total / 20);
+  const totalPages = Math.max(1, Math.ceil(total / 20));
 
   return (
     <div className="space-y-4">
-      {/* Page title */}
-      <div>
-        <h1 className="text-2xl font-extrabold text-white tracking-tight">Leads</h1>
-        <p className="text-sm text-white/30 mt-1">Gestiona los leads del test vocacional</p>
-      </div>
-
       {/* Filters — Clean input fields */}
       <div className="flex flex-wrap gap-3">
+        <label htmlFor="leads-search" className="sr-only">
+          Buscar nombre o email
+        </label>
         <input
+          id="leads-search"
           type="text"
           placeholder="Buscar nombre o email..."
           value={search}
           onChange={(e) => {
-            setSearch(e.target.value);
+            onSearchChange(e.target.value);
             setPage(1);
           }}
           className="flex-1 min-w-[200px] p-3.5 rounded-xl bg-white/3 border border-white/5 text-white placeholder-white/25 focus:border-[#D51933]/50 focus:bg-[#D51933]/3 focus:outline-none text-sm transition-all duration-300"
         />
+        <label htmlFor="leads-archetype" className="sr-only">
+          Filtrar por arquetipo
+        </label>
         <input
+          id="leads-archetype"
           type="text"
           placeholder="Arquetipo..."
           value={archetype}
           onChange={(e) => {
-            setArchetype(e.target.value);
+            onArchetypeChange(e.target.value);
             setPage(1);
           }}
           className="w-48 p-3.5 rounded-xl bg-white/3 border border-white/5 text-white placeholder-white/25 focus:border-[#D51933]/50 focus:bg-[#D51933]/3 focus:outline-none text-sm transition-all duration-300"
         />
+        <label htmlFor="leads-date-from" className="sr-only">
+          Desde
+        </label>
         <input
+          id="leads-date-from"
           type="date"
           value={dateFrom}
           onChange={(e) => {
-            setDateFrom(e.target.value);
+            onDateFromChange(e.target.value);
             setPage(1);
           }}
           className="p-3.5 rounded-xl bg-white/3 border border-white/5 text-white focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300"
         />
+        <label htmlFor="leads-date-to" className="sr-only">
+          Hasta
+        </label>
         <input
+          id="leads-date-to"
           type="date"
           value={dateTo}
           onChange={(e) => {
-            setDateTo(e.target.value);
+            onDateToChange(e.target.value);
             setPage(1);
           }}
           className="p-3.5 rounded-xl bg-white/3 border border-white/5 text-white focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300"
@@ -122,6 +161,8 @@ export default function LeadsTable({ onSelectLead }: LeadsTableProps) {
       <div className="bg-white/3 border border-white/5 rounded-2xl overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-white/30">Cargando...</div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-400">{error}</div>
         ) : leads.length === 0 ? (
           <div className="p-8 text-center text-white/30">
             No se encontraron leads
@@ -152,8 +193,16 @@ export default function LeadsTable({ onSelectLead }: LeadsTableProps) {
                 {leads.map((lead) => (
                   <tr
                     key={lead.id}
+                    tabIndex={0}
+                    role="button"
                     onClick={() => onSelectLead(lead)}
-                    className="border-b border-white/3 hover:bg-white/3 cursor-pointer transition-colors"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onSelectLead(lead);
+                      }
+                    }}
+                    className="border-b border-white/3 hover:bg-white/3 cursor-pointer transition-colors focus:outline-none focus:bg-white/5"
                   >
                     <td className="p-4 text-white/80 font-medium">
                       {lead.nombre}

@@ -2,11 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getLeads, type LeadRow } from "@/lib/sheets";
 
+const NO_STORE = { "Cache-Control": "no-store" };
+
 export async function GET(request: NextRequest) {
   // Check admin authentication
   const session = await auth();
   if (!session?.user) {
-    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    return NextResponse.json(
+      { error: "No autenticado" },
+      { status: 401, headers: NO_STORE }
+    );
+  }
+
+  if ((session.user as { role?: string }).role !== "admin") {
+    return NextResponse.json(
+      { error: "No autorizado" },
+      { status: 403, headers: NO_STORE }
+    );
   }
 
   try {
@@ -19,7 +31,15 @@ export async function GET(request: NextRequest) {
     const dateTo = searchParams.get("dateTo") || "";
     const modality = searchParams.get("modality") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
-    const pageSize = 20;
+
+    // pageSize: default 20, clamped to [1, 1000] (exports fetch pageSize=1000)
+    const rawPageSize = searchParams.get("pageSize");
+    const parsedPageSize = rawPageSize
+      ? parseInt(rawPageSize, 10)
+      : 20;
+    const pageSize = Number.isFinite(parsedPageSize)
+      ? Math.min(1000, Math.max(1, parsedPageSize))
+      : 20;
 
     // Filter leads
     let filtered = leads;
@@ -86,17 +106,26 @@ export async function GET(request: NextRequest) {
       compatibilidad_2: l.compatibilidad_2,
       compatibilidad_3: l.compatibilidad_3,
       respuestas_raw: l.respuestas_raw,
+      riasec_r: l.riasec_r,
+      riasec_i: l.riasec_i,
+      riasec_a: l.riasec_a,
+      riasec_s: l.riasec_s,
+      riasec_e: l.riasec_e,
+      riasec_c: l.riasec_c,
     }));
 
-    return NextResponse.json({
-      leads: leadsResponse,
-      total,
-      page,
-    });
+    return NextResponse.json(
+      {
+        leads: leadsResponse,
+        total,
+        page,
+      },
+      { headers: NO_STORE }
+    );
   } catch {
     return NextResponse.json(
       { error: "Error al obtener leads" },
-      { status: 500 }
+      { status: 500, headers: NO_STORE }
     );
   }
 }
