@@ -62,7 +62,7 @@ export default function Header() {
           <img
             src="/logo/logo-header.png"
             alt="Uniempresarial"
-            className="h-36 w-auto object-contain -my-12"
+            className="h-36 w-auto object-contain -my-4"
           />
         </Link>
 
