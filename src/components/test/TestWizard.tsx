@@ -6,17 +6,9 @@ import {
   LAYER_NAMES,
   LAYER_DESCRIPTIONS,
   getLayerForPosition,
-  isLayerBoundary,
 } from "@/stores/test-store";
-import { QUESTION_BANK, getQuestionById } from "@/lib/questions/question-bank";
-import type { Question } from "@/lib/scoring/types";
-import { normalizeProfile } from "@/lib/scoring/riasec";
-import { computeDirectSignal, computeDerivedSignal, recommendModality } from "@/lib/scoring/modality";
-import { determineArchetype } from "@/lib/scoring/archetypes";
-import { PROGRAM_PROFILES } from "@/lib/scoring/programs-matrix";
-import { rankPrograms } from "@/lib/scoring/riasec";
-import type { RIASECDimension, RIASECProfile } from "@/lib/scoring/types";
-import { RIASEC_DIMENSIONS } from "@/lib/scoring/types";
+import { QUESTION_BANK } from "@/lib/questions/question-bank";
+import { runScoringPipeline } from "@/lib/scoring/pipeline";
 import ProgressBar from "./ProgressBar";
 import QuestionCard from "./QuestionCard";
 import { useRouter } from "next/navigation";
@@ -106,25 +98,45 @@ export default function TestWizard() {
     acceptDisclaimer,
   } = useTestStore();
 
+  // Track which layer transitions have been dismissed so we don't re-show them
+  // when the user navigates back and forth.
+  const [dismissedTransitions, setDismissedTransitions] = useState<Set<number>>(new Set());
+
   const currentQuestion = step >= 1 && step <= TOTAL_STEPS
     ? QUESTION_BANK[step - 1]
     : undefined;
 
   const isDisclaimer = !disclaimerAccepted && step === 1 && Object.keys(answers).length === 0;
-  const isTransition =
-    !isDisclaimer &&
-    currentQuestion &&
-    isLayerBoundary(step - 1) &&
-    step <= TOTAL_STEPS;
 
-  // Check if we're on a layer transition step
-  // A transition step is when step-1 is a boundary and step <= TOTAL_STEPS
-  // We show the transition BEFORE the first question of the new layer
-  const transitionLayer =
-    step === 13 ? (2 as const) :
-    step === 18 ? (3 as const) :
-    step === 23 ? (4 as const) :
+  // ── Layer transitions ──
+  // After completing the last question of a layer (Q12, Q17, Q22), show a
+  // transition screen before the first question of the next layer (Q13, Q18, Q23).
+  // We use a local "pending transition" state that is set when we land on the
+  // first step of a new layer WITHOUT having answered that step yet, and cleared
+  // when the user clicks "Continuar".
+  // The first step of layers 2/3/4 is 13/18/23. We show the transition only if
+  // the user has answered the previous boundary question (Q12/Q17/Q22) but has
+  // NOT yet answered the current question (Q13/Q18/Q23).
+  const isFirstStepOfLayer = step === 13 || step === 18 || step === 23;
+  const boundaryQuestionId =
+    step === 13 ? "Q12" :
+    step === 18 ? "Q17" :
+    step === 23 ? "Q22" :
     null;
+  const boundaryAnswered = boundaryQuestionId
+    ? answers[boundaryQuestionId] !== undefined
+    : false;
+  const currentAnswered = currentQuestion
+    ? answers[currentQuestion.id] !== undefined
+    : false;
+
+  // Show transition only on first step of a layer, when boundary is answered,
+  // current question is not yet answered, AND the user hasn't already dismissed
+  // this transition (so navigating back doesn't re-show it).
+  const transitionLayer =
+    isFirstStepOfLayer && boundaryAnswered && !currentAnswered && !dismissedTransitions.has(step)
+      ? (step === 13 ? (2 as const) : step === 18 ? (3 as const) : (4 as const))
+      : null;
 
   const showTransition = transitionLayer !== null && !isDisclaimer;
 
@@ -168,125 +180,24 @@ export default function TestWizard() {
     const state = useTestStore.getState();
     const { answers } = state;
 
-    // ── Layer 1: RIASEC Profile ──
-    const rawScores: Record<RIASECDimension, number> = {
-      R: 0, I: 0, A: 0, S: 0, E: 0, C: 0,
-    };
-    const maxPossible: Record<RIASECDimension, number> = {
-      R: 0, I: 0, A: 0, S: 0, E: 0, C: 0,
-    };
-    const answeredL1: string[] = [];
+    // Run the pure scoring pipeline
+    const result = runScoringPipeline(answers);
 
-    for (const q of QUESTION_BANK.filter((q) => q.layer === 1)) {
-      const answer = answers[q.id];
-      if (answer === undefined || !q.riasecWeights) continue;
-      answeredL1.push(q.id);
-
-      const weights = q.riasecWeights[answer];
-      if (weights) {
-        for (const dim of RIASEC_DIMENSIONS) {
-          rawScores[dim] += weights[dim] ?? 0;
-        }
-      }
-
-      // Track max possible per dimension (max weight across all options for this question)
-      for (const dim of RIASEC_DIMENSIONS) {
-        let maxW = 0;
-        for (const optWeights of q.riasecWeights) {
-          maxW = Math.max(maxW, optWeights[dim] ?? 0);
-        }
-        maxPossible[dim] += maxW;
-      }
-    }
-
-    const riasecProfile = normalizeProfile(
-      rawScores as RIASECProfile,
-      answeredL1,
-      maxPossible
-    );
-    setRiasecProfile(riasecProfile);
-
-    // ── Layer 4: Modality ──
-    const directSignal = computeDirectSignal(answers);
-    const derivedSignal = computeDerivedSignal(answers, riasecProfile);
-    const modalityResult = recommendModality(directSignal, derivedSignal);
-    setModalityResult(modalityResult);
-
-    // ── Archetype ──
-    const archetype = determineArchetype(riasecProfile);
-    setArchetypeId(archetype.id);
-
-    // ── Layer 2: Aptitude vector ──
-    // Map answers Q13-Q17 to a 4-element aptitude vector
-    const aptitudeVec = [0, 0, 0, 0];
-    const aptitudeQuestions = QUESTION_BANK.filter((q) => q.layer === 2);
-    for (const q of aptitudeQuestions) {
-      const answer = answers[q.id];
-      if (answer !== undefined) {
-        // Each answer option index maps to an aptitude dimension
-        // Q13-Q17 each have 4 options → contribute to the corresponding dimension
-        const dimIndex = parseInt(q.dimension.split("-")[1] || "0", 10);
-        // Use the selected option index as a weighted contribution
-        // For simplicity: option 0→dimension 0, option 1→dimension 1, etc.
-        // Each question's dimension string tells us which dimension it primarily measures
-        const dimensionMap: Record<string, number> = {
-          "aptitude-logical": 0,
-          "aptitude-planning": 1,
-          "aptitude-learning": 2,
-          "aptitude-pressure": 3,
-          "aptitude-focus": 2, // falls under learning/creative
-        };
-        const idx = dimensionMap[q.dimension] ?? 0;
-        aptitudeVec[idx] += (answer + 1) / 4; // Normalize 0-3 → 0.25-1.0
-      }
-    }
-    // Normalize aptitude vector to [0, 1]
-    const aptMax = Math.max(...aptitudeVec, 1);
-    for (let i = 0; i < aptitudeVec.length; i++) {
-      aptitudeVec[i] = aptitudeVec[i] / aptMax;
-    }
-
-    // ── Layer 3: Values vector ──
-    // Map answers Q18-Q22 to a 4-element values vector
-    const valuesVec = [0, 0, 0, 0];
-    const valuesQuestions = QUESTION_BANK.filter((q) => q.layer === 3);
-    for (const q of valuesQuestions) {
-      const answer = answers[q.id];
-      if (answer !== undefined) {
-        const dimensionMap: Record<string, number> = {
-          autonomy: 0,
-          "work-style": 1,
-          "risk-tolerance": 2,
-          schedule: 3,
-          orientation: 1,
-        };
-        const idx = dimensionMap[q.dimension] ?? 0;
-        if (q.type === "likert-5") {
-          valuesVec[idx] += answer / 4; // Normalize 1-4 → 0.25-1.0
-        } else {
-          valuesVec[idx] += (answer + 1) / (q.options?.length ?? 2);
-        }
-      }
-    }
-    // Normalize values vector to [0, 1]
-    const valMax = Math.max(...valuesVec, 1);
-    for (let i = 0; i < valuesVec.length; i++) {
-      valuesVec[i] = valuesVec[i] / valMax;
-    }
-
-    // ── Rank programs ──
-    const rankedResults = rankPrograms(riasecProfile, aptitudeVec, valuesVec, PROGRAM_PROFILES);
+    // Persist to Zustand store for cross-component access
+    setRiasecProfile(result.riasecProfile);
+    setModalityResult(result.modalityResult);
+    setArchetypeId(result.archetype.id);
 
     // Store results in sessionStorage for results page
     sessionStorage.setItem(
       "tufuturo-results",
       JSON.stringify({
-        riasecProfile,
-        modalityResult,
-        archetype,
-        aptitudeVec,
-        valuesVec,
-        rankedResults,
+        riasecProfile: result.riasecProfile,
+        modalityResult: result.modalityResult,
+        archetype: result.archetype,
+        aptitudeVec: result.aptitudeVec,
+        valuesVec: result.valuesVec,
+        rankedResults: result.rankedResults,
         answers,
       })
     );
@@ -309,10 +220,10 @@ export default function TestWizard() {
       return;
     }
 
-    // If on a layer transition screen, advance to first question of new layer
-    if (showTransition) {
-      setSlideDirection("next");
-      nextStep();
+    // If on a layer transition screen, dismiss it and stay on the same step
+    // so the user can answer the first question of the new layer.
+    if (showTransition && transitionLayer !== null) {
+      setDismissedTransitions((prev) => new Set(prev).add(step));
       return;
     }
 
@@ -341,6 +252,25 @@ export default function TestWizard() {
           `Faltan ${missing} preguntas por responder. Por favor completa al menos todas menos 2.`
         );
         return;
+      }
+
+      // Layer 4 (Q23-Q25) is critical for modality recommendation.
+      // If any of these is missing, warn the user before continuing.
+      const layer4Missing = ["Q23", "Q24", "Q25"].filter(
+        (id) => answers[id] === undefined
+      );
+      if (layer4Missing.length > 0) {
+        const msg =
+          layer4Missing.length === 1
+            ? "Te falta responder 1 pregunta de modalidad (Q23-Q25). Estas preguntas son clave para recomendar presencial o virtual. ¿Querés completarla antes de finalizar?"
+            : `Te faltan responder ${layer4Missing.length} preguntas de modalidad (Q23-Q25). Estas preguntas son clave para recomendar presencial o virtual. ¿Querés completarlas antes de finalizar?`;
+        // confirm() returns true if user clicks "OK" (wants to go back and complete),
+        // false if user clicks "Cancel" (wants to proceed anyway).
+        if (confirm(msg)) {
+          // User wants to go back and complete — don't run scoring, stay on test
+          return;
+        }
+        // User chose to proceed anyway — fall through to runScoring
       }
 
       // Run scoring

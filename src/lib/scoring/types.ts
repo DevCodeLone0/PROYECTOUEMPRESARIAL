@@ -96,6 +96,12 @@ export interface Question {
    * Weights across all options for a question sum to 1.0 per dimension.
    */
   riasecWeights?: Record<RIASECDimension, number>[];
+  /**
+   * Per-option aptitude weights for Layer 2 questions. Each option maps to
+   * the aptitude slots [logical, planning, creative, social]; weights per
+   * option typically sum to 1. Only present for Layer 2 questions.
+   */
+  aptitudeWeights?: number[][];
 }
 
 // ── Program Profiles ──

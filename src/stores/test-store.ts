@@ -159,13 +159,30 @@ export const useTestStore = create<TestState>()(
         archetypeId: state.archetypeId,
         isCompleted: state.isCompleted,
       }),
-      onRehydrateStorage: () => (state) => {
-        if (!state) return;
-        // Migration: detect old 16-question format and reset
-        if (detectOldFormat(state.answers)) {
-          state.resetTest();
-          state.disclaimerAccepted = false;
+      // Migration: detect old 16-question format and reset via merge.
+      // Using `merge` avoids calling actions inside onRehydrateStorage,
+      // which can throw because `set` is not bound there.
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<TestState>;
+        if (
+          persisted &&
+          persisted.answers &&
+          detectOldFormat(persisted.answers as Record<string, string | number>)
+        ) {
+          // Old format detected — return a fresh state, ignoring persisted data
+          return {
+            ...currentState,
+            step: 1,
+            currentLayer: 1,
+            answers: {},
+            riasecProfile: null,
+            modalityResult: null,
+            archetypeId: null,
+            isCompleted: false,
+            disclaimerAccepted: false,
+          };
         }
+        return { ...currentState, ...persisted };
       },
     }
   )

@@ -101,11 +101,11 @@ const layer1Questions: Question[] = [
     type: "single-choice",
     text: "¿En qué tipo de proyecto te gustaría trabajar?",
     options: [
-      "Construir algo tangible (máquinas, productos)",
-      "Investigar y descubrir cosas nuevas",
-      "Crear arte, diseño o contenido visual",
-      "Ayudar a personas directamente",
-      "Liderar un equipo hacia una meta",
+      "Diseñar y construir un prototipo que funcione",
+      "Investigar qué causa un problema y demostrarlo con datos",
+      "Desarrollar la identidad visual de un producto",
+      "Acompañar a personas en un proceso de mejora personal",
+      "Conducir a un equipo para ganar un contrato importante",
     ],
     riasecWeights: [
       { R: 0.7, I: 0.1, A: 0.0, S: 0.0, E: 0.1, C: 0.1 },
@@ -147,11 +147,11 @@ const layer1Questions: Question[] = [
     type: "single-choice",
     text: "¿Qué habilidad quieres desarrollar más?",
     options: [
-      "Manejar herramientas y tecnología",
-      "Pensamiento crítico y análisis",
-      "Expresión artística y creativa",
-      "Comunicación y empatía",
-      "Negociación y persuasión",
+      "Operar equipos y herramientas especializadas",
+      "Descomponer problemas complejos en partes entendibles",
+      "Convertir ideas en imágenes o productos originales",
+      "Hacer que alguien se sienta comprendido y apoyado",
+      "Lograr acuerdos donde todas las partes ganen",
     ],
     riasecWeights: [
       { R: 0.6, I: 0.1, A: 0.1, S: 0.0, E: 0.1, C: 0.1 },
@@ -243,7 +243,7 @@ const layer1Questions: Question[] = [
       "Hacer un descubrimiento importante",
       "Que mi trabajo sea reconocido por su arte",
       "Que mi trabajo mejore la vida de otros",
-      "Liderar una empresa exitosa",
+      "Crear una empresa que crezca y genere empleo",
     ],
     riasecWeights: [
       { R: 0.5, I: 0.1, A: 0.1, S: 0.0, E: 0.2, C: 0.1 },
@@ -303,8 +303,10 @@ const layer1Questions: Question[] = [
 
 // ── Layer 2: Aptitudes (Q13-Q17) ──
 //
-// Behavioral scenario questions. Each has 4 options mapping to
-// aptitude vector dimensions: [logical, communication, creative, social].
+// Behavioral scenario questions. Each has 4 options whose `aptitudeWeights`
+// map to aptitude vector slots: [logical, planning, creative, social].
+// Each option carries its own per-slot weights (typically summing to 1),
+// so a question can signal multiple aptitudes — no single dimension slot.
 
 const layer2Questions: Question[] = [
   {
@@ -319,6 +321,12 @@ const layer2Questions: Question[] = [
       "La de crear algo original",
       "La de trabajar en equipo",
     ],
+    aptitudeWeights: [
+      [1, 0, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1],
+    ],
   },
   {
     id: "Q14",
@@ -331,6 +339,12 @@ const layer2Questions: Question[] = [
       "Investigo todo lo posible antes",
       "Empiezo a crear algo y ajusto después",
       "Organizo al grupo y asigno tareas",
+    ],
+    aptitudeWeights: [
+      [0, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0.6, 0, 0.4],
     ],
   },
   {
@@ -345,6 +359,12 @@ const layer2Questions: Question[] = [
       "Observando ejemplos e imitando",
       "Explicándolo a otros",
     ],
+    aptitudeWeights: [
+      [0.7, 0.3, 0, 0],
+      [1, 0, 0, 0],
+      [0.2, 0.8, 0, 0],
+      [0, 0, 0, 1],
+    ],
   },
   {
     id: "Q16",
@@ -357,6 +377,12 @@ const layer2Questions: Question[] = [
       "Cuando debo analizar y decidir",
       "Cuando debo ser creativo bajo presión",
       "Cuando debo trabajar con otros",
+    ],
+    aptitudeWeights: [
+      [0, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1],
     ],
   },
   {
@@ -371,6 +397,12 @@ const layer2Questions: Question[] = [
       "Tareas que requieren imaginación",
       "Tareas que involucran interacción social",
     ],
+    aptitudeWeights: [
+      [0, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1],
+    ],
   },
 ];
 
@@ -384,13 +416,13 @@ const layer3Questions: Question[] = [
     layer: 3,
     dimension: "autonomy",
     type: "likert-5",
-    text: "¿Qué tan importante es para ti la autonomía en tu trabajo?",
+    text: "Piensa en tu trabajo ideal: ¿cuánta libertad necesitas para decidir cómo organizar tus tareas y horarios?",
     options: [
-      "Nada importante",
-      "Poco importante",
-      "Moderadamente importante",
-      "Muy importante",
-      "Extremadamente importante",
+      "Ninguna, prefiero que me guíen",
+      "Poca",
+      "Moderada",
+      "Mucha",
+      "Total: quiero decidirlo todo",
     ],
   },
   {
@@ -411,13 +443,13 @@ const layer3Questions: Question[] = [
     layer: 3,
     dimension: "risk-tolerance",
     type: "likert-5",
-    text: "¿Qué tan dispuesto/a estás a asumir riesgos en tu carrera?",
+    text: "Si tuvieras que elegir entre un camino seguro y uno incierto pero con mayor potencial, ¿qué tan seguido elegirías el incierto?",
     options: [
-      "Nada dispuesto",
-      "Poco dispuesto",
-      "Moderadamente dispuesto",
-      "Muy dispuesto",
-      "Totalmente dispuesto",
+      "Nunca",
+      "Casi nunca",
+      "A veces",
+      "Casi siempre",
+      "Siempre",
     ],
   },
   {

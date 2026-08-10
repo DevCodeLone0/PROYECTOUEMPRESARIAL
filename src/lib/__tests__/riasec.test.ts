@@ -155,9 +155,11 @@ describe("cosineSimilarity", () => {
 
 describe("computeFitBreakdown", () => {
   const ingSoftware = PROGRAM_PROFILES[0]; // id: "ing-software"
+  const aptitudeVec = [0.9, 0.5, 0.3, 0.2];
+  const valuesVec = [0.6, 0.5, 0.4, 0.1];
 
   it("returns { personality, technical, lifestyle } with values 0-100", () => {
-    const breakdown = computeFitBreakdown(ENGINEER_PROFILE, ingSoftware);
+    const breakdown = computeFitBreakdown(ENGINEER_PROFILE, ingSoftware, aptitudeVec, valuesVec);
     expect(breakdown).toHaveProperty("personality");
     expect(breakdown).toHaveProperty("technical");
     expect(breakdown).toHaveProperty("lifestyle");
@@ -169,26 +171,48 @@ describe("computeFitBreakdown", () => {
     expect(breakdown.lifestyle).toBeLessThanOrEqual(100);
   });
 
-  it("engineer profile matches software engineering well (high personality)", () => {
-    const breakdown = computeFitBreakdown(ENGINEER_PROFILE, ingSoftware);
+  it("engineer profile + matching aptitude matches software engineering well", () => {
+    const breakdown = computeFitBreakdown(ENGINEER_PROFILE, ingSoftware, aptitudeVec, valuesVec);
     expect(breakdown.personality).toBeGreaterThan(70);
+    // aptitudeVec [0.9, 0.5, 0.3, 0.2] closely matches ing-software aptitude [0.9, 0.5, 0.3, 0.2]
+    expect(breakdown.technical).toBeGreaterThan(70);
   });
 
   it("social profile has lower personality fit for software engineering", () => {
-    const breakdown = computeFitBreakdown(SOCIAL_PROFILE, ingSoftware);
+    const breakdown = computeFitBreakdown(SOCIAL_PROFILE, ingSoftware, aptitudeVec, valuesVec);
     expect(breakdown.personality).toBeLessThan(70);
   });
 
-  it("identical profiles produce personality score of 100", () => {
-    const breakdown = computeFitBreakdown(ingSoftware.riasec, ingSoftware);
+  it("identical profiles and vectors produce all scores of 100", () => {
+    const breakdown = computeFitBreakdown(
+      ingSoftware.riasec,
+      ingSoftware,
+      ingSoftware.aptitude,
+      ingSoftware.values
+    );
     expect(breakdown.personality).toBeCloseTo(100, 0);
+    expect(breakdown.technical).toBeCloseTo(100, 0);
+    expect(breakdown.lifestyle).toBeCloseTo(100, 0);
   });
 
-  it("all-zero student profile produces all-zero fit scores", () => {
-    const breakdown = computeFitBreakdown(ALL_ZERO, ingSoftware);
+  it("all-zero student profile and vectors produce all-zero fit scores", () => {
+    const breakdown = computeFitBreakdown(ALL_ZERO, ingSoftware, [0, 0, 0, 0], [0, 0, 0, 0]);
     expect(breakdown.personality).toBe(0);
     expect(breakdown.technical).toBe(0);
     expect(breakdown.lifestyle).toBe(0);
+  });
+
+  it("matching aptitude but mismatched values still reflects technical fit", () => {
+    const matchingApt = ingSoftware.aptitude; // [0.9, 0.5, 0.3, 0.2]
+    const mismatchedVals = [0.1, 0.1, 0.1, 0.9]; // almost opposite of ing-software values
+    const breakdown = computeFitBreakdown(
+      ENGINEER_PROFILE,
+      ingSoftware,
+      matchingApt,
+      mismatchedVals
+    );
+    expect(breakdown.technical).toBeCloseTo(100, 0); // perfect aptitude match
+    expect(breakdown.lifestyle).toBeLessThan(60); // poor values match
   });
 });
 

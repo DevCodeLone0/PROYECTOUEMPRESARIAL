@@ -96,28 +96,26 @@ export function cosineSimilarity(a: number[], b: number[]): number {
 // ═══════════════════════════════════════════════════════════
 
 /**
- * Compute per-layer fit scores between a student's profile and a program.
- *
- * @param studentProfile - Normalized RIASEC profile [0, 1] per dimension
- * @param program - Program requirement vectors
- * @returns FitBreakdown with personality (0-100), technical (0-100), lifestyle (0-100)
- */
+  * Compute per-layer fit scores between a student's profile and a program.
+  *
+  * @param studentProfile - Normalized RIASEC profile [0, 1] per dimension
+  * @param program - Program requirement vectors
+  * @param aptitudeVec - Student's aptitude vector (4 elements)
+  * @param valuesVec - Student's values/lifestyle vector (4 elements)
+  * @returns FitBreakdown with personality (0-100), technical (0-100), lifestyle (0-100)
+  */
 export function computeFitBreakdown(
   studentProfile: RIASECProfile,
-  program: ProgramProfile
+  program: ProgramProfile,
+  aptitudeVec: number[],
+  valuesVec: number[]
 ): FitBreakdown {
   const riasecVec = Object.values(studentProfile);
   const programRiasecVec = Object.values(program.riasec);
 
   const personality = cosineSimilarity(riasecVec, programRiasecVec) * 100;
-  const technical = cosineSimilarity(
-    [0, 0, 0, 0], // placeholder — actual aptitude comes from overall score
-    [0, 0, 0, 0]
-  ) * 100;
-  const lifestyle = cosineSimilarity(
-    [0, 0, 0, 0], // placeholder — actual values comes from overall score
-    [0, 0, 0, 0]
-  ) * 100;
+  const technical = cosineSimilarity(aptitudeVec, program.aptitude) * 100;
+  const lifestyle = cosineSimilarity(valuesVec, program.values) * 100;
 
   return { personality, technical, lifestyle };
 }
@@ -178,17 +176,17 @@ export function rankPrograms(
       valuesVec
     );
 
-    const riasecVec = Object.values(studentProfile);
-    const programRiasecVec = Object.values(program.riasec);
-
-    const personality = cosineSimilarity(riasecVec, programRiasecVec) * 100;
-    const technical = cosineSimilarity(aptitudeVec, program.aptitude) * 100;
-    const lifestyle = cosineSimilarity(valuesVec, program.values) * 100;
+    const fitBreakdown = computeFitBreakdown(
+      studentProfile,
+      program,
+      aptitudeVec,
+      valuesVec
+    );
 
     return {
       programId: program.id,
       overallScore,
-      fitBreakdown: { personality, technical, lifestyle },
+      fitBreakdown,
     };
   });
 
