@@ -9,7 +9,6 @@ export default function Header() {
   const navLinks = [
     { href: "/", label: "Inicio" },
     { href: "/test", label: "Test vocacional" },
-    { href: "/resultados", label: "Resultados" },
     { href: "/admin", label: "Admin" },
   ];
 
@@ -57,13 +56,13 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-white shadow-md">
-      <div className="w-full px-6 py-2 flex items-center justify-between">
+      <div className="w-full px-6 py-1.5 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center" aria-label="Uniempresarial - Inicio">
           <img
             src="/logo/logo-header.png"
             alt="Uniempresarial"
-            className="h-24 w-auto object-contain"
+            className="h-20 w-auto object-contain"
           />
         </Link>
 
