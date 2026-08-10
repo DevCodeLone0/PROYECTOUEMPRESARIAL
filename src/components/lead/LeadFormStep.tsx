@@ -107,12 +107,20 @@ export default function LeadFormStep() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col relative overflow-hidden">
+      {/* Fondo degradado de marca (sutil — el formulario es una tarjeta clara) */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/8 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/10 blur-[130px]" />
+        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/6 blur-[110px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/8 blur-[100px]" />
+      </div>
+
       {/* Header */}
       <Header />
 
       {/* Content — Chaptr-style centered, light card on dark */}
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-lg animate-fade-in">
           {/* Hero text */}
           <div className="text-center mb-10">

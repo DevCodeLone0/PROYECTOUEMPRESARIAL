@@ -5,12 +5,18 @@ import { useTestStore } from "@/stores/test-store";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Header from "@/components/layout/Header";
 import { getUniquePrograms } from "@/lib/programs";
+import BackgroundCarousel, { type BackgroundSlide } from "@/components/ui/BackgroundCarousel";
 
-const photos = [
-  "/images/DSC_0191.JPG",
-  "/images/DSC_0294.JPG",
-  "/images/DSC_0228.JPG",
-  "/images/DSC_0299.JPG",
+// Slides del carousel de fondo del hero: fotos originales + nuevas del moodboard + video
+const heroSlides: BackgroundSlide[] = [
+  { type: "image", src: "/images/DSC_0191.JPG" },
+  { type: "image", src: "/images/DSC_0228.JPG" },
+  { type: "image", src: "/images/DSC_0294.JPG" },
+  { type: "image", src: "/images/DSC_0299.JPG" },
+  { type: "image", src: "/images/moodboard-campus-1.jpeg" },
+  { type: "image", src: "/images/moodboard-campus-2.jpeg" },
+  { type: "image", src: "/images/moodboard-campus-3.jpeg" },
+  { type: "video", src: "/videos/IMG_0229.mp4", poster: "/images/moodboard-campus-2.jpeg" },
 ];
 
 const archetypes = [
@@ -112,19 +118,11 @@ const features = [
 
 export default function HomePage() {
   const resetTest = useTestStore((s) => s.resetTest);
-  const [currentPhoto, setCurrentPhoto] = useState(0);
   const [audioStarted, setAudioStarted] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
-
-  // Carousel auto-slide
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentPhoto((prev) => (prev + 1) % photos.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  const [heroActive, setHeroActive] = useState(0);
 
   // Initialize audio
   useEffect(() => {
@@ -224,24 +222,8 @@ export default function HomePage() {
       <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Background carousel */}
         <div className="absolute inset-0 z-0">
-          {photos.map((photo, i) => (
-            <div
-              key={i}
-              className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
-              style={{ opacity: currentPhoto === i ? 1 : 0 }}
-            >
-              <div
-                className="w-full h-full bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(${photo})`,
-                  filter: "brightness(0.85) saturate(1.15)",
-                  transform: currentPhoto === i ? "scale(1)" : "scale(1.05)",
-                  transition: "transform 4s ease-out",
-                }}
-              />
-            </div>
-          ))}
-          {/* Dark overlay gradient — lighter to show images */}
+          <BackgroundCarousel slides={heroSlides} onActiveChange={setHeroActive} />
+          {/* Dark overlay gradient — lighter to show video */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/60 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/40 via-transparent to-transparent" />
         </div>
@@ -298,22 +280,19 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Carousel indicator dots + decorative */}
+            {/* Right: Decorative floating elements */}
             <div className="hidden lg:flex flex-col items-end space-y-6">
-              {/* Photo index indicator */}
+              {/* Dots indicadores del carousel */}
               <div className="flex gap-3">
-                {photos.map((_, i) => (
+                {heroSlides.map((_, i) => (
                   <div
                     key={i}
                     className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                      currentPhoto === i
-                        ? "bg-[#00ff88] w-8"
-                        : "bg-white/20"
+                      heroActive === i ? "bg-[#00ff88] w-8" : "bg-white/20"
                     }`}
                   />
                 ))}
               </div>
-
               {/* Floating decorative elements */}
               <div className="relative w-80 h-80">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#D51933]/10 rounded-3xl rotate-12 animate-float" />

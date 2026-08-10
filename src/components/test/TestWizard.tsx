@@ -13,12 +13,18 @@ import ProgressBar from "./ProgressBar";
 import QuestionCard from "./QuestionCard";
 import { useRouter } from "next/navigation";
 import { useRef, useCallback, useEffect, useState } from "react";
+import BackgroundCarousel, { type BackgroundSlide } from "@/components/ui/BackgroundCarousel";
 
-const photos = [
-  "/images/DSC_0191.JPG",
-  "/images/DSC_0294.JPG",
-  "/images/DSC_0228.JPG",
-  "/images/DSC_0299.JPG",
+// Slides del carousel de fondo del test: fotos originales + nuevas del moodboard + video
+const backgroundSlides: BackgroundSlide[] = [
+  { type: "image", src: "/images/DSC_0191.JPG" },
+  { type: "image", src: "/images/DSC_0228.JPG" },
+  { type: "image", src: "/images/DSC_0294.JPG" },
+  { type: "image", src: "/images/DSC_0299.JPG" },
+  { type: "image", src: "/images/moodboard-campus-1.jpeg" },
+  { type: "image", src: "/images/moodboard-campus-2.jpeg" },
+  { type: "image", src: "/images/moodboard-campus-3.jpeg" },
+  { type: "video", src: "/videos/IMG_0469.mp4", poster: "/images/moodboard-campus-1.jpeg" },
 ];
 
 /** Layer transition screen displayed between layers */
@@ -140,8 +146,7 @@ export default function TestWizard() {
 
   const showTransition = transitionLayer !== null && !isDisclaimer;
 
-  // Carousel state
-  const [currentPhoto, setCurrentPhoto] = useState(0);
+  // Slide direction for question animations
   const [slideDirection, setSlideDirection] = useState<"next" | "prev">("next");
 
   // Audio for test (Route 66)
@@ -159,14 +164,6 @@ export default function TestWizard() {
         audioRef.current = null;
       }
     };
-  }, []);
-
-  // Carousel auto-slide (every 5s)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentPhoto((prev) => (prev + 1) % photos.length);
-    }, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   const startTestAudio = useCallback(() => {
@@ -312,23 +309,7 @@ export default function TestWizard() {
     <div className="min-h-screen bg-[#111111] flex flex-col relative overflow-hidden">
       {/* Background carousel */}
       <div className="absolute inset-0 z-0">
-        {photos.map((photo, i) => (
-          <div
-            key={i}
-            className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
-            style={{ opacity: currentPhoto === i ? 1 : 0 }}
-          >
-            <div
-              className="w-full h-full bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${photo})`,
-                filter: "brightness(0.85) saturate(1.15)",
-                transform: currentPhoto === i ? "scale(1)" : "scale(1.05)",
-                transition: "transform 4s ease-out",
-              }}
-            />
-          </div>
-        ))}
+        <BackgroundCarousel slides={backgroundSlides} />
         {/* Darker overlays — text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#111111]/85 via-[#111111]/75 to-[#111111]/90" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/60 via-transparent to-[#111111]/60" />

@@ -59,7 +59,15 @@ function MissingResults() {
   const router = useRouter();
   const { resetTest } = useTestStore();
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Fondo degradado de marca */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/12 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
+        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/8 blur-[110px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/10 blur-[100px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]" />
+      </div>
       <div className="text-center space-y-6 max-w-md">
         <div className="text-5xl">🔍</div>
         <h1 className="text-2xl font-bold text-white">
@@ -106,7 +114,14 @@ export default function ResultadosPage() {
       return <MissingResults />;
     }
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center relative overflow-hidden">
+        {/* Fondo degradado de marca */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/12 blur-[120px]" />
+          <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
+          <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/8 blur-[110px]" />
+          <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/10 blur-[100px]" />
+        </div>
         <div className="text-white/40">Cargando resultados...</div>
       </div>
     );
@@ -177,14 +192,25 @@ export default function ResultadosPage() {
     recommendation === "presencial" ? "Presencial" : "Virtual";
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
+      {/* Fondo degradado de marca */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Glows radiales sutiles */}
+        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/12 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
+        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/8 blur-[110px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/10 blur-[100px]" />
+        {/* Gradiente lineal sutil */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]" />
+      </div>
+
       <Confetti />
 
       {/* Header */}
       <Header />
 
       {/* Content */}
-      <main className="max-w-4xl mx-auto px-4 py-10 space-y-12">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 py-10 space-y-12">
         {/* Hero result */}
         <div className="relative text-center space-y-5 animate-fade-in">
           {/* Decorative glow */}
