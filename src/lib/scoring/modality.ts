@@ -27,9 +27,9 @@ export interface ModalityScore {
 /**
  * Compute the direct modality signal from Layer 4 questions (Q23-Q25).
  *
- * Q23 (preference): 0=Presencial(+2p), 1=Virtual(+2v), 2=No pref(0). Weight: 0.5
- * Q24 (comfort):    0-1=Presencial(+1p), 2=Neutral(0), 3-4=Virtual(+1v). Weight: 0.3
- * Q25 (access):     0=Yes(+0.5v), 1=No(+1p). Weight: 0.2
+ * Q23 (environment): 0=Presencial-leaning(+2p), 1=Virtual-leaning(+2v), 2=No pref(0). Weight: 0.5
+ * Q24 (autonomy):    0-1=Needs structure(+1p), 2=Neutral(0), 3-4=Self-directed(+1v). Weight: 0.3
+ * Q25 (interaction): 0=Solo(+0.5v), 1=Group(+1p). Weight: 0.2
  *
  * @param answers - Record of question ID → selected option index
  * @returns ModalityScore with presencial and virtual components
@@ -40,40 +40,40 @@ export function computeDirectSignal(
   let presencial = 0;
   let virtual = 0;
 
-  // Q23: Primary preference question
+  // Q23: Environment preference question
   const q23 = answers["Q23"];
   if (q23 !== undefined) {
     if (q23 === 0) {
-      // "Presencial (ir a un campus)"
+      // "Entre campus, clases y trabajo con compañeros"
       presencial += 2 * 0.5;
     } else if (q23 === 1) {
-      // "Virtual (desde cualquier lugar)"
+      // "Desde casa, con mi propio horario"
       virtual += 2 * 0.5;
     }
-    // q23 === 2 → "No tengo preferencia" → no contribution
+    // q23 === 2 → "Una mezcla de ambos" → no contribution
   }
 
-  // Q24: Comfort learning online (likert 0-4)
+  // Q24: Autonomy / self-direction (likert 0-4)
   const q24 = answers["Q24"];
   if (q24 !== undefined) {
     if (q24 <= 1) {
-      // "Muy incómodo" or "Algo incómodo" → presencial
+      // "Muy mal" or "Mal" keeping up without supervision → presencial (needs structure)
       presencial += 1 * 0.3;
     } else if (q24 >= 3) {
-      // "Cómodo" or "Muy cómodo" → virtual
+      // "Bien" or "Muy bien" → virtual (self-directed)
       virtual += 1 * 0.3;
     }
-    // q24 === 2 → "Neutral" → no contribution
+    // q24 === 2 → "Regular" → no contribution
   }
 
-  // Q25: Access to internet and study space
+  // Q25: Social interaction preference
   const q25 = answers["Q25"];
   if (q25 !== undefined) {
     if (q25 === 0) {
-      // "Sí, tengo todo" → virtual indicator
+      // "Trabajar solo/a, en mi propio espacio" → virtual indicator
       virtual += 0.5 * 0.2;
     } else {
-      // "No tengo internet estable o espacio dedicado" → presencial
+      // "Compartir con un grupo y profesores cerca" → presencial
       presencial += 1 * 0.2;
     }
   }
@@ -220,6 +220,15 @@ export function recommendModality(
   const directDir = signalDirection(directScore);
   const derivedDir = signalDirection(derivedScore);
 
+  // Check if BOTH signals are essentially zero (no evidence either way).
+  // This is stricter than "neutral direction" — it means the student didn't
+  // produce enough signal to make any recommendation meaningful. In that
+  // case we default to presencial but mark confidence as "low" so the UI
+  // can surface a "no strong signals detected" message.
+  const directHasSignal = directScore.presencial > 0 || directScore.virtual > 0;
+  const derivedHasSignal = derivedScore.presencial > 0 || derivedScore.virtual > 0;
+  const noEvidence = !directHasSignal && !derivedHasSignal;
+
   // Determine recommendation: direct wins over derived
   let recommendation: "presencial" | "virtual";
   if (directDir === "neutral" && derivedDir === "neutral") {
@@ -234,7 +243,10 @@ export function recommendModality(
 
   // Determine confidence
   let confidence: "high" | "medium" | "low";
-  if (directDir !== "neutral" && derivedDir !== "neutral") {
+  if (noEvidence) {
+    // Neither signal accumulated any score — no evidence either way
+    confidence = "low";
+  } else if (directDir !== "neutral" && derivedDir !== "neutral") {
     if (directDir === derivedDir) {
       confidence = "high";
     } else {
@@ -242,7 +254,7 @@ export function recommendModality(
       confidence = "low";
     }
   } else {
-    // One or both neutral — no conflict
+    // One or both neutral (but not both zero) — no conflict
     confidence = "medium";
   }
 
@@ -287,6 +299,17 @@ export function generateExplanation(
   }
 
   if (confidence === "low") {
+    // Two paths to "low": conflict (direct vs derived disagree) OR no-evidence
+    // (both signals essentially zero). Distinguish via the actual signal scores.
+    const directHasSignal = directScore.presencial > 0 || directScore.virtual > 0;
+    const derivedHasSignal = derivedScore.presencial > 0 || derivedScore.virtual > 0;
+
+    if (!directHasSignal && !derivedHasSignal) {
+      // No evidence path — both signals essentially zero
+      return `No detectamos señales fuertes en tus respuestas sobre modalidad. La modalidad ${label} es el valor por defecto; te sugerimos conversar con un asesor para elegir la modalidad ideal para ti.`;
+    }
+
+    // Conflict path — direct and derived disagree
     if (recommendation === "presencial") {
       return `Tu respuesta directa indica preferencia presencial, pero tu estilo de vida podría funcionar en modalidad virtual. Considera explorar ambas opciones.`;
     }

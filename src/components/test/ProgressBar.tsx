@@ -28,9 +28,9 @@ const dimensionLabels: Record<string, string> = {
   schedule: "Horario",
   orientation: "Orientación",
   // Layer 4 — Modality
-  modality: "Modalidad",
-  "modality-discipline": "Disciplina",
-  "modality-access": "Acceso",
+  modality: "Entorno",
+  "modality-discipline": "Autonomía",
+  "modality-access": "Interacción",
   // Legacy dimensions (backward compat)
   intereses: "Intereses",
   personalidad: "Personalidad",

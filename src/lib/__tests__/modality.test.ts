@@ -270,10 +270,22 @@ describe("recommendModality", () => {
     expect(result.recommendation).toBe("virtual");
   });
 
-  it("all-zero signals produce medium confidence", () => {
+  it("all-zero signals produce low confidence (no evidence either way)", () => {
     const result = recommendModality(
       { presencial: 0, virtual: 0 },
       { presencial: 0, virtual: 0 }
+    );
+    expect(result.confidence).toBe("low");
+    // Still defaults to presencial
+    expect(result.recommendation).toBe("presencial");
+  });
+
+  it("neutral-direction signals WITH accumulated scores still produce medium confidence", () => {
+    // Both signals have some accumulated score, but direction is neutral (diff < 1.0).
+    // This is different from "no evidence" — the student gave weak signals on both sides.
+    const result = recommendModality(
+      { presencial: 0.4, virtual: 0.35 },
+      { presencial: 0.3, virtual: 0.25 }
     );
     expect(result.confidence).toBe("medium");
   });
@@ -345,6 +357,33 @@ describe("generateExplanation", () => {
       { presencial: 1.0, virtual: 0 }
     );
     expect(explanation.toLowerCase()).not.toContain("debes");
+  });
+
+  it("low confidence with no signals mentions 'no detectamos' or 'no identificamos' (no-evidence path)", () => {
+    const explanation = generateExplanation(
+      "presencial",
+      "low",
+      { presencial: 0, virtual: 0 },
+      { presencial: 0, virtual: 0 }
+    );
+    const hasNoEvidence =
+      explanation.toLowerCase().includes("no detectamos") ||
+      explanation.toLowerCase().includes("no identificamos");
+    expect(hasNoEvidence).toBe(true);
+  });
+
+  it("low confidence with conflicting signals mentions 'explorar' or 'considera' (conflict path)", () => {
+    const explanation = generateExplanation(
+      "virtual",
+      "low",
+      { presencial: 0, virtual: 1.5 },
+      { presencial: 1.0, virtual: 0 }
+    );
+    const hasCaveat =
+      explanation.toLowerCase().includes("explorar") ||
+      explanation.toLowerCase().includes("considera") ||
+      explanation.toLowerCase().includes("ambas");
+    expect(hasCaveat).toBe(true);
   });
 
   it("medium confidence explanation is present", () => {

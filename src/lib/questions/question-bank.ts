@@ -478,7 +478,11 @@ const layer3Questions: Question[] = [
 
 // ── Layer 4: Modality (Q23-Q25) ──
 //
-// Direct preference questions for presencial vs. virtual recommendation.
+// Indirect preference signals for presencial vs. virtual recommendation.
+// Deliberately avoids asking "¿presencial o virtual?" directly: the questions
+// probe autonomy, environment and social interaction, which are the
+// underlying drivers of modality fit. Option indices preserve the scoring
+// semantics: 0 → presencial, 1 → virtual, 2 → neutral.
 
 const layer4Questions: Question[] = [
   {
@@ -486,11 +490,11 @@ const layer4Questions: Question[] = [
     layer: 4,
     dimension: "modality",
     type: "single-choice",
-    text: "¿Cómo prefieres tomar tus clases?",
+    text: "Imagina tu semana de estudio ideal: ¿cómo la pasarías?",
     options: [
-      "Presencial (ir a un campus)",
-      "Virtual (desde cualquier lugar)",
-      "No tengo preferencia",
+      "Entre campus, clases y trabajo con compañeros",
+      "Desde casa, con mi propio horario",
+      "Una mezcla de ambos",
     ],
   },
   {
@@ -498,13 +502,13 @@ const layer4Questions: Question[] = [
     layer: 4,
     dimension: "modality-discipline",
     type: "likert-5",
-    text: "¿Qué tan cómodo/a te sientes aprendiendo en línea?",
+    text: "Cuando estudias sin supervisión, ¿qué tan bien logras mantenerte al día?",
     options: [
-      "Muy incómodo",
-      "Algo incómodo",
-      "Neutral",
-      "Cómodo",
-      "Muy cómodo",
+      "Muy mal",
+      "Mal",
+      "Regular",
+      "Bien",
+      "Muy bien",
     ],
   },
   {
@@ -512,10 +516,10 @@ const layer4Questions: Question[] = [
     layer: 4,
     dimension: "modality-access",
     type: "binary",
-    text: "¿Tienes acceso estable a internet y un espacio de estudio en casa?",
+    text: "Para aprender y concentrarte, ¿qué prefieres?",
     options: [
-      "Sí, tengo todo",
-      "No tengo internet estable o espacio dedicado",
+      "Trabajar solo/a, en mi propio espacio",
+      "Compartir con un grupo y profesores cerca",
     ],
   },
 ];
