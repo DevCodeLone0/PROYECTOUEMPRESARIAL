@@ -15,8 +15,9 @@ import { useRouter } from "next/navigation";
 import { useRef, useCallback, useEffect, useState } from "react";
 import BackgroundCarousel, { type BackgroundSlide } from "@/components/ui/BackgroundCarousel";
 
-// Slides del carousel de fondo del test: fotos originales + nuevas del moodboard + video
+// Slides del carousel de fondo del test: video primero, luego fotos originales y del moodboard
 const backgroundSlides: BackgroundSlide[] = [
+  { type: "video", src: "/videos/IMG_0469.mp4", poster: "/images/moodboard-campus-1.jpeg" },
   { type: "image", src: "/images/DSC_0191.JPG" },
   { type: "image", src: "/images/DSC_0228.JPG" },
   { type: "image", src: "/images/DSC_0294.JPG" },
@@ -24,7 +25,6 @@ const backgroundSlides: BackgroundSlide[] = [
   { type: "image", src: "/images/moodboard-campus-1.jpeg" },
   { type: "image", src: "/images/moodboard-campus-2.jpeg" },
   { type: "image", src: "/images/moodboard-campus-3.jpeg" },
-  { type: "video", src: "/videos/IMG_0469.mp4", poster: "/images/moodboard-campus-1.jpeg" },
 ];
 
 /** Layer transition screen displayed between layers */

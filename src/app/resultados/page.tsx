@@ -60,13 +60,18 @@ function MissingResults() {
   const { resetTest } = useTestStore();
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Fondo degradado de marca */}
+      {/* Fondo degradado de marca: rojo → blanco → azul */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/12 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
-        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/8 blur-[110px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/10 blur-[100px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]" />
+        {/* Degradado diagonal principal */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#D51933]/75 via-white/15 to-[#0033A5]/75" />
+        {/* Glows de profundidad */}
+        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/40 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/45 blur-[130px]" />
+        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/15 blur-[110px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/20 blur-[100px]" />
+        {/* Velo oscuro para legibilidad del texto */}
+        <div className="absolute inset-0 bg-[#0a0a0a]/55" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/70 via-transparent to-[#0a0a0a]" />
       </div>
       <div className="text-center space-y-6 max-w-md">
         <div className="text-5xl">🔍</div>
@@ -115,12 +120,15 @@ export default function ResultadosPage() {
     }
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center relative overflow-hidden">
-        {/* Fondo degradado de marca */}
+        {/* Fondo degradado de marca: rojo → blanco → azul */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/12 blur-[120px]" />
-          <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
-          <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/8 blur-[110px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/10 blur-[100px]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#D51933]/75 via-white/15 to-[#0033A5]/75" />
+          <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/40 blur-[120px]" />
+          <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/45 blur-[130px]" />
+          <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/15 blur-[110px]" />
+          <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/20 blur-[100px]" />
+          <div className="absolute inset-0 bg-[#0a0a0a]/55" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/70 via-transparent to-[#0a0a0a]" />
         </div>
         <div className="text-white/40">Cargando resultados...</div>
       </div>
@@ -193,15 +201,15 @@ export default function ResultadosPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
-      {/* Fondo degradado de marca */}
+      {/* Fondo degradado de marca: rojo → blanco → azul */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Glows radiales sutiles */}
-        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/12 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
-        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/8 blur-[110px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/10 blur-[100px]" />
-        {/* Gradiente lineal sutil */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#D51933]/75 via-white/15 to-[#0033A5]/75" />
+        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/40 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/45 blur-[130px]" />
+        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/15 blur-[110px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/20 blur-[100px]" />
+        <div className="absolute inset-0 bg-[#0a0a0a]/55" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/70 via-transparent to-[#0a0a0a]" />
       </div>
 
       <Confetti />

@@ -7,8 +7,9 @@ import Header from "@/components/layout/Header";
 import { getUniquePrograms } from "@/lib/programs";
 import BackgroundCarousel, { type BackgroundSlide } from "@/components/ui/BackgroundCarousel";
 
-// Slides del carousel de fondo del hero: fotos originales + nuevas del moodboard + video
+// Slides del carousel de fondo del hero: video primero, luego fotos originales y del moodboard
 const heroSlides: BackgroundSlide[] = [
+  { type: "video", src: "/videos/IMG_0229.mp4", poster: "/images/moodboard-campus-2.jpeg" },
   { type: "image", src: "/images/DSC_0191.JPG" },
   { type: "image", src: "/images/DSC_0228.JPG" },
   { type: "image", src: "/images/DSC_0294.JPG" },
@@ -16,7 +17,6 @@ const heroSlides: BackgroundSlide[] = [
   { type: "image", src: "/images/moodboard-campus-1.jpeg" },
   { type: "image", src: "/images/moodboard-campus-2.jpeg" },
   { type: "image", src: "/images/moodboard-campus-3.jpeg" },
-  { type: "video", src: "/videos/IMG_0229.mp4", poster: "/images/moodboard-campus-2.jpeg" },
 ];
 
 const archetypes = [

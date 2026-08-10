@@ -8,7 +8,7 @@ export type BackgroundSlide =
 
 interface BackgroundCarouselProps {
   slides: BackgroundSlide[];
-  /** Intervalo para slides de imagen en ms (default 5000) */
+  /** Intervalo para slides de imagen en ms (default 2000) */
   intervalMs?: number;
   /** Notifica el índice activo (para dots indicadores externos) */
   onActiveChange?: (index: number) => void;
@@ -23,7 +23,7 @@ interface BackgroundCarouselProps {
  */
 export default function BackgroundCarousel({
   slides,
-  intervalMs = 5000,
+  intervalMs = 2000,
   onActiveChange,
 }: BackgroundCarouselProps) {
   const [active, setActive] = useState(0);
