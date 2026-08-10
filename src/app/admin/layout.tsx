@@ -114,6 +114,7 @@ export default function AdminLayout({
                   <Link
                     key={item.href}
                     href={item.href}
+                    aria-label={item.label}
                     className={`p-2 rounded-lg transition-colors ${
                       isActive
                         ? "bg-[#D51933]/10 text-[#D51933]"

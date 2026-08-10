@@ -17,7 +17,7 @@ export default function AdminPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-white/40">Cargando...</div>
       </div>
     );

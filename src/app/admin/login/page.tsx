@@ -25,7 +25,11 @@ export default function AdminLoginPage() {
       });
 
       if (result?.error) {
-        setError("Correo o contraseña incorrectos");
+        if (result.code === "throttled") {
+          setError("Demasiados intentos. Intenta en unos minutos.");
+        } else {
+          setError("Correo o contraseña incorrectos");
+        }
       } else {
         router.push("/admin");
       }
@@ -59,6 +63,8 @@ export default function AdminLoginPage() {
               <label className="block text-sm font-semibold text-[#0a0a0a]">Correo</label>
               <input
                 type="email"
+                name="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -71,6 +77,8 @@ export default function AdminLoginPage() {
               <label className="block text-sm font-semibold text-[#0a0a0a]">Contraseña</label>
               <input
                 type="password"
+                name="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -80,7 +88,10 @@ export default function AdminLoginPage() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-sm text-red-500 text-center">
+              <div
+                role="alert"
+                className="bg-red-50 border border-red-100 rounded-xl p-3 text-sm text-red-500 text-center"
+              >
                 {error}
               </div>
             )}

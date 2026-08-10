@@ -21,16 +21,31 @@ interface Metrics {
 export default function Dashboard() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    fetch("/api/admin/metrics")
-      .then((res) => res.json())
-      .then((data) => {
-        setMetrics(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+    let cancelled = false;
+
+    async function loadMetrics() {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/admin/metrics");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!cancelled) {
+          setMetrics(data);
+          setLoading(false);
+        }
+      } catch {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadMetrics();
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadKey]);
 
   if (loading) {
     return (
@@ -50,8 +65,14 @@ export default function Dashboard() {
 
   if (!metrics) {
     return (
-      <div className="text-center py-12 text-white/30">
-        Error al cargar métricas
+      <div className="text-center py-12">
+        <p className="text-white/30 mb-6">Error al cargar métricas</p>
+        <button
+          onClick={() => setReloadKey((k) => k + 1)}
+          className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-white/60 hover:text-white text-sm transition-all duration-300"
+        >
+          Reintentar
+        </button>
       </div>
     );
   }
@@ -76,8 +97,8 @@ export default function Dashboard() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
-      color: "text-[#00d4ff]",
-      bg: "bg-[#00d4ff]/5",
+      color: "text-[#0033A5]",
+      bg: "bg-[#0033A5]/5",
     },
     {
       label: "Este mes",
@@ -94,12 +115,6 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Page title */}
-      <div>
-        <h1 className="text-2xl font-extrabold text-white tracking-tight">Dashboard</h1>
-        <p className="text-sm text-white/30 mt-1">Resumen de leads y actividad</p>
-      </div>
-
       {/* Metric Cards — Chaptr clean */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {cards.map((card) => (
