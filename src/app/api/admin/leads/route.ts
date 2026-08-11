@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
-import { getLeads, updateLead, type LeadRow } from "@/lib/sheets";
+import { deleteLead, getLeads, updateLead, type LeadRow } from "@/lib/supabase";
 import { LeadUpdateSchema } from "@/lib/schemas";
 
 const NO_STORE = { "Cache-Control": "no-store" };
 
 /**
- * Shared admin auth guard for GET and PATCH.
+ * Shared admin auth guard for GET, PATCH and DELETE.
  * Returns a 401/403 response when unauthenticated or not admin, or null
  * when the request may proceed.
  */
@@ -29,21 +30,33 @@ async function requireAdmin(): Promise<NextResponse | null> {
   return null;
 }
 
+/** Acepta id numérico o string numérica (compat con clientes viejos). */
+const LeadIdSchema = z.union([
+  z.int().positive(),
+  z.string().regex(/^\d+$/).transform(Number),
+]);
+
+function parseEsPrueba(raw: string | null): boolean | undefined {
+  if (raw === "true") return true;
+  if (raw === "false") return false;
+  return undefined;
+}
+
 export async function GET(request: NextRequest) {
   const denied = await requireAdmin();
   if (denied) return denied;
 
   try {
-    const leads = await getLeads();
     const { searchParams } = new URL(request.url);
 
-    const search = searchParams.get("search")?.toLowerCase() || "";
+    const search = searchParams.get("search") || "";
     const archetype = searchParams.get("archetype") || "";
     const dateFrom = searchParams.get("dateFrom") || "";
     const dateTo = searchParams.get("dateTo") || "";
     const modality = searchParams.get("modality") || "";
     const estado = searchParams.get("estado") || "";
-    const page = parseInt(searchParams.get("page") || "1", 10);
+    const esPrueba = parseEsPrueba(searchParams.get("esPrueba"));
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
 
     // pageSize: default 20, clamped to [1, 1000] (exports fetch pageSize=1000)
     const rawPageSize = searchParams.get("pageSize");
@@ -54,63 +67,28 @@ export async function GET(request: NextRequest) {
       ? Math.min(1000, Math.max(1, parsedPageSize))
       : 20;
 
-    // Filter leads
-    let filtered = leads;
+    // Filtros reales server-side en Postgres
+    const { leads, total } = await getLeads({
+      search,
+      archetype,
+      estado,
+      dateFrom,
+      dateTo,
+      modality,
+      esPrueba,
+      page,
+      pageSize,
+    });
 
-    if (search) {
-      filtered = filtered.filter(
-        (l) =>
-          l.nombre.toLowerCase().includes(search) ||
-          l.email.toLowerCase().includes(search)
-      );
-    }
-
-    if (archetype) {
-      filtered = filtered.filter((l) => l.arquetipo === archetype);
-    }
-
-    if (estado) {
-      filtered = filtered.filter((l) => l.estado === estado);
-    }
-
-    if (dateFrom) {
-      filtered = filtered.filter(
-        (l) => new Date(l.timestamp) >= new Date(dateFrom)
-      );
-    }
-
-    if (dateTo) {
-      filtered = filtered.filter(
-        (l) => new Date(l.timestamp) <= new Date(dateTo + "T23:59:59")
-      );
-    }
-
-    // Note: modality filter would require cross-referencing programs data
-    // For now, filter by career name containing "Virtual" if modality is virtual
-    if (modality === "virtual") {
-      filtered = filtered.filter((l) => l.carrera_1.includes("Virtual"));
-    } else if (modality === "presencial") {
-      filtered = filtered.filter((l) => !l.carrera_1.includes("Virtual"));
-    }
-
-    // Sort by date descending
-    filtered.sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-
-    const total = filtered.length;
-    const start = (page - 1) * pageSize;
-    const paginated = filtered.slice(start, start + pageSize);
-
-    // Map to response shape. id is STABLE: derived from the real sheet row,
-    // so PATCH can target the same row regardless of filters/pagination.
-    const leadsResponse = paginated.map((l: LeadRow) => ({
-      id: `lead-${l.rowIndex}`,
+    const leadsResponse = leads.map((l: LeadRow) => ({
+      id: l.id,
       nombre: l.nombre,
       email: l.email,
       celular: l.celular,
       arquetipo: l.arquetipo,
+      modality: l.modality,
+      confidence: l.confidence,
+      esPrueba: l.esPrueba,
       compatibilidad_1: l.compatibilidad_1,
       timestamp: l.timestamp,
       consentimiento: l.consentimiento,
@@ -166,12 +144,48 @@ export async function PATCH(request: NextRequest) {
     }
 
     const { id, estado, notas } = result.data;
-    const rowIndex = parseInt(id.replace("lead-", ""), 10);
-    const ok = await updateLead(rowIndex, { estado, notas });
+    const { ok } = await updateLead(id, { estado, notas });
     if (!ok) {
       return NextResponse.json(
         { error: "Error al actualizar el lead" },
         { status: 500, headers: NO_STORE }
+      );
+    }
+
+    return NextResponse.json({ ok: true }, { headers: NO_STORE });
+  } catch {
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
+      { status: 500, headers: NO_STORE }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
+  try {
+    const body = await request.json();
+    const result = z.object({ id: LeadIdSchema }).safeParse(body);
+    if (!result.success) {
+      return NextResponse.json(
+        { errors: result.error.issues },
+        { status: 400, headers: NO_STORE }
+      );
+    }
+
+    const { ok, deleted } = await deleteLead(result.data.id);
+    if (!ok) {
+      return NextResponse.json(
+        { error: "Error al eliminar el lead" },
+        { status: 500, headers: NO_STORE }
+      );
+    }
+    if (!deleted) {
+      return NextResponse.json(
+        { error: "Lead no encontrado" },
+        { status: 404, headers: NO_STORE }
       );
     }
 

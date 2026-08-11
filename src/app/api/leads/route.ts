@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LeadPayloadSchema } from "@/lib/schemas";
-import { appendLead, type LeadRow } from "@/lib/sheets";
+import { upsertLead, type LeadRowInsert } from "@/lib/supabase";
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -53,9 +53,10 @@ export async function POST(request: NextRequest) {
 
     const data = result.data;
 
-    // Build lead row for Google Sheets
-    const leadRow: LeadRow = {
-      timestamp: new Date().toISOString(),
+    // Build the insert row. Sin estado/notas/timestamp: la BD aplica sus
+    // defaults (estado 'nuevo', timestamp now()). El upsert por email solo
+    // actualiza estos campos, preservando estado/notas del admin.
+    const leadRow: LeadRowInsert = {
       nombre: data.nombre,
       email: data.email,
       celular: data.celular,
@@ -78,23 +79,21 @@ export async function POST(request: NextRequest) {
       riasec_s: data.riasecProfile.S,
       riasec_e: data.riasecProfile.E,
       riasec_c: data.riasecProfile.C,
-      estado: "nuevo",
-      notas: "",
-      actualizado_en: "",
-      // Sin fila asignada todavía: solo getLeads/updateLead la usan
-      rowIndex: 0,
+      requestId: data.requestId,
+      esPrueba: data.esPrueba ?? false,
     };
 
-    const success = await appendLead(leadRow);
+    const { ok, id } = await upsertLead(leadRow);
 
-    if (!success) {
+    if (!ok) {
       return NextResponse.json(
         { error: "Error al guardar el lead. Intenta de nuevo." },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ ok: true }, { status: 201 });
+    // 201 si se insertó (id presente), 200 si el email ya existía (upsert)
+    return NextResponse.json({ ok: true }, { status: id !== undefined ? 201 : 200 });
   } catch {
     return NextResponse.json(
       { error: "Error interno del servidor" },

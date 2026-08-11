@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getMetrics } from "@/lib/sheets";
+import { getMetrics } from "@/lib/supabase";
 
 const NO_STORE = { "Cache-Control": "no-store" };
 

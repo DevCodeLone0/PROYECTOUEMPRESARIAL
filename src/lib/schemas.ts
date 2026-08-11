@@ -89,6 +89,10 @@ export const LeadPayloadSchema = z.object({
       })
     )
     .max(3, { error: "El top 3 no puede tener más de 3 carreras" }),
+  // Idempotencia del cliente: mismo requestId no duplica
+  requestId: z.string().max(100, { error: "El requestId no puede superar 100 caracteres" }).optional(),
+  // Marca interna: los leads de prueba no se envían desde el form (el admin decide)
+  esPrueba: z.boolean().optional(),
 });
 
 export type LeadPayload = z.infer<typeof LeadPayloadSchema>;
@@ -96,9 +100,15 @@ export type LeadPayload = z.infer<typeof LeadPayloadSchema>;
 export const LEAD_STATUSES = ["nuevo", "contactado", "en_proceso", "admitido", "descartado"] as const;
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
+/** ID numérico real de Postgres; acepta también string numérica (compat con clientes viejos). */
+const LeadIdSchema = z.union([
+  z.int().positive(),
+  z.string().regex(/^\d+$/).transform(Number),
+]);
+
 export const LeadUpdateSchema = z
   .object({
-    id: z.string().regex(/^lead-\d+$/, { error: "ID de lead inválido" }),
+    id: LeadIdSchema,
     estado: z.enum(LEAD_STATUSES).optional(),
     notas: z.string().max(2000, { error: "Las notas no pueden superar 2000 caracteres" }).optional(),
   })

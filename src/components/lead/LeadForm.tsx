@@ -72,6 +72,11 @@ export default function LeadForm({
         riasecProfile,
         arquetipo,
         top3,
+        // Idempotencia: mismo requestId no duplica en la BD
+        requestId:
+          typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
       };
 
       const response = await fetch("/api/leads", {

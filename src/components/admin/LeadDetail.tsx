@@ -3,18 +3,29 @@
 import { useEffect, useState } from "react";
 import { QUESTION_BANK } from "@/lib/questions/question-bank";
 import { LEAD_STATUSES } from "@/lib/schemas";
-import type { Lead } from "@/components/admin/LeadsTable";
+import { modalityLabel, type Lead } from "@/components/admin/LeadsTable";
 
 interface LeadDetailProps {
   lead: Lead;
   onClose: () => void;
+  onDeleted: () => void;
 }
 
-export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
+/** Human-readable label for the confidence level. */
+function confidenceLabel(c?: string | null): string {
+  if (c === "high") return "Alta";
+  if (c === "medium") return "Media";
+  if (c === "low") return "Baja";
+  return "—";
+}
+
+export default function LeadDetail({ lead, onClose, onDeleted }: LeadDetailProps) {
   const [estado, setEstado] = useState(lead.estado || "nuevo");
   const [notas, setNotas] = useState(lead.notas || "");
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<"ok" | "error" | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteMsg, setDeleteMsg] = useState<string | null>(null);
 
   const handleSave = async () => {
     setSaving(true);
@@ -40,6 +51,34 @@ export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
+
+  const handleDelete = async () => {
+    if (!window.confirm(`¿Eliminar el lead de ${lead.nombre}? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+    setDeleting(true);
+    setDeleteMsg(null);
+    try {
+      const res = await fetch("/api/admin/leads", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: lead.id }),
+      });
+      if (!res.ok) {
+        setDeleteMsg(
+          res.status === 404
+            ? "El lead ya no existe."
+            : "Error al eliminar. Intenta de nuevo."
+        );
+        return;
+      }
+      onDeleted();
+    } catch {
+      setDeleteMsg("Error de conexión. Intenta de nuevo.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   let answers: Record<string, string | number> = {};
   try {
@@ -89,7 +128,14 @@ export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
               Contacto
             </h4>
             <div className="bg-white/3 rounded-xl p-4 space-y-1.5">
-              <div className="text-white font-bold">{lead.nombre}</div>
+              <div className="flex items-center gap-2">
+                <div className="text-white font-bold">{lead.nombre}</div>
+                {lead.esPrueba && (
+                  <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fbbf24]/15 text-[#fbbf24] uppercase tracking-wide">
+                    Prueba
+                  </span>
+                )}
+              </div>
               <div className="text-sm text-white/50">{lead.email}</div>
               <div className="text-sm text-white/50">{lead.celular}</div>
             </div>
@@ -196,6 +242,29 @@ export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
             </div>
           </div>
 
+          {/* Modalidad + Confianza */}
+          {(lead.modality || lead.confidence) && (
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider">
+                Resultado
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-white/3 rounded-xl p-4">
+                  <div className="text-xs text-white/30">Modalidad</div>
+                  <div className="text-sm font-bold text-white mt-1">
+                    {modalityLabel(lead.modality)}
+                  </div>
+                </div>
+                <div className="bg-white/3 rounded-xl p-4">
+                  <div className="text-xs text-white/30">Confianza</div>
+                  <div className="text-sm font-bold text-white mt-1">
+                    {confidenceLabel(lead.confidence)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Scores */}
           <div className="space-y-3">
             {lead.riasec_r + lead.riasec_i + lead.riasec_a + lead.riasec_s + lead.riasec_e + lead.riasec_c > 0 ? (
@@ -283,6 +352,20 @@ export default function LeadDetail({ lead, onClose }: LeadDetailProps) {
               </div>
             </div>
           )}
+
+          {/* Delete */}
+          <div className="pt-2">
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="w-full py-3 rounded-xl font-bold bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-all duration-300 disabled:opacity-50"
+            >
+              {deleting ? "Eliminando..." : "Eliminar lead"}
+            </button>
+            {deleteMsg && (
+              <p className="text-sm text-red-400 text-center mt-2">{deleteMsg}</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

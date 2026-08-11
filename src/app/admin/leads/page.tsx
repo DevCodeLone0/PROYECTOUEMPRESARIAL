@@ -25,6 +25,7 @@ export default function AdminLeadsPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [estado, setEstado] = useState("");
+  const [includePruebas, setIncludePruebas] = useState(false);
   const [message, setMessage] = useState<ExportMessage>(null);
   const [exporting, setExporting] = useState(false);
 
@@ -43,6 +44,8 @@ export default function AdminLeadsPage() {
         estado,
         pageSize: "1000",
       });
+      // Mismo toggle que la tabla: OFF (default) excluye leads de prueba.
+      if (!includePruebas) params.set("esPrueba", "false");
       const res = await fetch(`/api/admin/leads?${params}`);
       const data = await res.json();
 
@@ -162,10 +165,19 @@ export default function AdminLeadsPage() {
         onDateToChange={setDateTo}
         estado={estado}
         onEstadoChange={setEstado}
+        includePruebas={includePruebas}
+        onIncludePruebasChange={setIncludePruebas}
       />
 
       {selectedLead && (
-        <LeadDetail lead={selectedLead} onClose={() => setSelectedLead(null)} />
+        <LeadDetail
+          lead={selectedLead}
+          onClose={() => setSelectedLead(null)}
+          onDeleted={() => {
+            setSelectedLead(null);
+            window.location.reload();
+          }}
+        />
       )}
     </div>
   );

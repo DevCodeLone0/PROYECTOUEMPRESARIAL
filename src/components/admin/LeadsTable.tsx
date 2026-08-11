@@ -32,12 +32,25 @@ export function statusBadgeClasses(s: string): string {
   return classes[s] ?? "bg-white/5 text-white/40";
 }
 
+/**
+ * Human-readable label for a lead modality, with a neutral fallback when
+ * the lead has no modality yet.
+ */
+export function modalityLabel(m?: string | null): string {
+  if (m === "presencial") return "Presencial";
+  if (m === "virtual") return "Virtual";
+  return "—";
+}
+
 export interface Lead {
-  id: string;
+  id: number;
   nombre: string;
   email: string;
   celular: string;
   arquetipo: string;
+  modality?: string | null;
+  confidence?: string | null;
+  esPrueba?: boolean;
   compatibilidad_1: number;
   timestamp: string;
   consentimiento: boolean;
@@ -74,6 +87,8 @@ interface LeadsTableProps {
   onDateToChange: (value: string) => void;
   estado: string;
   onEstadoChange: (value: string) => void;
+  includePruebas: boolean;
+  onIncludePruebasChange: (value: boolean) => void;
 }
 
 export default function LeadsTable({
@@ -88,6 +103,8 @@ export default function LeadsTable({
   onDateToChange,
   estado,
   onEstadoChange,
+  includePruebas,
+  onIncludePruebasChange,
 }: LeadsTableProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [total, setTotal] = useState(0);
@@ -108,6 +125,9 @@ export default function LeadsTable({
         dateTo,
         estado,
       });
+      // "Incluir pruebas" OFF (default): excluye leads de prueba del listado.
+      // ON: sin el param → trae todos (comportamiento anterior).
+      if (!includePruebas) params.set("esPrueba", "false");
 
       try {
         const res = await fetch(`/api/admin/leads?${params}`);
@@ -131,7 +151,7 @@ export default function LeadsTable({
     return () => {
       cancelled = true;
     };
-  }, [page, search, archetype, dateFrom, dateTo, estado]);
+  }, [page, search, archetype, dateFrom, dateTo, estado, includePruebas]);
 
   const totalPages = Math.max(1, Math.ceil(total / 20));
 
@@ -224,6 +244,25 @@ export default function LeadsTable({
           }}
           className="p-3.5 rounded-xl bg-white/3 border border-white/5 text-white focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300"
         />
+        <label htmlFor="leads-include-pruebas" className="sr-only">
+          Incluir leads de prueba
+        </label>
+        <label
+          htmlFor="leads-include-pruebas"
+          className="flex items-center gap-2 p-3.5 rounded-xl bg-white/3 border border-white/5 cursor-pointer select-none hover:bg-white/5 transition-colors"
+        >
+          <input
+            id="leads-include-pruebas"
+            type="checkbox"
+            checked={includePruebas}
+            onChange={(e) => {
+              onIncludePruebasChange(e.target.checked);
+              setPage(1);
+            }}
+            className="w-4 h-4 rounded accent-[#D51933]"
+          />
+          <span className="text-sm text-white/50">Incluir pruebas</span>
+        </label>
       </div>
 
       {/* Table — Chaptr clean style */}
@@ -249,6 +288,9 @@ export default function LeadsTable({
                   </th>
                   <th className="text-left p-4 text-white/40 font-medium">
                     Arquetipo
+                  </th>
+                  <th className="text-left p-4 text-white/40 font-medium">
+                    Modalidad
                   </th>
                   <th className="text-left p-4 text-white/40 font-medium">
                     Estado
@@ -281,6 +323,9 @@ export default function LeadsTable({
                     </td>
                     <td className="p-4 text-white/50">{lead.email}</td>
                     <td className="p-4 text-white/50">{lead.arquetipo}</td>
+                    <td className="p-4 text-white/50">
+                      {modalityLabel(lead.modality)}
+                    </td>
                     <td className="p-4">
                       <span
                         className={
