@@ -29,7 +29,7 @@ function loadResults(): ResultsData | null {
   }
 }
 
-export default function LeadFormStep() {
+export default function LeadFormStep({ esPrueba = false }: { esPrueba?: boolean }) {
   const router = useRouter();
   const { isCompleted, resetTest } = useTestStore();
   const [data] = useState<ResultsData | null>(loadResults);
@@ -140,6 +140,7 @@ export default function LeadFormStep() {
               arquetipo={data.archetype.id}
               top3={top3ForLead}
               respuestas={data.answers}
+              esPrueba={esPrueba}
             />
           </div>
 

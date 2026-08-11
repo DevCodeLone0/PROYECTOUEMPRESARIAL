@@ -14,6 +14,8 @@ interface LeadFormProps {
   arquetipo: string;
   top3: { carrera: string; compatibilidad: number }[];
   respuestas: Record<string, string | number>;
+  /** Modo prueba (?prueba=1): marca el lead como es_prueba=true en la BD */
+  esPrueba?: boolean;
 }
 
 export default function LeadForm({
@@ -22,6 +24,7 @@ export default function LeadForm({
   arquetipo,
   top3,
   respuestas,
+  esPrueba = false,
 }: LeadFormProps) {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -77,6 +80,8 @@ export default function LeadForm({
           typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
             ? crypto.randomUUID()
             : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+        // Modo prueba: el form real nunca envía este campo (la BD aplica false)
+        ...(esPrueba ? { esPrueba: true } : {}),
       };
 
       const response = await fetch("/api/leads", {

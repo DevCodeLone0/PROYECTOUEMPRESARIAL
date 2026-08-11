@@ -86,7 +86,7 @@ function LayerIndicator({ layer }: { layer: 1 | 2 | 3 | 4 }) {
   );
 }
 
-export default function TestWizard() {
+export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean }) {
   const router = useRouter();
   const {
     step,
@@ -213,13 +213,15 @@ export default function TestWizard() {
     );
 
     completeTest();
-    router.push("/test?step=form");
+    // Preserva el modo prueba (?prueba=1) al pasar al formulario
+    router.push(esPrueba ? "/test?step=form&prueba=1" : "/test?step=form");
   }, [
     setRiasecProfile,
     setModalityResult,
     setArchetypeId,
     completeTest,
     router,
+    esPrueba,
   ]);
 
   const handleNext = () => {
