@@ -10,6 +10,7 @@ import BackgroundCarousel, { type BackgroundSlide } from "@/components/ui/Backgr
 // Slides del carousel de fondo del hero: video primero, luego fotos originales y del moodboard
 const heroSlides: BackgroundSlide[] = [
   { type: "video", src: "/videos/IMG_0229.mp4", poster: "/images/moodboard-campus-2.jpeg" },
+  { type: "video", src: "/videos/IMG_0263.mp4", poster: "/images/poster-img0263.jpeg" },
   { type: "image", src: "/images/DSC_0191.JPG" },
   { type: "image", src: "/images/DSC_0228.JPG" },
   { type: "image", src: "/images/DSC_0294.JPG" },

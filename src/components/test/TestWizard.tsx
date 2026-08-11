@@ -18,6 +18,7 @@ import BackgroundCarousel, { type BackgroundSlide } from "@/components/ui/Backgr
 // Slides del carousel de fondo del test: video primero, luego fotos originales y del moodboard
 const backgroundSlides: BackgroundSlide[] = [
   { type: "video", src: "/videos/IMG_0469.mp4", poster: "/images/moodboard-campus-1.jpeg" },
+  { type: "video", src: "/videos/IMG_0263.mp4", poster: "/images/poster-img0263.jpeg" },
   { type: "image", src: "/images/DSC_0191.JPG" },
   { type: "image", src: "/images/DSC_0228.JPG" },
   { type: "image", src: "/images/DSC_0294.JPG" },
