@@ -35,31 +35,65 @@ function LayerTransition({
   layer: 1 | 2 | 3 | 4;
   onContinue: () => void;
 }) {
+  const icon = (() => {
+    const cls = "w-10 h-10 text-white";
+    switch (layer) {
+      case 1:
+        return (
+          <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="9" />
+            <circle cx="12" cy="12" r="5" />
+            <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+          </svg>
+        );
+      case 2:
+        return (
+          <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+          </svg>
+        );
+      case 3:
+        return (
+          <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 3h12l4 6-10 12L2 9l4-6z" />
+            <path d="M2 9h20" />
+            <path d="M12 21 8 9l4-6 4 6-4 12" />
+          </svg>
+        );
+      case 4:
+        return (
+          <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 21h18" />
+            <path d="M5 21V8l7-5 7 5v13" />
+            <path d="M9 21v-6h6v6" />
+            <path d="M9 11h.01M15 11h.01M9 14h.01M15 14h.01" />
+          </svg>
+        );
+    }
+  })();
+
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-10 space-y-6 text-center">
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-white/10 flex items-center justify-center text-3xl">
-          {layer === 1 && "🎯"}
-          {layer === 2 && "🧠"}
-          {layer === 3 && "💎"}
-          {layer === 4 && "🏫"}
+      <div className="brand-border rounded-3xl p-8 md:p-12 space-y-6 text-center shadow-[0_8px_40px_rgba(0,51,165,0.10)]">
+        <div className="w-24 h-24 mx-auto rounded-2xl brand-gradient flex items-center justify-center shadow-[0_0_30px_rgba(213,25,51,0.35)]">
+          {icon}
         </div>
         <div>
-          <p className="text-white/50 text-sm font-medium uppercase tracking-wider mb-2">
+          <p className="text-[#0033A5]/60 text-sm font-bold uppercase tracking-widest mb-2">
             Capa {layer} de 4
           </p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">
+          <h2 className="text-4xl md:text-5xl font-black text-slate-900">
             {LAYER_NAMES[layer]}
           </h2>
         </div>
-        <p className="text-white/70 text-lg leading-relaxed max-w-md mx-auto">
+        <p className="text-slate-600 text-xl md:text-2xl leading-relaxed max-w-lg mx-auto">
           {LAYER_DESCRIPTIONS[layer]}
         </p>
       </div>
 
       <button
         onClick={onContinue}
-        className="w-full bg-white text-[#111] font-bold py-4 rounded-2xl transition-all duration-300 hover:bg-[#0033A5] hover:text-white hover:scale-[1.02] active:scale-[0.98]"
+        className="w-full bg-white text-[#111] font-bold py-4 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-[#D51933] hover:to-[#0033A5] hover:text-white hover:scale-[1.02] active:scale-[0.98]"
       >
         Continuar
       </button>
@@ -75,7 +109,9 @@ function LayerIndicator({ layer }: { layer: 1 | 2 | 3 | 4 }) {
         <div
           key={l}
           className={`h-1.5 rounded-full transition-all duration-500 ${
-            l <= layer ? "bg-white/80" : "bg-white/15"
+            l <= layer
+              ? "bg-gradient-to-r from-[#D51933] to-[#0033A5]"
+              : "bg-[#0033A5]/15"
           } ${l === layer ? "w-8" : "w-4"}`}
         />
       ))}
@@ -308,17 +344,17 @@ export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean })
   const displayStep = isDisclaimer ? 0 : step;
 
   return (
-    <div className="min-h-screen bg-[#111111] flex flex-col relative overflow-hidden">
-      {/* Background carousel */}
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF3F0] via-white to-[#E8EEFF] flex flex-col relative overflow-hidden">
+      {/* Background carousel — visible through a light veil */}
       <div className="absolute inset-0 z-0">
-        <BackgroundCarousel slides={backgroundSlides} />
-        {/* Darker overlays — text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#111111]/85 via-[#111111]/75 to-[#111111]/90" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/60 via-transparent to-[#111111]/60" />
+        <BackgroundCarousel slides={backgroundSlides} intervalMs={8000} />
+        {/* Light veil — imagery stays alive, text stays readable */}
+        <div className="absolute inset-0 bg-white/45" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/25 to-white/65" />
       </div>
 
       {/* Header with progress */}
-      <div className="sticky top-0 z-40 glass">
+      <div className="sticky top-0 z-40 glass-light">
         <div className="w-full px-6 py-4 space-y-2">
           <ProgressBar
             currentStep={displayStep}
@@ -334,15 +370,15 @@ export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean })
       {/* Audio toggle */}
       <button
         onClick={toggleAudio}
-        className="fixed top-4 right-4 z-50 glass rounded-full p-3 hover:bg-white/10 transition-all"
+        className="fixed top-4 right-4 z-50 glass-light rounded-full p-3 hover:bg-white/90 transition-all"
         aria-label={audioPlaying ? "Pausar música" : "Reproducir música"}
       >
         {audioPlaying ? (
-          <svg className="w-5 h-5 text-neon-green" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-[#D51933]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
           </svg>
         ) : (
-          <svg className="w-5 h-5 text-white/40" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-[#0033A5]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
           </svg>
         )}
@@ -354,17 +390,23 @@ export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean })
           {/* Disclaimer */}
           {isDisclaimer && (
             <div className="space-y-6 animate-fade-in">
-              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 space-y-5">
-                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                  <span className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">
-                    ⚖️
+              <div className="bg-white/80 backdrop-blur-xl border border-white/70 rounded-3xl p-6 md:p-9 space-y-5 shadow-[0_8px_40px_rgba(0,51,165,0.10)]">
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-3">
+                  <span className="w-12 h-12 rounded-xl brand-gradient flex items-center justify-center text-xl shadow-[0_0_16px_rgba(213,25,51,0.3)]">
+                    <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                      <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                      <path d="M7 21h10" />
+                      <path d="M12 3v18" />
+                      <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+                    </svg>
                   </span>
                   Descargo de Responsabilidad
                 </h2>
-                <div className="space-y-3 text-white/80 text-sm leading-relaxed">
+                <div className="space-y-3 text-slate-600 text-lg md:text-xl leading-relaxed">
                   <p>
                     El test vocacional es una herramienta de orientación{" "}
-                    <strong className="text-white">
+                    <strong className="text-slate-900">
                       informativa y complementaria
                     </strong>
                     . Los resultados NO constituyen:
@@ -385,7 +427,7 @@ export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean })
 
               <button
                 onClick={handleNext}
-                className="w-full bg-white text-[#111] font-bold py-4 rounded-2xl transition-all duration-300 hover:bg-[#0033A5] hover:text-white hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full bg-white text-[#111] font-bold py-4 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-[#D51933] hover:to-[#0033A5] hover:text-white hover:scale-[1.02] active:scale-[0.98]"
               >
                 Entendido, empezar
               </button>
@@ -423,7 +465,7 @@ export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean })
                 {canGoBack && (
                   <button
                     onClick={handlePrev}
-                    className="flex items-center gap-2 px-6 py-3 rounded-2xl border border-white/15 text-white/70 hover:border-[#0033A5] hover:text-[#0033A5] transition-all duration-300"
+                    className="flex items-center gap-2 px-6 py-3 rounded-2xl border border-white/70 bg-white/60 text-slate-600 hover:border-[#0033A5]/50 hover:text-[#0033A5] hover:bg-white/90 transition-all duration-300"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
@@ -437,8 +479,8 @@ export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean })
                   disabled={!canGoNext}
                   className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold transition-all duration-300 ${
                     canGoNext
-                      ? "bg-white text-[#111] hover:bg-[#0033A5] hover:text-white hover:scale-[1.02] active:scale-[0.98]"
-                      : "bg-white/10 text-white/30 cursor-not-allowed"
+                      ? "bg-white text-[#111] hover:bg-gradient-to-r hover:from-[#D51933] hover:to-[#0033A5] hover:text-white hover:scale-[1.02] active:scale-[0.98]"
+                      : "bg-white/50 text-slate-400 cursor-not-allowed"
                   }`}
                 >
                   {step === TOTAL_STEPS ? "Finalizar" : "Siguiente"}

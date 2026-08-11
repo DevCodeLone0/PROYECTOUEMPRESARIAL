@@ -240,6 +240,14 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* ── Glass light (bright palette — content floats over visible imagery) ── */
+.glass-light {
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
 /* ── Neon border effect ── */
 .neon-border {
   position: relative;
@@ -263,9 +271,50 @@ body {
   opacity: 1;
 }
 
-/* ── Gradient text ── */
+/* ── Brand border (red → blue) — bright interior ── */
+.brand-border {
+  position: relative;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)) padding-box,
+    linear-gradient(135deg, #D51933, #0033A5) border-box;
+}
+
+.brand-border-light {
+  position: relative;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)) padding-box,
+    linear-gradient(135deg, rgba(213, 25, 51, 0.9), rgba(0, 51, 165, 0.9)) border-box;
+}
+
+/* ── Brand solid gradient (red → blue) ── */
+.brand-gradient {
+  background: linear-gradient(135deg, #D51933, #0033A5);
+}
+
+/* ── Pop-in (selected checkmark feedback) ── */
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-pop-in {
+  animation: pop-in 0.25s ease-out forwards;
+}
+
+/* ── Gradient text (brand red → blue) ── */
 .gradient-text {
-  background: linear-gradient(135deg, #0033A5, #D51933, #ff0080);
+  background: linear-gradient(135deg, #D51933, #0033A5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -88,7 +88,7 @@ export default function BackgroundCarousel({
               className="w-full h-full bg-cover bg-center"
               style={{
                 backgroundImage: `url(${slide.src})`,
-                filter: "brightness(0.85) saturate(1.15)",
+                filter: "brightness(1.05) saturate(1.25)",
                 transform: isActive ? "scale(1)" : "scale(1.05)",
                 transition: "transform 4s ease-out",
               }}

@@ -52,31 +52,33 @@ export default function ProgressBar({
   return (
     <div className="w-full space-y-2">
       {/* Top row: question counter + dimension */}
-      <div className="flex items-center justify-between text-sm">
+      <div className="flex items-center justify-between text-lg">
         <div className="flex items-center gap-3">
           {currentStep > 0 ? (
-            <span className="text-white/90 font-semibold">
+            <span className="text-slate-900 font-black">
               Pregunta {currentStep} de {totalSteps}
             </span>
           ) : (
-            <span className="text-white/90 font-semibold">Bienvenido</span>
+            <span className="text-slate-900 font-black">Bienvenido</span>
           )}
           {displayDimension && (
             <>
-              <span className="text-white/20">·</span>
-              <span className="text-white/50">{displayDimension}</span>
+              <span className="text-[#0033A5]/30">·</span>
+              <span className="text-slate-500 font-semibold">{displayDimension}</span>
             </>
           )}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-white/40 text-xs">{Math.round(progress)}%</span>
+          <span className="text-[#0033A5] text-base font-black">
+            {Math.round(progress)}%
+          </span>
         </div>
       </div>
 
-      {/* Progress Bar — clean white/gray */}
-      <div className="relative h-2 bg-white/10 rounded-full overflow-hidden">
+      {/* Progress Bar — brand gradient */}
+      <div className="relative h-2.5 bg-white/60 rounded-full overflow-hidden">
         <div
-          className="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-700 ease-out"
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#D51933] to-[#0033A5] rounded-full transition-all duration-700 ease-out shadow-[0_0_12px_rgba(213,25,51,0.5)]"
           style={{ width: `${Math.min(progress, 100)}%` }}
         />
       </div>
