@@ -17,8 +17,8 @@ export default function AdminPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-white/40">Cargando...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-slate-400">Cargando...</div>
       </div>
     );
   }
@@ -30,8 +30,8 @@ export default function AdminPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-sm text-white/40 mt-1">
+        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+        <p className="text-sm text-slate-500 mt-1">
           Bienvenido, {session.user?.email}
         </p>
       </div>

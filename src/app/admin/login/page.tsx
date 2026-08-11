@@ -41,26 +41,31 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-8 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF3F0] via-white to-[#E8EEFF] flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Blobs de marca */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/10 blur-[120px]" />
+        <div className="absolute bottom-0 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
+      </div>
+      <div className="w-full max-w-sm space-y-8 animate-fade-in relative z-10">
         {/* Logo */}
         <div className="text-center">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#00ff88] to-[#D51933] rounded-2xl flex items-center justify-center font-bold text-xl text-black">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#D51933] to-[#0033A5] rounded-2xl flex items-center justify-center font-bold text-xl text-white shadow-lg shadow-[#D51933]/25">
               UF
             </div>
           </Link>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">Admin Panel</h1>
-          <p className="text-sm text-white/30 mt-2">
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Admin Panel</h1>
+          <p className="text-sm text-slate-500 mt-2">
             Inicia sesión para gestionar leads
           </p>
         </div>
 
-        {/* Form — Light card on dark (Chaptr style) */}
-        <div className="bg-[#fafafa] rounded-3xl p-6 md:p-8">
+        {/* Form */}
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/60 border border-slate-200/70">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-[#0a0a0a]">Correo</label>
+              <label className="block text-sm font-semibold text-slate-900">Correo</label>
               <input
                 type="email"
                 name="email"
@@ -68,13 +73,13 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full p-4 rounded-xl bg-white border-2 border-gray-100 text-[#0a0a0a] placeholder-gray-300 focus:border-[#D51933] focus:outline-none transition-colors"
+                className="w-full p-4 rounded-xl bg-white border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#D51933] focus:outline-none transition-colors"
                 placeholder="admin@uniempresarial.edu.co"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-[#0a0a0a]">Contraseña</label>
+              <label className="block text-sm font-semibold text-slate-900">Contraseña</label>
               <input
                 type="password"
                 name="password"
@@ -82,7 +87,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full p-4 rounded-xl bg-white border-2 border-gray-100 text-[#0a0a0a] placeholder-gray-300 focus:border-[#D51933] focus:outline-none transition-colors"
+                className="w-full p-4 rounded-xl bg-white border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#D51933] focus:outline-none transition-colors"
                 placeholder="••••••••"
               />
             </div>
@@ -90,7 +95,7 @@ export default function AdminLoginPage() {
             {error && (
               <div
                 role="alert"
-                className="bg-red-50 border border-red-100 rounded-xl p-3 text-sm text-red-500 text-center"
+                className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-600 text-center"
               >
                 {error}
               </div>
@@ -99,7 +104,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-4 rounded-xl font-bold bg-[#0a0a0a] text-white transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-[#D51933] to-[#0033A5] text-white shadow-lg shadow-[#D51933]/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
             </button>
@@ -107,7 +112,7 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="text-center">
-          <Link href="/" className="text-sm text-white/25 hover:text-[#0033A5] transition-colors">
+          <Link href="/" className="text-sm text-slate-400 hover:text-[#0033A5] transition-colors">
             ← Volver al sitio
           </Link>
         </div>

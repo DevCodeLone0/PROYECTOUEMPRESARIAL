@@ -23,13 +23,13 @@ export function statusLabel(s: string): string {
  */
 export function statusBadgeClasses(s: string): string {
   const classes: Record<string, string> = {
-    nuevo: "bg-[#4da6ff]/15 text-[#4da6ff]",
-    contactado: "bg-[#00ff88]/15 text-[#00ff88]",
-    en_proceso: "bg-[#fbbf24]/15 text-[#fbbf24]",
-    admitido: "bg-[#a78bfa]/15 text-[#a78bfa]",
-    descartado: "bg-red-500/15 text-red-400",
+    nuevo: "bg-[#0033A5]/10 text-[#0033A5]",
+    contactado: "bg-[#16a34a]/10 text-[#16a34a]",
+    en_proceso: "bg-amber-400/20 text-amber-700",
+    admitido: "bg-violet-500/10 text-violet-600",
+    descartado: "bg-red-500/10 text-red-600",
   };
-  return classes[s] ?? "bg-white/5 text-white/40";
+  return classes[s] ?? "bg-slate-100 text-slate-500";
 }
 
 /**
@@ -157,7 +157,7 @@ export default function LeadsTable({
 
   return (
     <div className="space-y-4">
-      {/* Filters — Clean input fields */}
+      {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <label htmlFor="leads-search" className="sr-only">
           Buscar nombre o email
@@ -171,7 +171,7 @@ export default function LeadsTable({
             onSearchChange(e.target.value);
             setPage(1);
           }}
-          className="flex-1 min-w-[200px] p-3.5 rounded-xl bg-white/3 border border-white/5 text-white placeholder-white/25 focus:border-[#D51933]/50 focus:bg-[#D51933]/3 focus:outline-none text-sm transition-all duration-300"
+          className="flex-1 min-w-[200px] p-3.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300 shadow-sm"
         />
         <label htmlFor="leads-archetype" className="sr-only">
           Filtrar por arquetipo
@@ -185,7 +185,7 @@ export default function LeadsTable({
             onArchetypeChange(e.target.value);
             setPage(1);
           }}
-          className="w-48 p-3.5 rounded-xl bg-white/3 border border-white/5 text-white placeholder-white/25 focus:border-[#D51933]/50 focus:bg-[#D51933]/3 focus:outline-none text-sm transition-all duration-300"
+          className="w-48 p-3.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300 shadow-sm"
         />
         <label htmlFor="leads-estado" className="sr-only">
           Filtrar por estado
@@ -197,26 +197,14 @@ export default function LeadsTable({
             onEstadoChange(e.target.value);
             setPage(1);
           }}
-          className="p-3.5 rounded-xl bg-white/3 border border-white/5 text-white focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300"
+          className="p-3.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300 shadow-sm"
         >
-          <option value="" className="bg-[#141414] text-white">
-            Todos los estados
-          </option>
-          <option value="nuevo" className="bg-[#141414] text-white">
-            Nuevo
-          </option>
-          <option value="contactado" className="bg-[#141414] text-white">
-            Contactado
-          </option>
-          <option value="en_proceso" className="bg-[#141414] text-white">
-            En proceso
-          </option>
-          <option value="admitido" className="bg-[#141414] text-white">
-            Admitido
-          </option>
-          <option value="descartado" className="bg-[#141414] text-white">
-            Descartado
-          </option>
+          <option value="">Todos los estados</option>
+          <option value="nuevo">Nuevo</option>
+          <option value="contactado">Contactado</option>
+          <option value="en_proceso">En proceso</option>
+          <option value="admitido">Admitido</option>
+          <option value="descartado">Descartado</option>
         </select>
         <label htmlFor="leads-date-from" className="sr-only">
           Desde
@@ -229,7 +217,7 @@ export default function LeadsTable({
             onDateFromChange(e.target.value);
             setPage(1);
           }}
-          className="p-3.5 rounded-xl bg-white/3 border border-white/5 text-white focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300"
+          className="p-3.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300 shadow-sm"
         />
         <label htmlFor="leads-date-to" className="sr-only">
           Hasta
@@ -242,14 +230,14 @@ export default function LeadsTable({
             onDateToChange(e.target.value);
             setPage(1);
           }}
-          className="p-3.5 rounded-xl bg-white/3 border border-white/5 text-white focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300"
+          className="p-3.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-[#D51933]/50 focus:outline-none text-sm transition-all duration-300 shadow-sm"
         />
         <label htmlFor="leads-include-pruebas" className="sr-only">
           Incluir leads de prueba
         </label>
         <label
           htmlFor="leads-include-pruebas"
-          className="flex items-center gap-2 p-3.5 rounded-xl bg-white/3 border border-white/5 cursor-pointer select-none hover:bg-white/5 transition-colors"
+          className="flex items-center gap-2 p-3.5 rounded-xl bg-white border border-slate-200 cursor-pointer select-none hover:bg-slate-50 transition-colors shadow-sm"
         >
           <input
             id="leads-include-pruebas"
@@ -261,44 +249,44 @@ export default function LeadsTable({
             }}
             className="w-4 h-4 rounded accent-[#D51933]"
           />
-          <span className="text-sm text-white/50">Incluir pruebas</span>
+          <span className="text-sm text-slate-600">Incluir pruebas</span>
         </label>
       </div>
 
-      {/* Table — Chaptr clean style */}
-      <div className="bg-white/3 border border-white/5 rounded-2xl overflow-hidden">
+      {/* Table */}
+      <div className="bg-white border border-slate-200/70 rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-white/30">Cargando...</div>
+          <div className="p-8 text-center text-slate-400">Cargando...</div>
         ) : error ? (
-          <div className="p-8 text-center text-red-400">{error}</div>
+          <div className="p-8 text-center text-red-600">{error}</div>
         ) : leads.length === 0 ? (
-          <div className="p-8 text-center text-white/30">
+          <div className="p-8 text-center text-slate-400">
             No se encontraron leads
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/5">
-                  <th className="text-left p-4 text-white/40 font-medium">
+                <tr className="border-b border-slate-200/70 bg-slate-50/60">
+                  <th className="text-left p-4 text-slate-500 font-medium">
                     Nombre
                   </th>
-                  <th className="text-left p-4 text-white/40 font-medium">
+                  <th className="text-left p-4 text-slate-500 font-medium">
                     Email
                   </th>
-                  <th className="text-left p-4 text-white/40 font-medium">
+                  <th className="text-left p-4 text-slate-500 font-medium">
                     Arquetipo
                   </th>
-                  <th className="text-left p-4 text-white/40 font-medium">
+                  <th className="text-left p-4 text-slate-500 font-medium">
                     Modalidad
                   </th>
-                  <th className="text-left p-4 text-white/40 font-medium">
+                  <th className="text-left p-4 text-slate-500 font-medium">
                     Estado
                   </th>
-                  <th className="text-left p-4 text-white/40 font-medium">
+                  <th className="text-left p-4 text-slate-500 font-medium">
                     Compat.
                   </th>
-                  <th className="text-left p-4 text-white/40 font-medium">
+                  <th className="text-left p-4 text-slate-500 font-medium">
                     Fecha
                   </th>
                 </tr>
@@ -316,14 +304,14 @@ export default function LeadsTable({
                         onSelectLead(lead);
                       }
                     }}
-                    className="border-b border-white/3 hover:bg-white/3 cursor-pointer transition-colors focus:outline-none focus:bg-white/5"
+                    className="border-b border-slate-100 hover:bg-slate-50/80 cursor-pointer transition-colors focus:outline-none focus:bg-slate-50"
                   >
-                    <td className="p-4 text-white/80 font-medium">
+                    <td className="p-4 text-slate-900 font-medium">
                       {lead.nombre}
                     </td>
-                    <td className="p-4 text-white/50">{lead.email}</td>
-                    <td className="p-4 text-white/50">{lead.arquetipo}</td>
-                    <td className="p-4 text-white/50">
+                    <td className="p-4 text-slate-500">{lead.email}</td>
+                    <td className="p-4 text-slate-500">{lead.arquetipo}</td>
+                    <td className="p-4 text-slate-500">
                       {modalityLabel(lead.modality)}
                     </td>
                     <td className="p-4">
@@ -336,10 +324,10 @@ export default function LeadsTable({
                         {statusLabel(lead.estado)}
                       </span>
                     </td>
-                    <td className="p-4 text-[#00ff88] font-bold">
+                    <td className="p-4 text-[#0033A5] font-bold">
                       {lead.compatibilidad_1}%
                     </td>
-                    <td className="p-4 text-white/30">
+                    <td className="p-4 text-slate-400">
                       {new Date(lead.timestamp).toLocaleDateString("es-CO")}
                     </td>
                   </tr>
@@ -353,24 +341,24 @@ export default function LeadsTable({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-white/30">
+          <div className="text-sm text-slate-500">
             {total} leads encontrados
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage(Math.max(1, page - 1))}
               disabled={page === 1}
-              className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-white/50 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed text-sm transition-all duration-300"
+              className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-[#0033A5] hover:border-[#0033A5]/40 disabled:opacity-30 disabled:cursor-not-allowed text-sm transition-all duration-300 shadow-sm"
             >
               Anterior
             </button>
-            <span className="text-sm text-white/30 px-3">
+            <span className="text-sm text-slate-500 px-3">
               {page} / {totalPages}
             </span>
             <button
               onClick={() => setPage(Math.min(totalPages, page + 1))}
               disabled={page === totalPages}
-              className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-white/50 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed text-sm transition-all duration-300"
+              className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-[#0033A5] hover:border-[#0033A5]/40 disabled:opacity-30 disabled:cursor-not-allowed text-sm transition-all duration-300 shadow-sm"
             >
               Siguiente
             </button>

@@ -39,18 +39,18 @@ export default function AdminLayout({
 
   return (
     <SessionProvider>
-      <div className="min-h-screen bg-[#0a0a0a] flex">
-        {/* Sidebar — Chaptr clean style */}
-        <aside className="hidden md:flex w-64 bg-[#141414] border-r border-white/5 flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-[#FFF3F0] via-white to-[#E8EEFF] flex">
+        {/* Sidebar */}
+        <aside className="hidden md:flex w-64 bg-white border-r border-slate-200/70 flex-col">
           {/* Logo */}
-          <div className="p-6 border-b border-white/5">
+          <div className="p-6 border-b border-slate-200/70">
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#00ff88] to-[#D51933] rounded-xl flex items-center justify-center font-bold text-sm text-black">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#D51933] to-[#0033A5] rounded-xl flex items-center justify-center font-bold text-sm text-white shadow-md shadow-[#D51933]/20">
                 UF
               </div>
               <div>
-                <div className="font-bold text-white text-sm">Tu Futuro Dual</div>
-                <div className="text-xs text-white/30">Admin Panel</div>
+                <div className="font-bold text-slate-900 text-sm">Tu Futuro Dual</div>
+                <div className="text-xs text-slate-400">Admin Panel</div>
               </div>
             </Link>
           </div>
@@ -70,7 +70,7 @@ export default function AdminLayout({
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                     isActive
                       ? "bg-[#D51933]/10 text-[#D51933] border border-[#D51933]/20"
-                      : "text-white/50 hover:text-[#0033A5] hover:bg-[#0033A5]/10"
+                      : "text-slate-500 hover:text-[#0033A5] hover:bg-[#0033A5]/10"
                   }`}
                 >
                   {item.icon}
@@ -81,10 +81,10 @@ export default function AdminLayout({
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-white/5">
+          <div className="p-4 border-t border-slate-200/70">
             <Link
               href="/"
-              className="flex items-center gap-2 text-sm text-white/30 hover:text-[#0033A5] transition-colors"
+              className="flex items-center gap-2 text-sm text-slate-400 hover:text-[#0033A5] transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -96,12 +96,12 @@ export default function AdminLayout({
 
         {/* Mobile header */}
         <div className="flex-1 flex flex-col">
-          <header className="md:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#141414]/80 backdrop-blur-md">
+          <header className="md:hidden flex items-center justify-between p-4 border-b border-slate-200/70 bg-white/90 backdrop-blur-md">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#00ff88] to-[#D51933] rounded-lg flex items-center justify-center font-bold text-xs text-black">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#D51933] to-[#0033A5] rounded-lg flex items-center justify-center font-bold text-xs text-white">
                 UF
               </div>
-              <span className="font-bold text-sm">Admin</span>
+              <span className="font-bold text-sm text-slate-900">Admin</span>
             </Link>
             <div className="flex items-center gap-2">
               {navItems.map((item) => {
@@ -118,7 +118,7 @@ export default function AdminLayout({
                     className={`p-2 rounded-lg transition-colors ${
                       isActive
                         ? "bg-[#D51933]/10 text-[#D51933]"
-                        : "text-white/30 hover:text-[#0033A5]"
+                        : "text-slate-400 hover:text-[#0033A5]"
                     }`}
                   >
                     {item.icon}
