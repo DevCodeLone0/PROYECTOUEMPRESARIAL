@@ -20,7 +20,7 @@ export default function RankingFull({
       {/* Toggle button */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-white/10 text-white/50 hover:border-[#0033A5] hover:text-[#0033A5] transition-all duration-300 font-medium"
+        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-slate-300 text-slate-600 hover:border-[#0033A5] hover:text-[#0033A5] transition-all duration-300 font-medium bg-white/60"
       >
         <span>
           {expanded
@@ -60,32 +60,32 @@ export default function RankingFull({
             return (
               <div
                 key={result.programId}
-                className="flex items-center gap-3 p-4 rounded-xl bg-white/3 border border-white/5 hover:border-white/10 transition-all duration-300"
+                className="flex items-center gap-3 p-4 rounded-xl bg-white border border-slate-200/70 shadow-sm hover:border-slate-300 transition-all duration-300"
               >
                 {/* Rank */}
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-white/50">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600">
                   {index + 1}
                 </div>
 
                 {/* Name and modality */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-white/80 truncate">
+                  <div className="text-sm font-medium text-slate-800 truncate">
                     {getProgramBaseName(program.id)}
                   </div>
                   <div className="flex items-center gap-1.5 text-xs flex-wrap">
                     {(program.modality === "presencial" || hasTwin) && (
-                      <span className="text-[10px] font-bold text-[#00ff88] bg-[#00ff88]/10 px-1 py-0.5 rounded">
+                      <span className="text-[10px] font-bold text-[#16a34a] bg-[#16a34a]/10 px-1 py-0.5 rounded">
                         Presencial
                       </span>
                     )}
                     {(program.modality === "virtual" || hasTwin) && (
-                      <span className="text-[10px] font-bold text-[#4da6ff] bg-[#4da6ff]/10 px-1 py-0.5 rounded">
+                      <span className="text-[10px] font-bold text-[#0033A5] bg-[#0033A5]/10 px-1 py-0.5 rounded">
                         Virtual
                       </span>
                     )}
                     {isModalityMatch && (
-                      <span className="text-[10px] font-bold text-[#00ff88] bg-[#00ff88]/10 px-1 py-0.5 rounded">
-                        ✓
+                      <span className="text-[10px] font-bold text-[#D51933] bg-[#D51933]/10 px-1 py-0.5 rounded">
+                        Recomendado
                       </span>
                     )}
                   </div>
@@ -93,13 +93,13 @@ export default function RankingFull({
 
                 {/* Bar and percentage */}
                 <div className="w-28 flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#D51933]/50 rounded-full transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-[#D51933] to-[#0033A5] rounded-full transition-all duration-500"
                       style={{ width: `${result.overallScore}%` }}
                     />
                   </div>
-                  <span className="text-xs font-medium text-white/40 w-8 text-right">
+                  <span className="text-xs font-medium text-slate-500 w-8 text-right">
                     {Math.round(result.overallScore)}%
                   </span>
                 </div>

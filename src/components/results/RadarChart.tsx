@@ -65,23 +65,23 @@ export default function RadarChart({
     <div className={className}>
       <ResponsiveContainer width="100%" height={320}>
         <RechartsRadarChart data={data} cx="50%" cy="50%" outerRadius="75%">
-          <PolarGrid stroke="rgba(255,255,255,0.08)" />
+          <PolarGrid stroke="rgba(15,23,42,0.12)" />
           <PolarAngleAxis
             dataKey="dimension"
-            tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 12 }}
+            tick={{ fill: "#334155", fontSize: 12 }}
           />
           <PolarRadiusAxis
             angle={30}
             domain={[0, 100]}
-            tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }}
+            tick={{ fill: "#94a3b8", fontSize: 10 }}
             axisLine={false}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "#1a1a1a",
-              border: "1px solid rgba(255,255,255,0.1)",
+              backgroundColor: "#ffffff",
+              border: "1px solid rgba(15,23,42,0.1)",
               borderRadius: "12px",
-              color: "#fff",
+              color: "#0f172a",
               fontSize: "12px",
             }}
           />
@@ -109,12 +109,12 @@ export default function RadarChart({
 
       {/* Legend */}
       <div className="flex items-center justify-center gap-6 mt-3">
-        <span className="flex items-center gap-2 text-xs text-white/40">
+        <span className="flex items-center gap-2 text-xs text-slate-500">
           <span className="w-3 h-3 rounded-full bg-[#D51933]" />
           Tu perfil
         </span>
         {programProfile && (
-          <span className="flex items-center gap-2 text-xs text-white/40">
+          <span className="flex items-center gap-2 text-xs text-slate-500">
             <span className="w-3 h-3 rounded-full bg-[#0033A5]" />
             Programa
           </span>
@@ -122,13 +122,13 @@ export default function RadarChart({
       </div>
 
       {/* Interpretation */}
-      <p className="text-sm text-white/50 leading-relaxed mt-4 text-center">
+      <p className="text-sm text-slate-600 leading-relaxed mt-4 text-center">
         Tu dimensión más fuerte es{" "}
-        <span className="text-white font-semibold">
+        <span className="text-slate-900 font-bold">
           {DIMENSION_LABELS[strong]} ({Math.round(profile[strong] * 100)}%)
         </span>
         . La más baja es{" "}
-        <span className="text-white/80 font-medium">
+        <span className="text-slate-700 font-medium">
           {DIMENSION_LABELS[weak]}
         </span>
         . {DIMENSION_INSIGHTS[strong]}

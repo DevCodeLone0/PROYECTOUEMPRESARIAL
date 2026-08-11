@@ -47,31 +47,31 @@ function GapBar({
 
   if (ratio >= 0.9) {
     status = "strong";
-    statusColor = "bg-emerald-400";
+    statusColor = "bg-emerald-500";
     statusLabel = "✓ Fuerte";
   } else if (ratio >= 0.6) {
     status = "gap";
-    statusColor = "bg-yellow-400";
+    statusColor = "bg-yellow-500";
     statusLabel = "Brecha";
   } else {
     status = "significant";
-    statusColor = "bg-orange-400";
+    statusColor = "bg-orange-500";
     statusLabel = "Brecha significativa";
   }
 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-white/50 font-medium">
+        <span className="text-xs text-slate-600 font-medium">
           {DIMENSION_LABELS[dimension]}
         </span>
         <span
           className={`text-xs font-bold ${
             status === "strong"
-              ? "text-emerald-400"
+              ? "text-emerald-600"
               : status === "gap"
-                ? "text-yellow-400"
-                : "text-orange-400"
+                ? "text-yellow-600"
+                : "text-orange-600"
           }`}
         >
           {statusLabel}
@@ -79,10 +79,10 @@ function GapBar({
       </div>
 
       {/* Student bar */}
-      <div className="relative h-5 bg-white/5 rounded-full overflow-hidden">
+      <div className="relative h-5 bg-slate-100 rounded-full overflow-hidden">
         {/* Requirement line */}
         <div
-          className="absolute top-0 bottom-0 w-0.5 bg-white/30 z-10"
+          className="absolute top-0 bottom-0 w-0.5 bg-slate-400/70 z-10"
           style={{ left: `${required * 100}%` }}
         />
         {/* Student fill */}
@@ -95,13 +95,13 @@ function GapBar({
         />
       </div>
 
-      <div className="flex items-center justify-between text-xs text-white/30">
+      <div className="flex items-center justify-between text-xs text-slate-600">
         <span>Tú: {Math.round(student * 100)}%</span>
         <span>Requerido: {Math.round(required * 100)}%</span>
       </div>
 
       {status !== "strong" && (
-        <p className="text-xs text-white/35 italic">{SUGGESTIONS[dimension]}</p>
+        <p className="text-xs text-slate-600 italic">{SUGGESTIONS[dimension]}</p>
       )}
     </div>
   );
@@ -115,13 +115,28 @@ export default function GapAnalysis({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-bold text-white flex items-center gap-3">
-        <span className="w-10 h-10 rounded-xl bg-[#0033A5]/10 flex items-center justify-center text-xl">
-          📊
+      <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
+        <span className="w-10 h-10 rounded-xl bg-[#0033A5]/10 flex items-center justify-center">
+          <svg
+            className="w-5 h-5 text-[#0033A5]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.8}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3 3v16a2 2 0 0 0 2 2h16" />
+            <path d="M7 13v-3" />
+            <path d="M11 13V7" />
+            <path d="M15 13v-5" />
+            <path d="M19 13V9" />
+          </svg>
         </span>
         Análisis de brechas
       </h3>
-      <p className="text-sm text-white/40 leading-relaxed">
+      <p className="text-sm text-slate-500 leading-relaxed">
         Una brecha es una aptitud que el programa requiere y en la que hoy
         estás lejos. No es un bloqueo: son áreas de crecimiento que
         desarrollarás durante la carrera.
@@ -139,19 +154,19 @@ export default function GapAnalysis({
         return (
           <div
             key={programId}
-            className="bg-white/3 border border-white/5 rounded-2xl overflow-hidden"
+            className="bg-white border border-slate-200/70 rounded-2xl shadow-sm overflow-hidden"
           >
             <button
               onClick={() => setExpandedIndex(isOpen ? null : index)}
               className="w-full p-4 flex items-center gap-3 text-left"
             >
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-white/80 truncate">
+                <div className="text-sm font-medium text-slate-800 truncate">
                   {getProgramBaseName(program.id)}
                 </div>
               </div>
               <svg
-                className={`w-4 h-4 text-white/30 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -166,7 +181,7 @@ export default function GapAnalysis({
             </button>
 
             {isOpen && (
-              <div className="px-4 pb-4 space-y-4 border-t border-white/5 pt-4 animate-fade-in">
+              <div className="px-4 pb-4 space-y-4 border-t border-slate-100 pt-4 animate-fade-in">
                 {DIMENSIONS.map((dim) => (
                   <GapBar
                     key={dim}

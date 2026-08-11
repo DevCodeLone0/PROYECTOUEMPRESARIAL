@@ -59,26 +59,33 @@ function MissingResults() {
   const router = useRouter();
   const { resetTest } = useTestStore();
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Fondo degradado de marca: rojo → blanco → azul */}
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF3F0] via-white to-[#E8EEFF] flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Fondo con blobs de marca */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Degradado diagonal principal */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#D51933]/90 via-white/25 to-[#0033A5]/90" />
-        {/* Glows de profundidad */}
-        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/55 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/60 blur-[130px]" />
-        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/25 blur-[110px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/30 blur-[100px]" />
-        {/* Velo oscuro para legibilidad del texto */}
-        <div className="absolute inset-0 bg-[#0a0a0a]/40" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/60 via-transparent to-[#0a0a0a]" />
+        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/10 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
+        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#D51933]/5 blur-[110px]" />
       </div>
-      <div className="text-center space-y-6 max-w-md">
-        <div className="text-5xl">🔍</div>
-        <h1 className="text-2xl font-bold text-white">
+      <div className="text-center space-y-6 max-w-md relative z-10">
+        <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-[#D51933] to-[#0033A5] flex items-center justify-center text-white shadow-lg shadow-[#D51933]/25">
+          <svg
+            className="w-10 h-10"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.8}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-bold text-slate-900">
           No encontramos tus resultados
         </h1>
-        <p className="text-white/50 leading-relaxed">
+        <p className="text-slate-500 leading-relaxed">
           Cerraste la pestaña y perdimos el resultado de tu test.
         </p>
         <div className="flex flex-col items-center gap-4">
@@ -87,13 +94,13 @@ function MissingResults() {
               resetTest();
               router.push("/test");
             }}
-            className="inline-flex items-center gap-3 bg-white text-[#0a0a0a] font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:bg-[#0033A5] hover:text-white hover:scale-105"
+            className="inline-flex items-center gap-3 bg-gradient-to-r from-[#D51933] to-[#0033A5] text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-lg shadow-[#D51933]/25 transition-all duration-300 hover:scale-105"
           >
             Hacer el test de nuevo
           </button>
           <Link
             href="/"
-            className="text-sm text-white/40 hover:text-white transition-colors"
+            className="text-sm text-slate-400 hover:text-[#0033A5] transition-colors"
           >
             Volver al inicio
           </Link>
@@ -119,18 +126,14 @@ export default function ResultadosPage() {
       return <MissingResults />;
     }
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center relative overflow-hidden">
-        {/* Fondo degradado de marca: rojo → blanco → azul */}
+      <div className="min-h-screen bg-gradient-to-br from-[#FFF3F0] via-white to-[#E8EEFF] flex items-center justify-center relative overflow-hidden">
+        {/* Fondo con blobs de marca */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#D51933]/90 via-white/25 to-[#0033A5]/90" />
-          <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/55 blur-[120px]" />
-          <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/60 blur-[130px]" />
-          <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/25 blur-[110px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/30 blur-[100px]" />
-          <div className="absolute inset-0 bg-[#0a0a0a]/40" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/60 via-transparent to-[#0a0a0a]" />
+          <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/10 blur-[120px]" />
+          <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
+          <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#D51933]/5 blur-[110px]" />
         </div>
-        <div className="text-white/40">Cargando resultados...</div>
+        <div className="text-slate-400">Cargando resultados...</div>
       </div>
     );
   }
@@ -200,16 +203,13 @@ export default function ResultadosPage() {
     recommendation === "presencial" ? "Presencial" : "Virtual";
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
-      {/* Fondo degradado de marca: rojo → blanco → azul */}
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF3F0] via-white to-[#E8EEFF] relative overflow-hidden">
+      {/* Fondo con blobs de marca */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#D51933]/90 via-white/25 to-[#0033A5]/90" />
-        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/55 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/60 blur-[130px]" />
-        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#00ff88]/25 blur-[110px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#4da6ff]/30 blur-[100px]" />
-        <div className="absolute inset-0 bg-[#0a0a0a]/40" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/60 via-transparent to-[#0a0a0a]" />
+        <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-[#D51933]/10 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-[#0033A5]/15 blur-[130px]" />
+        <div className="absolute bottom-0 left-1/4 w-[440px] h-[440px] rounded-full bg-[#D51933]/5 blur-[110px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#0033A5]/10 blur-[100px]" />
       </div>
 
       <Confetti />
@@ -218,26 +218,26 @@ export default function ResultadosPage() {
       <Header />
 
       {/* Content */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 py-10 space-y-12">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 pt-44 pb-16 space-y-12">
         {/* Hero result */}
         <div className="relative text-center space-y-5 animate-fade-in">
           {/* Decorative glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-[#00ff88]/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-[#0033A5]/10 rounded-full blur-3xl" />
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight relative z-10">
             <span className="gradient-text">Tu resultado</span>
           </h1>
-          <p className="text-white/60 text-lg relative z-10">
+          <p className="text-slate-600 text-lg relative z-10">
             Descubriste tu arquetipo:{" "}
-            <span className="font-bold text-white">
+            <span className="font-bold text-slate-900">
               {data.archetype.name}
             </span>
           </p>
-          <p className="text-white/40 relative z-10">
-            Modalidad recomendada:{" "}
-            <span className="font-semibold text-[#00ff88]">
+          <div className="relative z-10 flex items-center justify-center gap-2">
+            <span className="text-slate-500">Modalidad recomendada:</span>
+            <span className="px-3 py-1 rounded-full bg-[#0033A5]/10 border border-[#0033A5]/20 text-sm font-bold text-[#0033A5]">
               {modalityLabel}
             </span>
-          </p>
+          </div>
         </div>
 
         {/* Archetype */}
@@ -250,13 +250,26 @@ export default function ResultadosPage() {
 
         {/* Radar Chart */}
         <div className="space-y-3">
-          <h3 className="text-xl font-bold text-white flex items-center gap-3">
-            <span className="w-10 h-10 rounded-xl bg-[#D51933]/10 flex items-center justify-center text-xl">
-              🎯
+          <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+            <span className="w-12 h-12 rounded-2xl bg-[#0033A5]/10 text-[#0033A5] flex items-center justify-center">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
             </span>
             Tu perfil RIASEC
           </h3>
-          <div className="bg-gradient-to-br from-[#141414] to-[#1a1a1a] border border-white/8 rounded-3xl p-6">
+          <div className="bg-white border border-slate-200/70 rounded-3xl p-6 shadow-sm">
             <RadarChart profile={data.riasecProfile} />
           </div>
         </div>
@@ -266,27 +279,39 @@ export default function ResultadosPage() {
 
         {/* Top 3 */}
         <div className="space-y-5">
-          <h3 className="text-xl font-bold text-white flex items-center gap-3">
-            <span className="w-10 h-10 rounded-xl bg-[#fbbf24]/10 flex items-center justify-center text-xl">
-              🏆
+          <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+            <span className="w-12 h-12 rounded-2xl bg-[#0033A5]/10 text-[#0033A5] flex items-center justify-center">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.735H5.81a1 1 0 0 1-.957-.735L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z" />
+                <path d="M5 21h14" />
+              </svg>
             </span>
             Tus 3 carreras ideales
           </h3>
-          <p className="text-sm text-white/40 leading-relaxed">
+          <p className="text-sm text-slate-500 leading-relaxed">
             Ordenamos los programas por afinidad con tu personalidad, tus
             aptitudes y tu estilo de vida. El primero es tu mejor
             coincidencia.
           </p>
           {wasFiltered && (
-            <p className="text-xs text-white/30">
+            <p className="text-xs text-slate-400">
               Mostramos solo programas{" "}
               {recommendation === "presencial" ? "presenciales" : "virtuales"}{" "}
               según tu recomendación.
             </p>
           )}
           {confidence === "low" && (
-            <div className="border border-orange-500/25 bg-orange-500/5 rounded-xl px-4 py-3">
-              <p className="text-sm text-orange-200/80 leading-relaxed">
+            <div className="border border-orange-300 bg-orange-50 rounded-xl px-4 py-3">
+              <p className="text-sm text-orange-700 leading-relaxed">
                 No detectamos una señal clara sobre tu modalidad ideal, por
                 eso te mostramos las 7 carreras con sus modalidades.
               </p>
@@ -327,20 +352,20 @@ export default function ResultadosPage() {
           <Link
             href="/test"
             onClick={resetTest}
-            className="inline-flex items-center gap-3 bg-white text-[#0a0a0a] font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:bg-[#0033A5] hover:text-white hover:scale-105"
+            className="inline-flex items-center gap-3 bg-gradient-to-r from-[#D51933] to-[#0033A5] text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-lg shadow-[#D51933]/25 transition-all duration-300 hover:scale-105"
           >
             Repetir el test
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center gap-3 border border-white/20 text-white/60 font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:border-[#0033A5] hover:text-[#0033A5]"
+            className="inline-flex items-center gap-3 border border-slate-300 text-slate-600 font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:border-[#0033A5] hover:text-[#0033A5]"
           >
             Volver al inicio
           </Link>
         </div>
 
         {/* Disclaimer */}
-        <div className="text-center text-xs text-white/20 pt-4 pb-8">
+        <div className="text-center text-xs text-slate-400 pt-4 pb-8">
           <p>
             Los resultados son una guía basada en auto-percepción y no
             constituyen un diagnóstico psicológico certificado.
