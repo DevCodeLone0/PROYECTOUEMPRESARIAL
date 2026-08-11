@@ -148,6 +148,14 @@ export default function LeadFormStep({ esPrueba = false }: { esPrueba?: boolean 
               top3={top3ForLead}
               respuestas={data.answers}
               esPrueba={esPrueba}
+              modality={data.modalityResult.recommendation}
+              confidence={data.modalityResult.confidence}
+              aptitudeVec={data.aptitudeVec}
+              valuesVec={data.valuesVec}
+              ranking={(data.rankedResults ?? []).map((r) => ({
+                programId: r.programId,
+                compatibility: Math.round(r.overallScore),
+              }))}
             />
           </div>
 

@@ -14,6 +14,12 @@ interface LeadFormProps {
   arquetipo: string;
   top3: { carrera: string; compatibilidad: number }[];
   respuestas: Record<string, string | number>;
+  // Fase 2: resultados del scoring persistidos con el lead
+  modality: "presencial" | "virtual";
+  confidence: "high" | "medium" | "low";
+  aptitudeVec?: number[];
+  valuesVec?: number[];
+  ranking?: { programId: string; compatibility: number }[];
   /** Modo prueba (?prueba=1): marca el lead como es_prueba=true en la BD */
   esPrueba?: boolean;
 }
@@ -24,6 +30,11 @@ export default function LeadForm({
   arquetipo,
   top3,
   respuestas,
+  modality,
+  confidence,
+  aptitudeVec,
+  valuesVec,
+  ranking,
   esPrueba = false,
 }: LeadFormProps) {
   const [formData, setFormData] = useState({
@@ -74,6 +85,11 @@ export default function LeadForm({
         scores,
         riasecProfile,
         arquetipo,
+        modality,
+        confidence,
+        ...(aptitudeVec ? { aptitudeVec } : {}),
+        ...(valuesVec ? { valuesVec } : {}),
+        ...(ranking ? { ranking } : {}),
         top3,
         // Idempotencia: mismo requestId no duplica en la BD
         requestId:

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import LeadsTable, { statusLabel, type Lead } from "@/components/admin/LeadsTable";
+import LeadsTable, { statusLabel, modalityLabel, type Lead } from "@/components/admin/LeadsTable";
 import LeadDetail from "@/components/admin/LeadDetail";
 
 /**
@@ -59,44 +59,160 @@ export default function AdminLeadsPage() {
         return;
       }
 
-      // Dynamic import of xlsx
-      // Nota de seguridad: xlsx@0.18.5 (última publicada en npm) tiene CVEs conocidas
-      // (Prototype Pollution GHSA-4r6h-8v6p-xvw6 y ReDoS GHSA-5pgg-2g8v-p4x9).
-      // No existe versión parcheada en npm; los builds oficiales con fixes solo se
-      // distribuyen desde https://cdn.sheetjs.com. Mitigación actual: solo
-      // serializamos datos propios del API (nunca archivos de usuario), por lo que
-      // el vector de explotación no es alcanzable desde esta ruta.
-      const XLSX = await import("xlsx");
+      // Dynamic import de exceljs
+      // Nota de seguridad: reemplazamos xlsx@0.18.5 (última publicada en npm;
+      // CVEs conocidas de Prototype Pollution GHSA-4r6h-8v6p-xvw6 y ReDoS
+      // GHSA-5pgg-2g8v-p4x9, sin versión parcheada en npm) por exceljs, que
+      // no tiene esas CVEs. Igual que antes, solo serializamos datos propios
+      // del API (nunca archivos de usuario).
+      const ExcelJS = await import("exceljs");
 
-      const exportData = data.leads.map((lead: Lead) => ({
-        Nombre: sanitizeCell(lead.nombre),
-        Email: sanitizeCell(lead.email),
-        Celular: sanitizeCell(lead.celular),
-        Arquetipo: sanitizeCell(lead.arquetipo),
-        Estado: lead.estado ? statusLabel(lead.estado) : "Nuevo",
-        "Compatibilidad Top 1": `${lead.compatibilidad_1}%`,
-        "Carrera 1": sanitizeCell(lead.carrera_1),
-        "Carrera 2": sanitizeCell(lead.carrera_2),
-        "Carrera 3": sanitizeCell(lead.carrera_3),
-        Fecha: sanitizeCell(
-          new Date(lead.timestamp).toLocaleDateString("es-CO")
-        ),
-        Consentimiento: lead.consentimiento ? "Sí" : "No",
-        "RIASEC R": lead.riasec_r,
-        "RIASEC I": lead.riasec_i,
-        "RIASEC A": lead.riasec_a,
-        "RIASEC S": lead.riasec_s,
-        "RIASEC E": lead.riasec_e,
-        "RIASEC C": lead.riasec_c,
-      }));
+      const HEADER_FILL = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF0033A5" },
+      } as const;
+      const TITLE_FILL = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFD51933" },
+      } as const;
+      const BAND_FILL = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFF5F7FF" },
+      } as const;
+      const SLATE_BORDER = {
+        style: "thin",
+        color: { argb: "FFE2E8F0" },
+      } as const;
+      const WHITE_BORDER = {
+        style: "thin",
+        color: { argb: "FFFFFFFF" },
+      } as const;
 
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Leads");
-      XLSX.writeFile(
-        wb,
-        `leads-tu-futuro-dual-${new Date().toISOString().split("T")[0]}.xlsx`
-      );
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Leads");
+
+      // Anchos de columna: Nombre, Email, Celular, Fecha, Arquetipo,
+      // Modalidad, Confianza, Carrera 1/2/3, Estado, Consentimiento
+      sheet.columns = [
+        { width: 28 },
+        { width: 34 },
+        { width: 18 },
+        { width: 14 },
+        { width: 16 },
+        { width: 14 },
+        { width: 12 },
+        { width: 30 },
+        { width: 30 },
+        { width: 30 },
+        { width: 14 },
+        { width: 14 },
+      ];
+
+      const carreraCell = (carrera: string, compatibilidad: number): string => {
+        if (!carrera) return "";
+        const base = sanitizeCell(carrera);
+        return compatibilidad > 0 ? `${base} (${compatibilidad}%)` : base;
+      };
+
+      const confianzaLabel = (c: string | null | undefined): string =>
+        c === "high" ? "Alta" : c === "medium" ? "Media" : c === "low" ? "Baja" : "";
+
+      // Fila 1: título con merge A1:L1
+      sheet.addRow(["Leads — Tu Futuro Dual"]);
+      sheet.mergeCells("A1:L1");
+      const titleRow = sheet.getRow(1);
+      titleRow.height = 32;
+      const titleCell = titleRow.getCell(1);
+      titleCell.fill = TITLE_FILL;
+      titleCell.font = { bold: true, size: 16, color: { argb: "FFFFFFFF" } };
+      titleCell.alignment = { horizontal: "center", vertical: "middle" };
+      // Borde delgado blanco en todas las celdas del merge
+      titleRow.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: WHITE_BORDER,
+          left: WHITE_BORDER,
+          bottom: WHITE_BORDER,
+          right: WHITE_BORDER,
+        };
+      });
+
+      // Fila 2: encabezados
+      sheet.addRow([
+        "Nombre",
+        "Email",
+        "Celular",
+        "Fecha",
+        "Arquetipo",
+        "Modalidad",
+        "Confianza",
+        "Carrera 1",
+        "Carrera 2",
+        "Carrera 3",
+        "Estado",
+        "Consentimiento",
+      ]);
+      const headerRow = sheet.getRow(2);
+      headerRow.height = 24;
+      headerRow.eachCell((cell) => {
+        cell.fill = HEADER_FILL;
+        cell.font = { bold: true, size: 11, color: { argb: "FFFFFFFF" } };
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+      });
+
+      // Columnas centradas: Fecha, Modalidad, Confianza, Estado, Consentimiento
+      const centeredCols = new Set([4, 6, 7, 11, 12]);
+
+      // Filas de datos (3..n): banding con pares en azul claro
+      data.leads.forEach((lead: Lead) => {
+        const row = sheet.addRow([
+          sanitizeCell(lead.nombre),
+          sanitizeCell(lead.email),
+          sanitizeCell(lead.celular),
+          sanitizeCell(new Date(lead.timestamp).toLocaleDateString("es-CO")),
+          sanitizeCell(lead.arquetipo),
+          modalityLabel(lead.modality),
+          confianzaLabel(lead.confidence),
+          carreraCell(lead.carrera_1, lead.compatibilidad_1),
+          carreraCell(lead.carrera_2, lead.compatibilidad_2),
+          carreraCell(lead.carrera_3, lead.compatibilidad_3),
+          lead.estado ? statusLabel(lead.estado) : "Nuevo",
+          lead.consentimiento ? "Sí" : "No",
+        ]);
+        row.height = 20;
+        const hasBand = row.number % 2 === 0;
+        row.eachCell((cell, colNumber) => {
+          if (hasBand) cell.fill = BAND_FILL;
+          cell.font = { color: { argb: "FF1F2937" } };
+          cell.border = {
+            top: SLATE_BORDER,
+            left: SLATE_BORDER,
+            bottom: SLATE_BORDER,
+            right: SLATE_BORDER,
+          };
+          cell.alignment = {
+            horizontal: centeredCols.has(colNumber) ? "center" : "left",
+            vertical: "middle",
+          };
+        });
+      });
+
+      // Congela título + encabezados y activa el filtro automático
+      sheet.views = [{ state: "frozen", ySplit: 2 }];
+      sheet.autoFilter = { from: "A2", to: "L2" };
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `leads-tu-futuro-dual-${new Date().toISOString().split("T")[0]}.xlsx`;
+      link.click();
+      URL.revokeObjectURL(url);
 
       setMessage({
         kind: "success",

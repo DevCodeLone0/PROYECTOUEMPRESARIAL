@@ -231,6 +231,11 @@ export async function upsertLead(
   };
   if (lead.requestId) row.request_id = lead.requestId;
   if (lead.esPrueba !== undefined) row.es_prueba = lead.esPrueba;
+  if (lead.modality !== undefined) row.modality = lead.modality;
+  if (lead.confidence !== undefined) row.confidence = lead.confidence;
+  if (lead.aptitude_vec !== undefined) row.aptitude_vec = lead.aptitude_vec;
+  if (lead.values_vec !== undefined) row.values_vec = lead.values_vec;
+  if (lead.ranking !== undefined) row.ranking = lead.ranking;
 
   const { data: existing, error: selectError } = await supabase
     .from("leads")

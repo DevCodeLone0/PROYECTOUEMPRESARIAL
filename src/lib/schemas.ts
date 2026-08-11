@@ -79,6 +79,16 @@ export const LeadPayloadSchema = z.object({
   arquetipo: z.string().min(1).max(80, {
     error: "El arquetipo no puede superar 80 caracteres",
   }),
+  // Fase 2: resultados del scoring persistidos con el lead
+  modality: z.enum(["presencial", "virtual"]),
+  confidence: z.enum(["high", "medium", "low"]),
+  // 4 slots [logical, planning, creative, social]
+  aptitudeVec: z.array(z.number()).optional(),
+  // 4 slots de valores/estilo de vida
+  valuesVec: z.array(z.number()).optional(),
+  ranking: z
+    .array(z.object({ programId: z.string(), compatibility: z.number() }))
+    .optional(),
   top3: z
     .array(
       z.object({
