@@ -21,42 +21,90 @@ const heroSlides: BackgroundSlide[] = [
 
 const archetypes = [
   {
-    emoji: "⚙️",
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    ),
     name: "El Constructor",
     desc: "Optimizas todo lo que tocas. Procesos, recursos, tiempo — encuentras la forma más inteligente de hacer las cosas.",
   },
   {
-    emoji: "🔬",
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.3-4.3" />
+      </svg>
+    ),
     name: "El Investigador",
     desc: "Tu curiosidad no tiene límites. Analizas, experimentas y descubres patrones que otros pasan por alto.",
   },
   {
-    emoji: "🎨",
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        <path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+        <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
+      </svg>
+    ),
     name: "El Creador",
     desc: "Transformas ideas en experiencias. Tu creatividad es tu lenguaje natural y tu mayor ventaja.",
   },
   {
-    emoji: "🤝",
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
     name: "El Conector",
     desc: "Entiendes a las personas como nadie. Empatía, comunicación y habilidades sociales son tu superpoder.",
   },
   {
-    emoji: "♟️",
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <circle cx="12" cy="12" r="6" />
+        <circle cx="12" cy="12" r="2" />
+      </svg>
+    ),
     name: "El Estratega",
     desc: "Planificas, organizas y ejecutas con precisión. Ves el panorama completo donde otros ven caos.",
   },
   {
-    emoji: "📊",
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 3v16a2 2 0 0 0 2 2h16" />
+        <path d="M7 13v-3" />
+        <path d="M11 13V7" />
+        <path d="M15 13v-5" />
+        <path d="M19 13V9" />
+      </svg>
+    ),
     name: "El Analista",
     desc: "Los datos cuentan historias para ti. Metódico, preciso y orientado a la excelencia.",
   },
   {
-    emoji: "🚀",
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+        <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+        <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+      </svg>
+    ),
     name: "El Visionario",
     desc: "Conectas creatividad con negocio. Ves oportunidades donde otros ven problemas.",
   },
   {
-    emoji: "👑",
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.735H5.81a1 1 0 0 1-.957-.735L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z" />
+        <path d="M5 21h14" />
+      </svg>
+    ),
     name: "El Líder",
     desc: "Inspiras, motivas y llevas equipos a resultados extraordinarios. Tu energía es contagiosa.",
   },
@@ -195,12 +243,12 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#fafafa]">
       {/* Audio toggle */}
       {audioStarted && (
         <button
           onClick={toggleAudio}
-          className="fixed top-4 right-4 z-50 glass rounded-full p-3 hover:bg-white/10 transition-all"
+          className="fixed top-4 right-4 z-50 glass-light rounded-full p-3 hover:bg-white transition-all"
           aria-label={audioPlaying ? "Pausar música" : "Reproducir música"}
         >
           {audioPlaying ? (
@@ -208,7 +256,7 @@ export default function HomePage() {
               <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
             </svg>
           ) : (
-            <svg className="w-5 h-5 text-white/40" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-slate-500" fill="currentColor" viewBox="0 0 24 24">
               <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
             </svg>
           )}
@@ -220,28 +268,28 @@ export default function HomePage() {
 
       {/* Hero Section — Asymmetric layout with carousel */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Background carousel */}
+        {/* Background carousel — light veil keeps imagery alive */}
         <div className="absolute inset-0 z-0">
-          <BackgroundCarousel slides={heroSlides} onActiveChange={setHeroActive} />
-          {/* Dark overlay gradient — lighter to show video */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/60 via-transparent to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/40 via-transparent to-transparent" />
+          <BackgroundCarousel slides={heroSlides} onActiveChange={setHeroActive} intervalMs={8000} />
+          {/* Light veil — imagery stays alive, text stays readable */}
+          <div className="absolute inset-0 bg-white/45" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/25 to-white/65" />
         </div>
 
         {/* Hero Content — Chaptr-style asymmetric */}
         <div className="relative z-10 w-full px-6 pt-32 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left: Bold typography */}
-            <div className="space-y-8 bg-[#0a0a0a]/70 backdrop-blur-xl rounded-3xl p-8 lg:p-12 border border-white/5">
+            <div className="space-y-8 glass-light rounded-3xl p-8 lg:p-12">
               <h1 className="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tight leading-[0.85] animate-slide-up">
-                <span className="gradient-text drop-shadow-[0_0_30px_rgba(0,51,165,0.3)]">Descubre</span>
+                <span className="gradient-text drop-shadow-[0_0_30px_rgba(0,51,165,0.25)]">Descubre</span>
                 <br />
-                <span className="text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">tu carrera</span>
+                <span className="text-slate-900">tu carrera</span>
                 <br />
-                <span className="text-white font-light text-5xl md:text-6xl lg:text-7xl">ideal</span>
+                <span className="text-slate-900 font-extrabold text-5xl md:text-6xl lg:text-7xl">ideal</span>
               </h1>
 
-              <p className="text-2xl md:text-3xl text-white/70 max-w-lg leading-relaxed animate-fade-in font-light" style={{ animationDelay: "0.3s" }}>
+              <p className="text-2xl md:text-3xl text-slate-600 max-w-lg leading-relaxed animate-fade-in font-medium" style={{ animationDelay: "0.3s" }}>
                 25 preguntas. 4 capas. 8 arquetipos. 12 programas. Un resultado que puede
                 cambiar tu futuro.
               </p>
@@ -250,7 +298,7 @@ export default function HomePage() {
                 <Link
                   href="/test"
                   onClick={handleStart}
-                  className="group relative inline-flex items-center gap-3 bg-white text-[#0a0a0a] font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:bg-[#0033A5] hover:text-white hover:scale-105"
+                  className="group relative inline-flex items-center gap-3 bg-white text-[#0a0a0a] font-bold text-lg px-8 py-4 rounded-2xl border border-slate-200 transition-all duration-300 hover:bg-gradient-to-r hover:from-[#D51933] hover:to-[#0033A5] hover:text-white hover:scale-105 hover:border-transparent"
                 >
                   Empezar el test
                   <svg
@@ -263,7 +311,7 @@ export default function HomePage() {
                   </svg>
                 </Link>
 
-                <div className="flex items-center gap-6 text-sm text-white/40">
+                <div className="flex items-center gap-6 text-sm text-slate-500 font-medium">
                   <span className="flex items-center gap-2">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -288,7 +336,7 @@ export default function HomePage() {
                   <div
                     key={i}
                     className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                      heroActive === i ? "bg-[#00ff88] w-8" : "bg-white/20"
+                      heroActive === i ? "brand-gradient w-8" : "bg-slate-300"
                     }`}
                   />
                 ))}
@@ -296,15 +344,15 @@ export default function HomePage() {
               {/* Floating decorative elements */}
               <div className="relative w-80 h-80">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#D51933]/10 rounded-3xl rotate-12 animate-float" />
-                <div className="absolute bottom-10 left-0 w-24 h-24 bg-[#00ff88]/10 rounded-2xl -rotate-6 animate-float" style={{ animationDelay: "1s" }} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-[#ff0080]/10 rounded-xl rotate-45 animate-float" style={{ animationDelay: "0.5s" }} />
+                <div className="absolute bottom-10 left-0 w-24 h-24 bg-[#0033A5]/10 rounded-2xl -rotate-6 animate-float" style={{ animationDelay: "1s" }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-[#D51933]/10 rounded-xl rotate-45 animate-float" style={{ animationDelay: "0.5s" }} />
               </div>
             </div>
           </div>
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/30 text-sm animate-float">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-slate-500 text-sm animate-float">
           <span>Scroll</span>
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -349,25 +397,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Archetypes — Dark section */}
+      {/* Archetypes — Light section */}
       <section
         id="archetypes"
         data-reveal
-        className={`py-24 md:py-32 bg-[#0a0a0a] transition-all duration-700 delay-100 ${
+        className={`py-24 md:py-32 bg-[#fafafa] text-[#0a0a0a] transition-all duration-700 delay-100 ${
           visibleSections.has("archetypes") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
         <div className="px-6 md:px-10">
           <div className="max-w-2xl mb-16">
-            <span className="text-sm font-semibold tracking-widest text-[#00ff88] uppercase">
+            <span className="text-sm font-semibold tracking-widest text-[#D51933] uppercase">
               Tu perfil profesional
             </span>
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white mt-4 tracking-tight leading-tight">
+            <h2 className="text-4xl md:text-5xl font-extrabold mt-4 tracking-tight leading-tight">
               8 arquetipos basados en
               <br />
               <span className="gradient-text">los tipos de Jung.</span>
             </h2>
-            <p className="text-white/50 text-lg mt-4 max-w-xl">
+            <p className="text-gray-500 text-lg mt-4 max-w-xl">
               Tu resultado combina intereses, aptitudes y valores para revelar el arquetipo que
               mejor describe tu forma de trabajar.
             </p>
@@ -377,27 +425,29 @@ export default function HomePage() {
             {archetypes.map((a, i) => (
               <div
                 key={i}
-                className="group p-6 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
+                className="group p-6 rounded-3xl bg-white border border-gray-100 hover:border-[#0033A5]/30 hover:shadow-xl hover:shadow-[#0033A5]/5 transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="text-4xl mb-4">{a.emoji}</div>
-                <h3 className="text-lg font-bold text-white mb-2">{a.name}</h3>
-                <p className="text-sm text-white/50 leading-relaxed">{a.desc}</p>
+                <div className="w-12 h-12 rounded-2xl bg-[#0033A5]/10 flex items-center justify-center text-[#0033A5] mb-4 group-hover:bg-[#D51933] group-hover:text-white transition-all duration-300">
+                  {a.icon}
+                </div>
+                <h3 className="text-lg font-bold mb-2">{a.name}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{a.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stats Section — Dark */}
+      {/* Stats Section — Light with soft brand gradient */}
       <section
         id="stats"
         data-reveal
-        className={`pb-24 bg-[#0a0a0a] transition-all duration-700 delay-100 ${
+        className={`pb-24 bg-gradient-to-b from-[#fafafa] to-[#f1f3fa] text-[#0a0a0a] transition-all duration-700 delay-100 ${
           visibleSections.has("stats") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
         <div className="px-6 md:px-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/10 pt-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-gray-200 pt-16">
             {[
               { value: "25", label: "Preguntas" },
               { value: "4", label: "Capas" },
@@ -408,7 +458,7 @@ export default function HomePage() {
                 <div className="text-4xl md:text-5xl font-extrabold gradient-text">
                   {stat.value}
                 </div>
-                <div className="text-sm text-white/40 uppercase tracking-wider">
+                <div className="text-sm text-gray-500 uppercase tracking-wider font-medium">
                   {stat.label}
                 </div>
               </div>
@@ -454,25 +504,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Programs — Dark section */}
+      {/* Programs — Light section */}
       <section
         id="programs"
         data-reveal
-        className={`py-24 md:py-32 bg-[#0a0a0a] transition-all duration-700 delay-100 ${
+        className={`py-24 md:py-32 bg-[#fafafa] text-[#0a0a0a] transition-all duration-700 delay-100 ${
           visibleSections.has("programs") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
         <div className="px-6 md:px-10">
           <div className="max-w-2xl mb-16">
-            <span className="text-sm font-semibold tracking-widest text-[#00ff88] uppercase">
+            <span className="text-sm font-semibold tracking-widest text-[#D51933] uppercase">
               Programas del Modelo Dual
             </span>
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white mt-4 tracking-tight leading-tight">
+            <h2 className="text-4xl md:text-5xl font-extrabold mt-4 tracking-tight leading-tight">
               Tu carrera entre
               <br />
               <span className="gradient-text">7 carreras, 5 también en virtual.</span>
             </h2>
-            <p className="text-white/50 text-lg mt-4 max-w-xl">
+            <p className="text-gray-500 text-lg mt-4 max-w-xl">
               El test ordena los 7 programas por afinidad con tu perfil y te recomienda la
               modalidad que mejor se adapta a tu estilo de aprendizaje.
             </p>
@@ -482,17 +532,17 @@ export default function HomePage() {
             {getUniquePrograms().map((p) => (
               <div
                 key={p.baseId}
-                className="group flex items-center justify-between gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                className="group flex items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-gray-100 hover:border-[#D51933]/30 hover:shadow-lg hover:shadow-[#D51933]/5 transition-all duration-300"
               >
-                <span className="font-semibold text-white">{p.name}</span>
+                <span className="font-semibold text-[#0a0a0a]">{p.name}</span>
                 <div className="flex items-center gap-1.5 shrink-0">
                   {p.modalities.includes("presencial") && (
-                    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#00ff88]/10 text-[#00ff88]">
+                    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#16a34a]/10 text-[#16a34a]">
                       Presencial
                     </span>
                   )}
                   {p.modalities.includes("virtual") && (
-                    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#4da6ff]/10 text-[#4da6ff]">
+                    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#0033A5]/10 text-[#0033A5]">
                       Virtual
                     </span>
                   )}
@@ -503,7 +553,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section — Mixed light/dark (Chaptr editorial) */}
+      {/* CTA Section — Light editorial */}
       <section
         id="cta"
         data-reveal
@@ -524,7 +574,7 @@ export default function HomePage() {
           <Link
             href="/test"
             onClick={handleStart}
-            className="group inline-flex items-center gap-3 bg-[#0a0a0a] text-white font-bold text-lg px-10 py-5 rounded-2xl transition-all duration-300 hover:bg-[#0033A5] hover:scale-105 hover:shadow-2xl"
+            className="group inline-flex items-center gap-3 brand-gradient text-white font-bold text-lg px-10 py-5 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#D51933]/30"
           >
             Comenzar ahora
             <svg
@@ -540,7 +590,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-8 text-center text-sm text-white/30 bg-[#0a0a0a]">
+      <footer className="border-t border-gray-200 py-8 text-center text-sm text-gray-500 bg-white">
         <p>
           Fundación Universitaria Empresarial de la CCB — Uniempresarial
         </p>
