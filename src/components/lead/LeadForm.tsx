@@ -116,16 +116,24 @@ export default function LeadForm({
   if (submitted) {
     return (
       <div className="text-center space-y-6 py-8">
-        <div className="text-6xl animate-float">🎉</div>
-        <h3 className="text-2xl font-bold text-[#0a0a0a]">
+        <div className="w-20 h-20 mx-auto rounded-3xl brand-gradient flex items-center justify-center shadow-[0_0_30px_rgba(213,25,51,0.3)] animate-pop-in">
+          <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+            <path d="M5 3v4" />
+            <path d="M19 17v4" />
+            <path d="M3 5h4" />
+            <path d="M17 19h4" />
+          </svg>
+        </div>
+        <h3 className="text-2xl md:text-3xl font-black text-slate-900">
           ¡Gracias, {formData.nombre}!
         </h3>
-        <p className="text-gray-500 leading-relaxed">
+        <p className="text-slate-500 text-lg leading-relaxed">
           El equipo de admisiones de Uniempresarial te contactará pronto.
         </p>
         <a
           href="/resultados"
-          className="inline-flex items-center gap-2 bg-[#0a0a0a] text-white font-bold px-8 py-3 rounded-2xl transition-all duration-300 hover:scale-105"
+          className="inline-flex items-center gap-2 brand-gradient text-white font-bold px-8 py-3.5 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#D51933]/30"
         >
           Ver mis resultados
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -139,22 +147,22 @@ export default function LeadForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="mb-6">
-        <h3 className="text-xl font-bold text-[#0a0a0a]">
+        <h3 className="text-2xl font-black text-slate-900">
           ¿Te gustó tu resultado?
         </h3>
-        <p className="text-sm text-gray-400 mt-1">Déjanos tus datos para recibir orientación personalizada</p>
+        <p className="text-base text-slate-500 mt-1">Déjanos tus datos para recibir orientación personalizada</p>
       </div>
 
       {/* Nombre */}
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-[#0a0a0a]">
+        <label className="block text-base font-semibold text-slate-900">
           Nombre completo
         </label>
         <input
           type="text"
           value={formData.nombre}
           onChange={(e) => handleChange("nombre", e.target.value)}
-          className="w-full p-4 rounded-xl bg-white border-2 border-gray-100 text-[#0a0a0a] placeholder-gray-300 focus:border-[#D51933] focus:outline-none transition-colors text-base"
+          className="w-full p-4 rounded-xl bg-white border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#D51933] focus:outline-none focus:ring-2 focus:ring-[#D51933]/20 transition-all text-lg"
           placeholder="Tu nombre"
         />
         {errors.nombre && (
@@ -164,14 +172,14 @@ export default function LeadForm({
 
       {/* Email */}
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-[#0a0a0a]">
+        <label className="block text-base font-semibold text-slate-900">
           Correo electrónico
         </label>
         <input
           type="email"
           value={formData.email}
           onChange={(e) => handleChange("email", e.target.value)}
-          className="w-full p-4 rounded-xl bg-white border-2 border-gray-100 text-[#0a0a0a] placeholder-gray-300 focus:border-[#D51933] focus:outline-none transition-colors text-base"
+          className="w-full p-4 rounded-xl bg-white border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#D51933] focus:outline-none focus:ring-2 focus:ring-[#D51933]/20 transition-all text-lg"
           placeholder="tu@email.com"
         />
         {errors.email && (
@@ -181,14 +189,14 @@ export default function LeadForm({
 
       {/* Celular */}
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-[#0a0a0a]">
+        <label className="block text-base font-semibold text-slate-900">
           Celular
         </label>
         <input
           type="tel"
           value={formData.celular}
           onChange={(e) => handleChange("celular", e.target.value)}
-          className="w-full p-4 rounded-xl bg-white border-2 border-gray-100 text-[#0a0a0a] placeholder-gray-300 focus:border-[#D51933] focus:outline-none transition-colors text-base"
+          className="w-full p-4 rounded-xl bg-white border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#D51933] focus:outline-none focus:ring-2 focus:ring-[#D51933]/20 transition-all text-lg"
           placeholder="3XX XXX XXXX"
         />
         {errors.celular && (
@@ -244,7 +252,7 @@ export default function LeadForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-4 rounded-xl font-bold bg-[#0a0a0a] text-white transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-base"
+        className="w-full py-4 rounded-xl font-bold brand-gradient text-white text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-[#D51933]/30 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? "Enviando..." : "Enviar mis datos"}
       </button>
