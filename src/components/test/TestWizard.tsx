@@ -463,7 +463,7 @@ export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean })
                 }
               >
                 <QuestionCard
-                  question={currentQuestion as any}
+                  question={currentQuestion}
                   value={answers[currentQuestion.id]}
                   onChange={(value) => setAnswer(currentQuestion.id, value as number)}
                 />

@@ -12,6 +12,8 @@ export default function Confetti({ active = true }: ConfettiProps) {
 
   useEffect(() => {
     if (!active || hasFired.current) return;
+    // Respeta la preferencia del sistema de reducir animaciones
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     hasFired.current = true;
 
     const duration = 4000;
@@ -19,6 +21,7 @@ export default function Confetti({ active = true }: ConfettiProps) {
 
     const colors = ["#00ff88", "#D51933", "#ff0080", "#fbbf24", "#00d4ff"];
 
+    let rafId = 0;
     const frame = () => {
       confetti({
         particleCount: 4,
@@ -40,11 +43,14 @@ export default function Confetti({ active = true }: ConfettiProps) {
       });
 
       if (Date.now() < end) {
-        requestAnimationFrame(frame);
+        rafId = requestAnimationFrame(frame);
       }
     };
 
     frame();
+
+    // Cancela el loop si el componente se desmonta antes de los 4s
+    return () => cancelAnimationFrame(rafId);
   }, [active]);
 
   return null;
