@@ -37,6 +37,14 @@ yarn-error.log*
 # moodboard (material de diseño local, no debe ir al repo)
 /moodboard/
 
+# playwright MCP (logs de auditoría local, no va al repo)
+/.playwright-mcp/
+
+# capturas temporales raíz (auditorías visuales con Playwright MCP)
+/*.png
+/Logo/
+/Logo /
+
 # vercel
 .vercel
 
