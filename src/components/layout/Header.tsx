@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
-export default function Header() {
+export default function Header({ audioButton }: { audioButton?: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navLinks = [
@@ -56,19 +56,19 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-white shadow-md">
-      <div className="w-full px-6 py-1.5 flex items-center justify-between">
-        {/* Logo — sobresale sin empujar el header */}
-        <Link href="/" className="flex items-center -my-6" aria-label="Uniempresarial - Inicio">
+      <div className="w-full px-6 py-2 flex items-center justify-between gap-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center shrink-0" aria-label="Uniempresarial - Inicio">
           <img
             src="/logo/logo-header.png"
             alt="Uniempresarial"
-            className="h-36 w-auto object-contain -my-4"
+            className="h-14 w-auto object-contain"
           />
         </Link>
 
-        {/* Desktop Navigation + Social */}
-        <div className="hidden md:flex items-center gap-8">
-          <nav className="flex items-center gap-6" aria-label="Navegación principal">
+        {/* Desktop: nav + audio + social */}
+        <div className="hidden md:flex items-center gap-6">
+          <nav className="flex items-center gap-5" aria-label="Navegación principal">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -80,7 +80,13 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-4" aria-label="Redes sociales">
+          {/* Audio toggle (slot del parent) — sutil, sin protagonismo */}
+          {audioButton}
+
+          {/* Divisor ligero */}
+          <span className="h-5 w-px bg-slate-200" aria-hidden="true" />
+
+          <div className="flex items-center gap-3" aria-label="Redes sociales">
             {socialLinks.map((social) => (
               <a
                 key={social.label}
@@ -88,7 +94,7 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={social.label}
-                className="text-[#0a0a0a] hover:text-[#D51933] transition-colors"
+                className="text-slate-600 hover:text-[#D51933] transition-colors"
               >
                 {social.icon}
               </a>
@@ -96,35 +102,38 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Hamburger */}
-        <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
-          aria-expanded={mobileOpen}
-        >
-          <span className="w-6 h-0.5 bg-[#0a0a0a] transition-transform" style={{ transform: mobileOpen ? "rotate(45deg) translate(4px, 4px)" : "none" }} />
-          <span className="w-6 h-0.5 bg-[#0a0a0a]" style={{ opacity: mobileOpen ? 0 : 1 }} />
-          <span className="w-6 h-0.5 bg-[#0a0a0a] transition-transform" style={{ transform: mobileOpen ? "rotate(-45deg) translate(4px, -4px)" : "none" }} />
-        </button>
+        {/* Mobile: audio (si hay) + hamburger */}
+        <div className="md:hidden flex items-center gap-2">
+          {audioButton}
+          <button
+            className="flex flex-col gap-1.5 p-2 -mr-2"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={mobileOpen}
+          >
+            <span className="w-6 h-0.5 bg-[#0a0a0a] transition-transform" style={{ transform: mobileOpen ? "rotate(45deg) translate(4px, 4px)" : "none" }} />
+            <span className="w-6 h-0.5 bg-[#0a0a0a]" style={{ opacity: mobileOpen ? 0 : 1 }} />
+            <span className="w-6 h-0.5 bg-[#0a0a0a] transition-transform" style={{ transform: mobileOpen ? "rotate(-45deg) translate(4px, -4px)" : "none" }} />
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-white/20 px-6 py-4 animate-fade-in">
-          <nav className="flex flex-col gap-3" aria-label="Navegación móvil">
+        <div className="md:hidden bg-white border-t border-slate-100 px-6 py-4 animate-fade-in">
+          <nav className="flex flex-col gap-1" aria-label="Navegación móvil">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-base font-medium text-[#0a0a0a] hover:text-[#0033A5] transition-colors py-2"
+                className="text-base font-medium text-[#0a0a0a] hover:text-[#0033A5] transition-colors py-2.5"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-4 pt-4 border-t border-white/20" aria-label="Redes sociales">
+          <div className="flex items-center gap-4 pt-3 mt-2 border-t border-slate-100" aria-label="Redes sociales">
             {socialLinks.map((social) => (
               <a
                 key={social.label}
@@ -132,7 +141,7 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={social.label}
-                className="text-[#0a0a0a] hover:text-[#D51933] transition-colors p-2"
+                className="text-slate-600 hover:text-[#D51933] transition-colors p-1.5"
               >
                 {social.icon}
               </a>
