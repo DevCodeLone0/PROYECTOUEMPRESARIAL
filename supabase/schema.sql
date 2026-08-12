@@ -65,6 +65,9 @@ create index if not exists leads_arquetipo_idx on public.leads (arquetipo);
 create index if not exists leads_modality_idx on public.leads (modality);
 create index if not exists leads_timestamp_idx on public.leads (timestamp desc);
 create index if not exists leads_es_prueba_idx on public.leads (es_prueba);
+-- Compuesto para el query default del dashboard (filtro por estado + orden por fecha)
+create index if not exists leads_estado_timestamp_idx
+  on public.leads (estado, timestamp desc);
 
 -- updated_at automático
 create or replace function public.set_updated_at()

@@ -53,6 +53,15 @@ export async function GET(request: NextRequest) {
     const archetype = searchParams.get("archetype") || "";
     const dateFrom = searchParams.get("dateFrom") || "";
     const dateTo = searchParams.get("dateTo") || "";
+    // Fechas en formato YYYY-MM-DD; inválidas → 400 (evita 500 de PostgREST)
+    const dateRe = /^\d{4}-\d{2}-\d{2}$/;
+    if ((dateFrom && !dateRe.test(dateFrom)) || (dateTo && !dateRe.test(dateTo))) {
+      return NextResponse.json(
+        { error: "Formato de fecha inválido. Usa YYYY-MM-DD." },
+        { status: 400, headers: NO_STORE }
+      );
+    }
+
     const modality = searchParams.get("modality") || "";
     const estado = searchParams.get("estado") || "";
     const esPrueba = parseEsPrueba(searchParams.get("esPrueba"));
@@ -121,7 +130,11 @@ export async function GET(request: NextRequest) {
       },
       { headers: NO_STORE }
     );
-  } catch {
+  } catch (err) {
+    console.error("[api/admin/leads] GET falló", {
+      error: err instanceof Error ? err.message : String(err),
+      url: request.url,
+    });
     return NextResponse.json(
       { error: "Error al obtener leads" },
       { status: 500, headers: NO_STORE }
@@ -134,7 +147,15 @@ export async function PATCH(request: NextRequest) {
   if (denied) return denied;
 
   try {
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "JSON inválido" },
+        { status: 400, headers: NO_STORE }
+      );
+    }
     const result = LeadUpdateSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
@@ -153,7 +174,10 @@ export async function PATCH(request: NextRequest) {
     }
 
     return NextResponse.json({ ok: true }, { headers: NO_STORE });
-  } catch {
+  } catch (err) {
+    console.error("[api/admin/leads] PATCH falló", {
+      error: err instanceof Error ? err.message : String(err),
+    });
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500, headers: NO_STORE }
@@ -166,7 +190,15 @@ export async function DELETE(request: NextRequest) {
   if (denied) return denied;
 
   try {
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "JSON inválido" },
+        { status: 400, headers: NO_STORE }
+      );
+    }
     const result = z.object({ id: LeadIdSchema }).safeParse(body);
     if (!result.success) {
       return NextResponse.json(
@@ -190,7 +222,10 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({ ok: true }, { headers: NO_STORE });
-  } catch {
+  } catch (err) {
+    console.error("[api/admin/leads] DELETE falló", {
+      error: err instanceof Error ? err.message : String(err),
+    });
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500, headers: NO_STORE }

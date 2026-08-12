@@ -167,58 +167,34 @@ const features = [
 
 export default function HomePage() {
   const resetTest = useTestStore((s) => s.resetTest);
-  const [audioStarted, setAudioStarted] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const [heroActive, setHeroActive] = useState(0);
 
-  // Initialize audio
-  useEffect(() => {
-    audioRef.current = new Audio("/audio/Bella Ciao.mp3");
-    audioRef.current.loop = false;
-    audioRef.current.volume = 0.15;
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
-
-  const handleFirstInteraction = useCallback(() => {
-    if (!audioStarted && audioRef.current) {
-      audioRef.current.play().then(() => {
-        setAudioStarted(true);
-        setAudioPlaying(true);
-      }).catch(() => {
-        setAudioStarted(true);
-      });
+  // Crea el Audio recién cuando el usuario pide música (opt-in explícito):
+  // así no se descargan los ~6MB de "Bella Ciao.mp3" en cada visita.
+  const ensureAudio = useCallback(() => {
+    if (!audioRef.current) {
+      const audio = new Audio("/audio/Bella Ciao.mp3");
+      audio.loop = false;
+      audio.volume = 0.15;
+      audioRef.current = audio;
     }
-  }, [audioStarted]);
-
-  useEffect(() => {
-    const handler = () => handleFirstInteraction();
-    document.addEventListener("click", handler, { once: true });
-    document.addEventListener("touchstart", handler, { once: true });
-    return () => {
-      document.removeEventListener("click", handler);
-      document.removeEventListener("touchstart", handler);
-    };
-  }, [handleFirstInteraction]);
+    return audioRef.current;
+  }, []);
 
   const toggleAudio = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (audioRef.current) {
-      if (audioPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch(() => {});
-      }
-      setAudioPlaying(!audioPlaying);
+    const audio = ensureAudio();
+    if (audioPlaying) {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {});
     }
-  }, [audioPlaying]);
+    setAudioPlaying(!audioPlaying);
+  }, [audioPlaying, ensureAudio]);
 
   const handleStart = () => {
     resetTest();
@@ -245,9 +221,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      {/* Audio toggle */}
-      {audioStarted && (
-        <button
+      {/* Audio toggle — siempre visible como opt-in explícito */}
+      <button
           onClick={toggleAudio}
           className="fixed top-4 right-4 z-50 glass-light rounded-full p-3 hover:bg-white transition-all"
           aria-label={audioPlaying ? "Pausar música" : "Reproducir música"}
@@ -262,7 +237,6 @@ export default function HomePage() {
             </svg>
           )}
         </button>
-      )}
 
       {/* Header */}
       <Header />

@@ -186,15 +186,14 @@ export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean })
   // Slide direction for question animations
   const [slideDirection, setSlideDirection] = useState<"next" | "prev">("next");
 
-  // Audio for test (Route 66)
+  // Audio for test (Route 66) — se descarga recién cuando el usuario acepta
+  // iniciar el test o toca el toggle (opt-in explícito, ~8MB no son gratis).
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioStarted = useRef(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
 
+  // Solo limpia si llegó a crearse; no crea ni descarga nada al montar.
   useEffect(() => {
-    audioRef.current = new Audio("/audio/Route 66.mp3");
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.15;
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -203,24 +202,33 @@ export default function TestWizard({ esPrueba = false }: { esPrueba?: boolean })
     };
   }, []);
 
+  const ensureAudio = useCallback(() => {
+    if (!audioRef.current) {
+      const audio = new Audio("/audio/Route 66.mp3");
+      audio.loop = true;
+      audio.volume = 0.15;
+      audioRef.current = audio;
+    }
+    return audioRef.current;
+  }, []);
+
   const startTestAudio = useCallback(() => {
-    if (!audioStarted.current && audioRef.current) {
-      audioRef.current.play().catch(() => {});
+    if (!audioStarted.current) {
+      ensureAudio().play().catch(() => {});
       setAudioPlaying(true);
       audioStarted.current = true;
     }
-  }, []);
+  }, [ensureAudio]);
 
   const toggleAudio = useCallback(() => {
-    if (audioRef.current) {
-      if (audioPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch(() => {});
-      }
-      setAudioPlaying(!audioPlaying);
+    const audio = ensureAudio();
+    if (audioPlaying) {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {});
     }
-  }, [audioPlaying]);
+    setAudioPlaying(!audioPlaying);
+  }, [audioPlaying, ensureAudio]);
 
   /** Run all scoring engines and store results */
   const runScoring = useCallback(() => {

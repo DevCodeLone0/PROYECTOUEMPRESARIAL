@@ -8,8 +8,15 @@ const sora = Sora({
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
+// metadataBase: en Vercel apunta al dominio real vía AUTH_URL/NEXTAUTH_URL
+const siteUrl =
+  process.env.AUTH_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Tu Futuro Dual — Descubre tu carrera ideal",
+  title: {
+    default: "Tu Futuro Dual — Descubre tu carrera ideal",
+    template: "%s — Tu Futuro Dual",
+  },
   description:
     "Test vocacional gamificado de Uniempresarial. Descubre cuál carrera universitaria se adapta mejor a tus intereses, personalidad y habilidades.",
   keywords: [
@@ -19,6 +26,19 @@ export const metadata: Metadata = {
     "test vocacional",
     "Bogotá",
   ],
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    siteName: "Tu Futuro Dual",
+    title: "Tu Futuro Dual — Descubre tu carrera ideal",
+    description:
+      "Test vocacional gamificado de Uniempresarial. Descubre cuál carrera universitaria se adapta mejor a tus intereses, personalidad y habilidades.",
+    images: [{ url: "/images/poster-img0263.jpeg", width: 1280, height: 720 }],
+  },
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.png",

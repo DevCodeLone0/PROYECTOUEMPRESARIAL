@@ -24,7 +24,10 @@ export async function GET() {
   try {
     const metrics = await getMetrics();
     return NextResponse.json(metrics, { headers: NO_STORE });
-  } catch {
+  } catch (err) {
+    console.error("[api/admin/metrics] GET falló", {
+      error: err instanceof Error ? err.message : String(err),
+    });
     return NextResponse.json(
       { error: "Error al obtener métricas" },
       { status: 500, headers: NO_STORE }

@@ -380,25 +380,43 @@ export async function getMetrics(): Promise<AdminMetrics> {
     now.getTime() - 30 * 24 * 60 * 60 * 1000
   ).toISOString();
 
-  const countAll = supabase
+  // OJO: cada builder DEBE ser independiente — postgrest-js muta el mismo objeto
+  // si se reutiliza uno solo para los 3 counts (los filtros .gte() se acumulan
+  // en la misma URL y total/thisWeek/thisMonth terminan siendo idénticos).
+  const totalQuery = supabase
     .from("leads")
     .select("id")
     .setHeader("Prefer", "count=exact")
     .limit(0);
+  const weekQuery = supabase
+    .from("leads")
+    .select("id")
+    .setHeader("Prefer", "count=exact")
+    .limit(0)
+    .gte("timestamp", weekAgo);
+  const monthQuery = supabase
+    .from("leads")
+    .select("id")
+    .setHeader("Prefer", "count=exact")
+    .limit(0)
+    .gte("timestamp", monthAgo);
 
   const [totalRes, weekRes, monthRes] = await Promise.all([
-    countAll,
-    countAll.gte("timestamp", weekAgo),
-    countAll.gte("timestamp", monthAgo),
+    totalQuery,
+    weekQuery,
+    monthQuery,
   ]);
   if (totalRes.error || weekRes.error || monthRes.error) {
     throw totalRes.error ?? weekRes.error ?? monthRes.error;
   }
 
-  const { data, error } = await supabase
-    .from("leads")
-    .select("timestamp")
-    .gte("timestamp", monthAgo);
+  // Daily: trae hasta 100k timestamps de los últimos 30 días. Sin este límite
+    // PostgREST corta en 1000 filas y los counts diarios quedan incompletos.
+    const { data, error } = await supabase
+      .from("leads")
+      .select("timestamp")
+      .gte("timestamp", monthAgo)
+      .limit(100000);
   if (error) throw error;
 
   const timestamps = (data ?? []) as unknown as {

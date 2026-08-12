@@ -25,8 +25,11 @@ function checkRateLimit(ip: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  // Rate limiting
+  // Rate limiting por IP real. En Vercel, x-vercel-forwarded-for ya viene
+  // saneado por la plataforma (x-forwarded-for es spoofeable por el cliente).
+  // El Map es por-instancia: en serverless multi-instancia es un límite blando.
   const ip =
+    request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ||
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     request.headers.get("x-real-ip") ||
     "unknown";
@@ -39,7 +42,16 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      // Body malformado → 400, no 500
+      return NextResponse.json(
+        { error: "JSON inválido" },
+        { status: 400 }
+      );
+    }
 
     // Validate with Zod
     const result = LeadPayloadSchema.safeParse(body);
@@ -99,7 +111,11 @@ export async function POST(request: NextRequest) {
 
     // 201 si se insertó (id presente), 200 si el email ya existía (upsert)
     return NextResponse.json({ ok: true }, { status: id !== undefined ? 201 : 200 });
-  } catch {
+  } catch (err) {
+    console.error("[api/leads] POST falló", {
+      error: err instanceof Error ? err.message : String(err),
+      email: undefined, // no loguear el cuerpo: puede contener datos personales
+    });
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

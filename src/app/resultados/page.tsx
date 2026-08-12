@@ -113,7 +113,14 @@ function MissingResults() {
 export default function ResultadosPage() {
   const router = useRouter();
   const { isCompleted, resetTest } = useTestStore();
-  const [data] = useState<ResultsData | null>(loadResults);
+  const [data, setData] = useState<ResultsData | null>(null);
+
+  // Lee sessionStorage tras la hidratación, no en el initializer del estado:
+  // leerlo durante el primer render del cliente genera hydration mismatch
+  // (el server renderiza "Cargando..." y el cliente el resultado completo).
+  useEffect(() => {
+    setData(loadResults());
+  }, []);
 
   useEffect(() => {
     if (!data && !isCompleted) {
