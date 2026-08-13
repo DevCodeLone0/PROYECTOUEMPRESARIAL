@@ -71,12 +71,14 @@ create index if not exists leads_estado_timestamp_idx
 
 -- updated_at automático
 create or replace function public.set_updated_at()
-returns trigger as $$
+returns trigger
+language plpgsql
+set search_path = '' as $$
 begin
   new.updated_at = now();
   return new;
 end;
-$$ language plpgsql;
+$$;
 
 drop trigger if exists leads_set_updated_at on public.leads;
 create trigger leads_set_updated_at
