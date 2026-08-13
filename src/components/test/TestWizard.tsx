@@ -5,7 +5,6 @@ import {
   TOTAL_STEPS,
   LAYER_NAMES,
   LAYER_DESCRIPTIONS,
-  getLayerForPosition,
 } from "@/stores/test-store";
 import { QUESTION_BANK } from "@/lib/questions/question-bank";
 import { runScoringPipeline } from "@/lib/scoring/pipeline";

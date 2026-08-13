@@ -34,10 +34,7 @@ const STRATEGIST_PROFILE: RIASECProfile = {
   R: 0.3, I: 0.4, A: 0.1, S: 0.2, E: 0.7, C: 0.9,
 };
 
-/** Profile heavily skewed toward I and A → Visionario. */
-const VISIONARY_PROFILE: RIASECProfile = {
-  R: 0.3, I: 0.7, A: 0.7, S: 0.4, E: 0.9, C: 0.2,
-};
+/** Profile heavily skewed toward I and A → Visionario. (fixture reserved for future cases) */
 
 /** All-equal profile — should use cosine fallback. */
 const AMBIGUOUS_PROFILE: RIASECProfile = {

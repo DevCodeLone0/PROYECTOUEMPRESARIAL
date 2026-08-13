@@ -37,6 +37,7 @@ export default function LeadFormStep({ esPrueba = false }: { esPrueba?: boolean 
   // Lee sessionStorage tras la hidratación, no en el initializer del estado:
   // leerlo durante el primer render del cliente genera hydration mismatch.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- lectura post-hidratación para evitar hydration mismatch
     setData(loadResults());
   }, []);
 

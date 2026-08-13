@@ -10,7 +10,6 @@
  */
 
 import type {
-  RIASECDimension,
   RIASECProfile,
   FitBreakdown,
   ScoringResult,

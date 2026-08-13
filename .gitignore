@@ -40,6 +40,9 @@ yarn-error.log*
 # playwright MCP (logs de auditoría local, no va al repo)
 /.playwright-mcp/
 
+# gentle-ai skill registry (cache local de tooling, no va al repo)
+/.atl/
+
 # capturas temporales raíz (auditorías visuales con Playwright MCP)
 /*.png
 /Logo/

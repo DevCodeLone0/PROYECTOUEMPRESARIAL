@@ -14,8 +14,7 @@ import type { RIASECProfile } from "../scoring/types";
 /** All-zero RIASEC profile (no answers at all). */
 const ALL_ZERO: RIASECProfile = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
 
-/** All-max RIASEC profile (maximum on every dimension). */
-const ALL_MAX: RIASECProfile = { R: 1, I: 1, A: 1, S: 1, E: 1, C: 1 };
+/** All-max RIASEC profile (maximum on every dimension). (fixture reserved for future cases) */
 
 /** Profile heavily skewed toward R and I (engineer-type). */
 const ENGINEER_PROFILE: RIASECProfile = {

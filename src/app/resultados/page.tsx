@@ -119,6 +119,7 @@ export default function ResultadosPage() {
   // leerlo durante el primer render del cliente genera hydration mismatch
   // (el server renderiza "Cargando..." y el cliente el resultado completo).
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- lectura post-hidratación para evitar hydration mismatch
     setData(loadResults());
   }, []);
 
