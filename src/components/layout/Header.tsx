@@ -62,7 +62,7 @@ export default function Header({ audioButton }: { audioButton?: ReactNode }) {
           <img
             src="/logo/logo-header.png"
             alt="Uniempresarial"
-            className="h-14 w-auto object-contain"
+            className="h-16 lg:h-20 xl:h-24 w-auto object-contain max-w-[60vw] sm:max-w-none"
           />
         </Link>
 
